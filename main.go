@@ -6,6 +6,7 @@ import (
 	"log"
 
 	"github.com/SA-TailorStore/Kanok-API/configs"
+	_ "github.com/go-sql-driver/mysql"
 	"github.com/gofiber/fiber/v2"
 	"github.com/jmoiron/sqlx"
 )

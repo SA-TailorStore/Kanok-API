@@ -33,7 +33,7 @@ services:
       PMA_USER: ${DB_USERNAME}
       PMA_PASSWORD: ${DB_PASSWORD}
     ports:
-      - "9090:80"
+      - "9000:80"
     networks:
       - sdd-db-network
     restart: on-failure
