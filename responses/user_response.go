@@ -3,7 +3,6 @@ package responses
 type UserLoginResponse struct {
 	ID        string `json:"id"`
 	Name      string `json:"name"`
-	Email     string `json:"email"`
 	Token     string `json:"token"`
 	CreatedAt string `json:"createdAt"`
 }
@@ -18,4 +17,8 @@ type UserResponse struct {
 	Phone_number     string `json:"phone_number" db:"phone_number"`
 	Address          string `json:"address" db:"address"`
 	Created_at       string `json:"created_at" db:"created_at"`
+}
+
+type UsernameResponse struct {
+	Username string `json:"username" db:"username"`
 }

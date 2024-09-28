@@ -5,7 +5,10 @@ import (
 	"fmt"
 	"log"
 
+	"github.com/SA-TailorStore/Kanok-API/adapter/mysql"
+	"github.com/SA-TailorStore/Kanok-API/adapter/rest"
 	"github.com/SA-TailorStore/Kanok-API/configs"
+	"github.com/SA-TailorStore/Kanok-API/services"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/gofiber/fiber/v2"
 	"github.com/jmoiron/sqlx"
@@ -27,10 +30,19 @@ func main() {
 
 	defer db.Close()
 
-	// api routes
+	userRepo := mysql.NewUserMySQL(db)
+	userService := services.NewUserService(userRepo, cfg)
+	userController := rest.NewUserHandler(userService)
+
+	// api routes post
+	app.Post("/register", userController.Register)
+
+	// api routes get
 	app.Get("/", func(c *fiber.Ctx) error {
 		return c.SendString("Hello, World!")
 	})
+
+	app.Get("/users", userController.FindAllUser)
 
 	if err := app.Listen(":9000"); err != nil {
 		log.Fatal(err)
