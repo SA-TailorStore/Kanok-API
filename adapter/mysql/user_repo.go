@@ -46,18 +46,14 @@ func (u *UserMySQL) FindAllUser(ctx context.Context) ([](entities.User), error) 
 	for rows.Next() {
 		var user entities.User
 
-		if err := rows.Scan(&user.ID, &user.Username, &user.Password, &user.Created_at, &user.Phone_number,
+		if err := rows.Scan(&user.ID, &user.Username, &user.Password,
+			&user.Created_at,
+			&user.Phone_number,
 			&user.User_profile_url,
 			&user.Role,
 			&user.Display_name,
 			&user.Address); err != nil {
 			return nil, err
-		}
-
-		if user.Display_name.Valid {
-			user.DisplayNameString = user.Display_name.String
-		} else {
-			user.DisplayNameString = "-"
 		}
 
 		users = append(users, user)

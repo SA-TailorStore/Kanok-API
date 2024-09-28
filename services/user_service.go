@@ -73,3 +73,17 @@ func (u *userService) Register(ctx context.Context, req *requests.UserRegisterRe
 	return u.userRepo.Create(ctx, req)
 
 }
+
+// FindByUsername implements usercases.UserUseCase.
+func (u *userService) FindByUsername(ctx context.Context, req *requests.UsernameRequest) (*responses.UsernameResponse, error) {
+	username, err := u.userRepo.FindByUsername(ctx, req.Username)
+
+	user := &responses.UsernameResponse{
+		Username: username.Username,
+	}
+	if err == exceptions.ErrUserNotFound {
+		return user, err
+	}
+
+	return user, err
+}
