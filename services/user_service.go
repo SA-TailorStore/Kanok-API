@@ -2,6 +2,7 @@ package services
 
 import (
 	"context"
+
 	"github.com/SA-TailorStore/Kanok-API/configs"
 	"github.com/SA-TailorStore/Kanok-API/reposititories"
 	"github.com/SA-TailorStore/Kanok-API/requests"
@@ -28,5 +29,9 @@ func (u *userService) Login(ctx context.Context, req *requests.UserLoginRequest)
 
 // Register implements usercases.UserUseCase.
 func (u *userService) Register(ctx context.Context, req *requests.UserRegisterRequest) error {
+	panic("unimplemented")
+}
+
+func (u *userService) GetUsers(ctx context.Context) ([]responses.UserResponse, error) {
 	panic("unimplemented")
 }

@@ -27,6 +27,11 @@ func main() {
 
 	defer db.Close()
 
+	// api routes
+	app.Get("/", func(c *fiber.Ctx) error {
+		return c.SendString("Hello, World!")
+	})
+
 	if err := app.Listen(":9000"); err != nil {
 		log.Fatal(err)
 	}
