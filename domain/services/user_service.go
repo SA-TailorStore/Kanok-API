@@ -11,7 +11,7 @@ import (
 	"github.com/SA-TailorStore/Kanok-API/database/responses"
 	"github.com/SA-TailorStore/Kanok-API/domain/exceptions"
 	"github.com/SA-TailorStore/Kanok-API/domain/reposititories"
-	"github.com/SA-TailorStore/Kanok-API/domain/usercases"
+	"github.com/SA-TailorStore/Kanok-API/domain/usecases"
 	"github.com/golang-jwt/jwt/v5"
 )
 
@@ -20,7 +20,7 @@ type userService struct {
 	config   *configs.Config
 }
 
-func NewUserService(userRepo reposititories.UserRepository, config *configs.Config) usercases.UserUseCase {
+func NewUserService(userRepo reposititories.UserRepository, config *configs.Config) usecases.UserUseCase {
 	return &userService{
 		userRepo: userRepo,
 		config:   config,

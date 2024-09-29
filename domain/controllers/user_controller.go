@@ -4,16 +4,16 @@ import (
 	"github.com/SA-TailorStore/Kanok-API/database/adapter/rest"
 	"github.com/SA-TailorStore/Kanok-API/database/requests"
 	"github.com/SA-TailorStore/Kanok-API/domain/exceptions"
-	"github.com/SA-TailorStore/Kanok-API/domain/usercases"
+	"github.com/SA-TailorStore/Kanok-API/domain/usecases"
 	"github.com/SA-TailorStore/Kanok-API/utils"
 	"github.com/gofiber/fiber/v2"
 )
 
 type userController struct {
-	service usercases.UserUseCase
+	service usecases.UserUseCase
 }
 
-func NewUserController(service usercases.UserUseCase) rest.UserHandler {
+func NewUserController(service usecases.UserUseCase) rest.UserHandler {
 	return &userController{
 		service: service,
 	}
