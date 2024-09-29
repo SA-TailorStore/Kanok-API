@@ -47,7 +47,7 @@ func (u *UserMySQL) FindAllUser(ctx context.Context) ([](entities.User), error) 
 	for rows.Next() {
 		var user entities.User
 
-		if err := rows.Scan(&user.ID, &user.Username, &user.Password,
+		if err := rows.Scan(&user.User_id, &user.Username, &user.Password,
 			&user.Created_at,
 			&user.Phone_number,
 			&user.User_profile_url,
