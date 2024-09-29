@@ -1,7 +1,7 @@
 package requests
 
 type UserRegisterRequest struct {
-	Username     string `json:"username" validate:"required"`
+	Username     string `json:"username" validate:"required,username"`
 	Password     string `json:"password" validate:"required"`
 	Phone_number string `json:"phone_number" validate:"required"`
 }

@@ -32,17 +32,18 @@ func main() {
 
 	userRepo := mysql.NewUserMySQL(db)
 	userService := services.NewUserService(userRepo, cfg)
-	userController := rest.NewUserHandler(userService)
+	userHandler := rest.NewUserHandler(userService)
 
 	// api routes post
-	app.Post("/register", userController.Register)
+	app.Post("/register", userHandler.Register)
+	app.Post("/login", userHandler.Login)
 
 	// api routes get
 	app.Get("/", func(c *fiber.Ctx) error {
 		return c.SendString("Hello, World!")
 	})
 
-	app.Get("/users", userController.FindAllUser)
+	app.Get("/users", userHandler.FindAllUser)
 
 	if err := app.Listen(":9000"); err != nil {
 		log.Fatal(err)
