@@ -69,7 +69,11 @@ func (u *userHandler) Login(c *fiber.Ctx) error {
 		}
 	}
 
-	return c.Status(fiber.StatusOK).JSON(user)
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{
+		"message": "User login successfully",
+		"status":  "200",
+		"data":    user,
+	})
 }
 
 // Register implements UserHandler.
