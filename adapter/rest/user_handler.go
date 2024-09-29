@@ -50,9 +50,10 @@ func (u *userHandler) Login(c *fiber.Ctx) error {
 	}
 
 	// Validate request
-	if err := utils.ValidateStruct(true); err != nil {
+	if err := utils.ValidateStruct(req); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(err)
 	}
+
 	// Login user
 	user, err := u.userService.Login(c.Context(), req)
 	if err != nil {

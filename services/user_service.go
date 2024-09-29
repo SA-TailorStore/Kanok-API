@@ -2,7 +2,6 @@ package services
 
 import (
 	"context"
-	"fmt"
 	"time"
 
 	"golang.org/x/crypto/bcrypt"
@@ -48,12 +47,11 @@ func (u *userService) FindAllUser(ctx context.Context) ([]*responses.UsernameRes
 
 // Login implements usercases.UserUseCase.
 func (u *userService) Login(ctx context.Context, req *requests.UserLoginRequest) (*responses.UserLoginResponse, error) {
-	username := &requests.UsernameRequest{
+	username := requests.UsernameRequest{
 		Username: req.Username,
 	}
 
-	user, err := u.userRepo.GetUserByUsername(ctx, username)
-	fmt.Println(err)
+	user, err := u.userRepo.GetUserByUsername(ctx, &username)
 	if err != nil {
 		return nil, err
 	}
@@ -72,7 +70,7 @@ func (u *userService) Login(ctx context.Context, req *requests.UserLoginRequest)
 	expireAt := time.Now().Add(time.Hour * 1)
 
 	claims := jwt.MapClaims{
-		"id":       user.ID,
+		"user_id":  user.User_id,
 		"username": user.Username,
 		"exp":      expireAt.Unix(),
 	}
@@ -86,7 +84,7 @@ func (u *userService) Login(ctx context.Context, req *requests.UserLoginRequest)
 	}
 
 	return &responses.UserLoginResponse{
-		ID:         user.ID,
+		User_id:    user.User_id,
 		Username:   user.Username,
 		Token:      tokenString,
 		Created_at: user.Created_at,

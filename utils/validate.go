@@ -16,15 +16,8 @@ type ValidateError struct {
 
 func ValidateStruct[T any](payload T) *ValidateError {
 	err := validate.Struct(payload)
-	if err != nil {
-		// Check if it's an InvalidValidationError (e.g., non-struct input)
-		// if _, ok := err.(*valid.InvalidValidationError); ok {
-		// 	return &ValidateError{
-		// 		Error:   "Invalid input",
-		// 		Message: "The input provided is not valid for validation",
-		// 	}
-		// }
 
+	if err != nil {
 		// Handle ValidationErrors
 		errMsg := ""
 		if validationErrors, ok := err.(valid.ValidationErrors); ok {

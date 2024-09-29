@@ -80,7 +80,9 @@ func (u *UserMySQL) FindByUsername(ctx context.Context, req *requests.UsernameRe
 
 // GetUserByUsername implements reposititories.UserRepository.
 func (u *UserMySQL) GetUserByUsername(ctx context.Context, req *requests.UsernameRequest) (*responses.UserResponse, error) {
+
 	user := responses.UserResponse{}
+
 	err := u.db.GetContext(ctx, &user, "SELECT * FROM users WHERE username = ?", req.Username)
 
 	if err != nil {
