@@ -86,7 +86,7 @@ func (u *UserMySQL) GetUserByUsername(ctx context.Context, req *requests.Usernam
 	err := u.db.GetContext(ctx, &user, "SELECT * FROM users WHERE username = ?", req.Username)
 
 	if err != nil {
-		return nil, err
+		return nil, exceptions.ErrUserNotFound
 	}
 
 	return &user, nil

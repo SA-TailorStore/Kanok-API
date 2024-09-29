@@ -52,13 +52,10 @@ func (u *userService) Login(ctx context.Context, req *requests.UserLoginRequest)
 	}
 
 	user, err := u.userRepo.GetUserByUsername(ctx, &username)
-	if err != nil {
-		return nil, err
-	}
 
 	// Check if user exist
 	if err == exceptions.ErrUserNotFound {
-		return nil, exceptions.ErrLoginFailed
+		return nil, exceptions.ErrUserNotFound
 	}
 
 	// Compare password
