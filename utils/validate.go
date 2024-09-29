@@ -16,18 +16,28 @@ type ValidateError struct {
 
 func ValidateStruct[T any](payload T) *ValidateError {
 	err := validate.Struct(payload)
-	errMsg := ""
+
 	if err != nil {
-		for _, err := range err.(valid.ValidationErrors) {
-			tmp := strings.Split(err.StructNamespace(), ".")
-			msg := fmt.Sprintf("%s is %s", tmp[len(tmp)-1], err.Tag())
-			msg = strings.ToLower(string(msg[0])) + msg[1:]
-			errMsg = errMsg + msg + ", "
+		// Handle ValidationErrors
+		errMsg := ""
+		if validationErrors, ok := err.(valid.ValidationErrors); ok {
+			for _, err := range validationErrors {
+				tmp := strings.Split(err.StructNamespace(), ".")
+				msg := fmt.Sprintf("%s is %s", tmp[len(tmp)-1], err.Tag())
+				msg = strings.ToLower(string(msg[0])) + msg[1:] // lowercase the first letter
+				errMsg = errMsg + msg + ", "
+			}
+
+			return &ValidateError{
+				Error:   "Invalid request",
+				Message: errMsg[:len(errMsg)-2], // Remove the trailing comma and space
+			}
 		}
 
+		// Return a generic error message if we encounter an unknown error
 		return &ValidateError{
-			Error:   "Invalid request",
-			Message: errMsg[:len(errMsg)-2],
+			Error:   "Unknown validation error",
+			Message: err.Error(),
 		}
 	}
 

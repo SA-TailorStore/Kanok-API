@@ -7,6 +7,7 @@ import (
 	"github.com/SA-TailorStore/Kanok-API/exceptions"
 	"github.com/SA-TailorStore/Kanok-API/reposititories"
 	"github.com/SA-TailorStore/Kanok-API/requests"
+	"github.com/SA-TailorStore/Kanok-API/responses"
 	"github.com/google/uuid"
 	"github.com/jmoiron/sqlx"
 )
@@ -46,18 +47,14 @@ func (u *UserMySQL) FindAllUser(ctx context.Context) ([](entities.User), error) 
 	for rows.Next() {
 		var user entities.User
 
-		if err := rows.Scan(&user.ID, &user.Username, &user.Password, &user.Created_at, &user.Phone_number,
+		if err := rows.Scan(&user.ID, &user.Username, &user.Password,
+			&user.Created_at,
+			&user.Phone_number,
 			&user.User_profile_url,
 			&user.Role,
 			&user.Display_name,
 			&user.Address); err != nil {
 			return nil, err
-		}
-
-		if user.Display_name.Valid {
-			user.DisplayNameString = user.Display_name.String
-		} else {
-			user.DisplayNameString = "-"
 		}
 
 		users = append(users, user)
@@ -67,17 +64,29 @@ func (u *UserMySQL) FindAllUser(ctx context.Context) ([](entities.User), error) 
 }
 
 // FindByUsername implements reposititories.UserRepository.
-func (u *UserMySQL) FindByUsername(ctx context.Context, username string) (*entities.User, error) {
+func (u *UserMySQL) FindByUsername(ctx context.Context, req *requests.UsernameRequest) (*responses.UsernameResponse, error) {
 
-	var user entities.User
+	user := responses.UsernameResponse{}
 
-	err := u.db.GetContext(ctx, &user, "SELECT username FROM users WHERE username = ?", username)
+	err := u.db.GetContext(ctx, &user, "SELECT username FROM users WHERE username = ?", req)
+
 	if err != nil {
+		err = exceptions.ErrDuplicatedUsername
 		return nil, err
 	}
 
-	if user.Username != "" {
-		return &user, exceptions.ErrDuplicatedUsername
+	return &user, nil
+}
+
+// GetUserByUsername implements reposititories.UserRepository.
+func (u *UserMySQL) GetUserByUsername(ctx context.Context, req *requests.UsernameRequest) (*responses.UserResponse, error) {
+
+	user := responses.UserResponse{}
+
+	err := u.db.GetContext(ctx, &user, "SELECT * FROM users WHERE username = ?", req.Username)
+
+	if err != nil {
+		return nil, exceptions.ErrUserNotFound
 	}
 
 	return &user, nil

@@ -40,7 +40,36 @@ func (u *userHandler) FindAllUser(c *fiber.Ctx) error {
 
 // Login implements UserHandler.
 func (u *userHandler) Login(c *fiber.Ctx) error {
-	panic("unimplemented")
+	// Parse request
+	var req *requests.UserLoginRequest
+
+	if err := c.BodyParser(&req); err != nil {
+		c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"error": err.Error(),
+		})
+	}
+
+	// Validate request
+	if err := utils.ValidateStruct(req); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(err)
+	}
+
+	// Login user
+	user, err := u.userService.Login(c.Context(), req)
+	if err != nil {
+		switch err {
+		case exceptions.ErrLoginFailed:
+			return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
+				"error": "Login failed",
+			})
+		default:
+			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+				"error": err.Error(),
+			})
+		}
+	}
+
+	return c.Status(fiber.StatusOK).JSON(user)
 }
 
 // Register implements UserHandler.
