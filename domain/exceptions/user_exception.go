@@ -10,4 +10,5 @@ var (
 	ErrUsernameFormat         = errors.New("username format is invalid")
 	ErrInvalidPassword        = errors.New("password must be at least 8 characters long")
 	ErrLoginFailed            = errors.New("login failed")
+	ErrInvalidToken           = errors.New("invalid token")
 )

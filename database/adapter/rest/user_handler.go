@@ -8,4 +8,5 @@ type UserHandler interface {
 	Register(c *fiber.Ctx) error
 	Login(c *fiber.Ctx) error
 	FindAllUser(c *fiber.Ctx) error
+	GetUserByJWT(c *fiber.Ctx) error
 }

@@ -2,6 +2,7 @@ package services
 
 import (
 	"context"
+	"errors"
 	"time"
 
 	"golang.org/x/crypto/bcrypt"
@@ -16,9 +17,10 @@ import (
 
 type UserUseCase interface {
 	Register(ctx context.Context, req *requests.UserRegisterRequest) error
-	Login(ctx context.Context, req *requests.UserLoginRequest) (*responses.UserLoginResponse, error)
+	Login(ctx context.Context, req *requests.UserLoginRequest) (*responses.UserJWT, error)
 	FindAllUser(ctx context.Context) ([]*responses.UsernameResponse, error)
 	FindByUsername(ctx context.Context, req *requests.UsernameRequest) (*responses.UsernameResponse, error)
+	FindByJWT(ctx context.Context, req *requests.UserJWT) (*responses.UserResponse, error)
 }
 
 type userService struct {
@@ -52,13 +54,12 @@ func (u *userService) FindAllUser(ctx context.Context) ([]*responses.UsernameRes
 }
 
 // Login implements usercases.UserUseCase.
-func (u *userService) Login(ctx context.Context, req *requests.UserLoginRequest) (*responses.UserLoginResponse, error) {
-	username := requests.UsernameRequest{
+func (u *userService) Login(ctx context.Context, req *requests.UserLoginRequest) (*responses.UserJWT, error) {
+	username := &requests.UsernameRequest{
 		Username: req.Username,
 	}
 
-	user, err := u.userRepo.GetUserByUsername(ctx, &username)
-
+	user, err := u.userRepo.GetPasswordByUsername(ctx, username)
 	// Check if user exist
 	if err == exceptions.ErrUserNotFound {
 		return nil, exceptions.ErrUserNotFound
@@ -85,7 +86,7 @@ func (u *userService) Login(ctx context.Context, req *requests.UserLoginRequest)
 		return nil, err
 	}
 
-	return &responses.UserLoginResponse{
+	return &responses.UserJWT{
 		Token: tokenString,
 	}, nil
 }
@@ -134,4 +135,55 @@ func (u *userService) FindByUsername(ctx context.Context, req *requests.Username
 	}
 
 	return user, err
+}
+
+// FindByJWT implements UserUseCase.
+func (u *userService) FindByJWT(ctx context.Context, req *requests.UserJWT) (*responses.UserResponse, error) {
+	//JWT
+	secret_key := []byte(u.config.JWTSecret)
+
+	token, err := jwt.Parse(req.Token, func(token *jwt.Token) (interface{}, error) {
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, errors.New("unexpected signing method")
+		}
+		return secret_key, nil
+	})
+
+	// Check JWT
+	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid && err == nil {
+		user_id := &requests.UserID{
+			User_id: claims["user_id"].(string),
+		}
+		user, err := u.userRepo.GetUserByUserID(ctx, user_id)
+
+		// Generate JWT token
+		expireAt := time.Now().Add(time.Hour * 1)
+
+		claims := jwt.MapClaims{
+			"user_id": user.User_id,
+			"exp":     expireAt.Unix(),
+		}
+
+		token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+
+		// Sign the token with the secret
+		tokenString, err := token.SignedString([]byte(u.config.JWTSecret))
+		if err != nil {
+			return nil, err
+		}
+
+		return &responses.UserResponse{
+			User_id:          user.User_id,
+			Username:         user.Username,
+			Display_name:     user.Display_name,
+			User_profile_url: user.User_profile_url,
+			Role:             user.Role,
+			Phone_number:     user.Phone_number,
+			Address:          user.Address,
+			Created_at:       user.Created_at,
+			Token:            tokenString,
+		}, err
+	} else {
+		return nil, exceptions.ErrInvalidToken
+	}
 }
