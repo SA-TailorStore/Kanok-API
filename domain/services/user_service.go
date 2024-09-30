@@ -18,7 +18,7 @@ import (
 type UserUseCase interface {
 	Register(ctx context.Context, req *requests.UserRegisterRequest) error
 	Login(ctx context.Context, req *requests.UserLoginRequest) (*responses.UserJWT, error)
-	FindAllUser(ctx context.Context) ([]*responses.UsernameResponse, error)
+	GetAllUser(ctx context.Context) ([]*responses.UsernameResponse, error)
 	FindByUsername(ctx context.Context, req *requests.UsernameRequest) (*responses.UsernameResponse, error)
 	FindByJWT(ctx context.Context, req *requests.UserJWT) (*responses.UserResponse, error)
 }
@@ -36,8 +36,8 @@ func NewUserService(userRepo reposititories.UserRepository, config *configs.Conf
 }
 
 // FindAllUser implements usercases.UserUseCase.
-func (u *userService) FindAllUser(ctx context.Context) ([]*responses.UsernameResponse, error) {
-	users, err := u.userRepo.FindAllUser(ctx)
+func (u *userService) GetAllUser(ctx context.Context) ([]*responses.UsernameResponse, error) {
+	users, err := u.userRepo.GetAllUser(ctx)
 
 	if err != nil {
 		return nil, err

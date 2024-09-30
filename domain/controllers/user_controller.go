@@ -21,7 +21,7 @@ func NewUserController(service services.UserUseCase) rest.UserHandler {
 
 // FindAllUser implements UserHandler.
 func (u *userController) FindAllUser(c *fiber.Ctx) error {
-	users, err := u.service.FindAllUser(c.Context())
+	users, err := u.service.GetAllUser(c.Context())
 
 	if err != nil {
 		// If there's an error, return a 500 status with the error message

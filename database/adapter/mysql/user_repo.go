@@ -37,7 +37,7 @@ func (u *UserMySQL) Create(ctx context.Context, req *requests.UserRegisterReques
 }
 
 // FindAllUser implements reposititories.UserRepository.
-func (u *UserMySQL) FindAllUser(ctx context.Context) ([](entities.User), error) {
+func (u *UserMySQL) GetAllUser(ctx context.Context) ([](entities.User), error) {
 	rows, err := u.db.QueryContext(ctx, "SELECT * FROM users")
 	if err != nil {
 		return nil, err
