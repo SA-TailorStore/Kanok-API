@@ -67,9 +67,8 @@ func (u *userService) Login(ctx context.Context, req *requests.UserLoginRequest)
 	expireAt := time.Now().Add(time.Hour * 1)
 
 	claims := jwt.MapClaims{
-		"user_id":  user.User_id,
-		"username": user.Username,
-		"exp":      expireAt.Unix(),
+		"user_id": user.User_id,
+		"exp":     expireAt.Unix(),
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
@@ -81,10 +80,7 @@ func (u *userService) Login(ctx context.Context, req *requests.UserLoginRequest)
 	}
 
 	return &responses.UserLoginResponse{
-		User_id:    user.User_id,
-		Username:   user.Username,
-		Token:      tokenString,
-		Created_at: user.Created_at,
+		Token: tokenString,
 	}, nil
 }
 

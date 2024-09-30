@@ -1,10 +1,7 @@
 package responses
 
 type UserLoginResponse struct {
-	User_id    string `json:"user_id"`
-	Username   string `json:"username"`
-	Token      string `json:"token"`
-	Created_at string `json:"created_at"`
+	Token string `json:"token"`
 }
 
 type UserResponse struct {
