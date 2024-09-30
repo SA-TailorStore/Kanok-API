@@ -11,16 +11,22 @@ import (
 	"github.com/SA-TailorStore/Kanok-API/database/responses"
 	"github.com/SA-TailorStore/Kanok-API/domain/exceptions"
 	"github.com/SA-TailorStore/Kanok-API/domain/reposititories"
-	"github.com/SA-TailorStore/Kanok-API/domain/usecases"
 	"github.com/golang-jwt/jwt/v5"
 )
+
+type UserUseCase interface {
+	Register(ctx context.Context, req *requests.UserRegisterRequest) error
+	Login(ctx context.Context, req *requests.UserLoginRequest) (*responses.UserLoginResponse, error)
+	FindAllUser(ctx context.Context) ([]*responses.UsernameResponse, error)
+	FindByUsername(ctx context.Context, req *requests.UsernameRequest) (*responses.UsernameResponse, error)
+}
 
 type userService struct {
 	userRepo reposititories.UserRepository
 	config   *configs.Config
 }
 
-func NewUserService(userRepo reposititories.UserRepository, config *configs.Config) usecases.UserUseCase {
+func NewUserService(userRepo reposititories.UserRepository, config *configs.Config) UserUseCase {
 	return &userService{
 		userRepo: userRepo,
 		config:   config,
