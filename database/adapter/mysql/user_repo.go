@@ -82,11 +82,22 @@ func (u *UserMySQL) FindByUsername(ctx context.Context, req *requests.UsernameRe
 }
 
 // GetUserByUsername implements reposititories.UserRepository.
-func (u *UserMySQL) GetUserByUsername(ctx context.Context, req *requests.UsernameRequest) (*responses.UserResponse, error) {
+func (u *UserMySQL) GetPasswordByUsername(ctx context.Context, req *requests.UsernameRequest) (*responses.UserLoginResponse, error) {
 
+	var user responses.UserLoginResponse
+
+	err := u.db.GetContext(ctx, &user, "SELECT user_id,password FROM users WHERE username = ?", req.Username)
+	if err != nil {
+		return nil, exceptions.ErrUserNotFound
+	}
+
+	return &user, nil
+}
+
+func (u *UserMySQL) GetUserByUserID(ctx context.Context, req *requests.UserID) (*responses.UserResponse, error) {
 	var user responses.UserResponse
 
-	err := u.db.GetContext(ctx, &user, "SELECT * FROM users WHERE username = ?", req.Username)
+	err := u.db.GetContext(ctx, &user, "SELECT user_id,username,display_name,user_profile_url,role,phone_number,address,created_at FROM users WHERE user_id = ?", req.User_id)
 
 	if err != nil {
 		return nil, exceptions.ErrUserNotFound

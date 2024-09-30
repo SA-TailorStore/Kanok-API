@@ -14,3 +14,11 @@ type UserLoginRequest struct {
 type UsernameRequest struct {
 	Username string `json:"username" validate:"required"`
 }
+
+type UserJWT struct {
+	Token string `json:"token" validate:"required"`
+}
+
+type UserID struct {
+	User_id string `json:"user_id" validate:"required"`
+}

@@ -4,16 +4,16 @@ import (
 	"github.com/SA-TailorStore/Kanok-API/database/adapter/rest"
 	"github.com/SA-TailorStore/Kanok-API/database/requests"
 	"github.com/SA-TailorStore/Kanok-API/domain/exceptions"
-	"github.com/SA-TailorStore/Kanok-API/domain/usecases"
+	"github.com/SA-TailorStore/Kanok-API/domain/services"
 	"github.com/SA-TailorStore/Kanok-API/utils"
 	"github.com/gofiber/fiber/v2"
 )
 
 type userController struct {
-	service usecases.UserUseCase
+	service services.UserUseCase
 }
 
-func NewUserController(service usecases.UserUseCase) rest.UserHandler {
+func NewUserController(service services.UserUseCase) rest.UserHandler {
 	return &userController{
 		service: service,
 	}
@@ -61,11 +61,13 @@ func (u *userController) Login(c *fiber.Ctx) error {
 		switch err {
 		case exceptions.ErrLoginFailed:
 			return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
-				"error": "Login failed",
+				"error":  "Login failed",
+				"status": "201",
 			})
 		default:
 			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-				"error": err.Error(),
+				"error":  err.Error(),
+				"status": "500",
 			})
 		}
 	}
@@ -73,7 +75,7 @@ func (u *userController) Login(c *fiber.Ctx) error {
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{
 		"message": "User login successfully",
 		"status":  "200",
-		"data":    user,
+		"token":   user.Token,
 	})
 }
 
@@ -118,5 +120,43 @@ func (u *userController) Register(c *fiber.Ctx) error {
 		"message": "User registered successfully",
 		"status":  "201",
 		"data":    req.Username,
+	})
+}
+
+func (u *userController) GetUserByJWT(c *fiber.Ctx) error {
+	// Parse request
+	var req *requests.UserJWT
+
+	if err := c.BodyParser(&req); err != nil {
+		c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"error": err.Error(),
+		})
+	}
+
+	// Validate request
+	if err := utils.ValidateStruct(req); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(err)
+	}
+
+	user, err := u.service.FindByJWT(c.Context(), req)
+	if err != nil {
+		switch err {
+		case exceptions.ErrInvalidToken:
+			return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
+				"error":  "Unauthorized",
+				"status": "401",
+			})
+		default:
+			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+				"error":  err.Error(),
+				"status": "500",
+			})
+		}
+	}
+
+	return c.Status(fiber.StatusCreated).JSON(fiber.Map{
+		"message": "The session is still alive.",
+		"status":  "201",
+		"token":   user.Token,
 	})
 }

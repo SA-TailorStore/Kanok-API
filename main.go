@@ -37,6 +37,7 @@ func main() {
 	// api routes post
 	app.Post("/register", userController.Register)
 	app.Post("/login", userController.Login)
+	app.Post("/login-token", userController.GetUserByJWT)
 
 	// api routes get
 	app.Get("/", func(c *fiber.Ctx) error {
