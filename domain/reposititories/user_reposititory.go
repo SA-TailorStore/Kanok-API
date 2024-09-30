@@ -13,5 +13,5 @@ type UserRepository interface {
 	GetAllUser(ctx context.Context) ([]entities.User, error)
 	FindByUsername(ctx context.Context, req *requests.UsernameRequest) (*responses.UsernameResponse, error)
 	GetPasswordByUsername(ctx context.Context, req *requests.UsernameRequest) (*responses.UserLoginResponse, error)
-	GetUserByUserID(ctx context.Context, req *requests.UserID) (*responses.UserResponse, error)
+	GetUserByUserID(ctx context.Context, req *requests.UserIDRequest) (*responses.UserResponse, error)
 }

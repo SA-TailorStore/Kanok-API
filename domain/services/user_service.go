@@ -20,24 +20,25 @@ type UserUseCase interface {
 	Login(ctx context.Context, req *requests.UserLoginRequest) (*responses.UserJWT, error)
 	GetAllUser(ctx context.Context) ([]*responses.UsernameResponse, error)
 	FindByUsername(ctx context.Context, req *requests.UsernameRequest) (*responses.UsernameResponse, error)
-	FindByJWT(ctx context.Context, req *requests.UserJWT) (*responses.UserResponse, error)
+	FindByJWT(ctx context.Context, req *requests.UserJWTRequest) (*responses.UserResponse, error)
+	FindByID(ctx context.Context, req *requests.UserIDRequest) (*responses.UserResponse, error)
 }
 
 type userService struct {
-	userRepo reposititories.UserRepository
-	config   *configs.Config
+	reposititory reposititories.UserRepository
+	config       *configs.Config
 }
 
-func NewUserService(userRepo reposititories.UserRepository, config *configs.Config) UserUseCase {
+func NewUserService(reposititory reposititories.UserRepository, config *configs.Config) UserUseCase {
 	return &userService{
-		userRepo: userRepo,
-		config:   config,
+		reposititory: reposititory,
+		config:       config,
 	}
 }
 
 // FindAllUser implements usercases.UserUseCase.
 func (u *userService) GetAllUser(ctx context.Context) ([]*responses.UsernameResponse, error) {
-	users, err := u.userRepo.GetAllUser(ctx)
+	users, err := u.reposititory.GetAllUser(ctx)
 
 	if err != nil {
 		return nil, err
@@ -59,7 +60,7 @@ func (u *userService) Login(ctx context.Context, req *requests.UserLoginRequest)
 		Username: req.Username,
 	}
 
-	user, err := u.userRepo.GetPasswordByUsername(ctx, username)
+	user, err := u.reposititory.GetPasswordByUsername(ctx, username)
 	// Check if user exist
 	if err == exceptions.ErrUserNotFound {
 		return nil, exceptions.ErrUserNotFound
@@ -98,7 +99,7 @@ func (u *userService) Register(ctx context.Context, req *requests.UserRegisterRe
 		Username: req.Username,
 	}
 
-	user, err := u.userRepo.FindByUsername(ctx, &username)
+	user, err := u.reposititory.FindByUsername(ctx, &username)
 
 	if user == nil {
 		return exceptions.ErrDuplicatedUsername
@@ -118,13 +119,13 @@ func (u *userService) Register(ctx context.Context, req *requests.UserRegisterRe
 	}
 
 	req.Password = string(hashedPassword)
-	return u.userRepo.Create(ctx, req)
+	return u.reposititory.Create(ctx, req)
 
 }
 
 // FindByUsername implements usercases.UserUseCase.
 func (u *userService) FindByUsername(ctx context.Context, req *requests.UsernameRequest) (*responses.UsernameResponse, error) {
-	user, err := u.userRepo.FindByUsername(ctx, req)
+	user, err := u.reposititory.FindByUsername(ctx, req)
 
 	if err == exceptions.ErrUserNotFound {
 		return user, err
@@ -138,7 +139,7 @@ func (u *userService) FindByUsername(ctx context.Context, req *requests.Username
 }
 
 // FindByJWT implements UserUseCase.
-func (u *userService) FindByJWT(ctx context.Context, req *requests.UserJWT) (*responses.UserResponse, error) {
+func (u *userService) FindByJWT(ctx context.Context, req *requests.UserJWTRequest) (*responses.UserResponse, error) {
 	//JWT
 	secret_key := []byte(u.config.JWTSecret)
 
@@ -151,10 +152,10 @@ func (u *userService) FindByJWT(ctx context.Context, req *requests.UserJWT) (*re
 
 	// Check JWT
 	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid && err == nil {
-		user_id := &requests.UserID{
+		user_id := &requests.UserIDRequest{
 			User_id: claims["user_id"].(string),
 		}
-		user, err := u.userRepo.GetUserByUserID(ctx, user_id)
+		user, err := u.reposititory.GetUserByUserID(ctx, user_id)
 
 		// Generate JWT token
 		expireAt := time.Now().Add(time.Hour * 1)
@@ -186,4 +187,42 @@ func (u *userService) FindByJWT(ctx context.Context, req *requests.UserJWT) (*re
 	} else {
 		return nil, exceptions.ErrInvalidToken
 	}
+}
+
+func (u *userService) FindByID(ctx context.Context, req *requests.UserIDRequest) (*responses.UserResponse, error) {
+
+	user, err := u.reposititory.GetUserByUserID(ctx, req)
+
+	if err != nil {
+		return nil, err
+	}
+
+	// Generate JWT token
+	expireAt := time.Now().Add(time.Hour * 1)
+
+	claims := jwt.MapClaims{
+		"user_id": user.User_id,
+		"exp":     expireAt.Unix(),
+	}
+
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+
+	// Sign the token with the secret
+	tokenString, err := token.SignedString([]byte(u.config.JWTSecret))
+	if err != nil {
+		return nil, err
+	}
+
+	return &responses.UserResponse{
+		User_id:          user.User_id,
+		Username:         user.Username,
+		Display_name:     user.Display_name,
+		User_profile_url: user.User_profile_url,
+		Role:             user.Role,
+		Phone_number:     user.Phone_number,
+		Address:          user.Address,
+		Created_at:       user.Created_at,
+		Token:            tokenString,
+	}, err
+
 }

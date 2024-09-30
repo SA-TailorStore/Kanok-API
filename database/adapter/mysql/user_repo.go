@@ -94,7 +94,7 @@ func (u *UserMySQL) GetPasswordByUsername(ctx context.Context, req *requests.Use
 	return &user, nil
 }
 
-func (u *UserMySQL) GetUserByUserID(ctx context.Context, req *requests.UserID) (*responses.UserResponse, error) {
+func (u *UserMySQL) GetUserByUserID(ctx context.Context, req *requests.UserIDRequest) (*responses.UserResponse, error) {
 	var user responses.UserResponse
 
 	err := u.db.GetContext(ctx, &user, "SELECT user_id,username,display_name,user_profile_url,role,phone_number,address,created_at FROM users WHERE user_id = ?", req.User_id)

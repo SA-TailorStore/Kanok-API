@@ -34,10 +34,17 @@ func main() {
 	userService := services.NewUserService(userRepo, cfg)
 	userController := controllers.NewUserController(userService)
 
+	orderRepo := mysql.NewOrderMySQL(db)
+	orderService := services.NewOrderService(orderRepo, cfg)
+	orderController := controllers.NewOrderController(orderService)
+
 	// api routes post
+	// User
 	app.Post("/register", userController.Register)
 	app.Post("/login", userController.Login)
 	app.Post("/login-token", userController.GetUserByJWT)
+	// Order
+	app.Post("/create-order", orderController.CreateOrder)
 
 	// api routes get
 	app.Get("/", func(c *fiber.Ctx) error {

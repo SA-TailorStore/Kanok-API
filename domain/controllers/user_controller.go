@@ -125,7 +125,7 @@ func (u *userController) Register(c *fiber.Ctx) error {
 
 func (u *userController) GetUserByJWT(c *fiber.Ctx) error {
 	// Parse request
-	var req *requests.UserJWT
+	var req *requests.UserJWTRequest
 
 	if err := c.BodyParser(&req); err != nil {
 		c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
