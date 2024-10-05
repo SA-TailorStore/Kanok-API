@@ -45,3 +45,20 @@ type CreateProductRequest struct {
 	Max_quantity int    `json:"max_quantity " db:"max_quantity "`
 	Create_by    string `json:"create_by" db:"create_by"`
 }
+
+type CreateDesignRequest struct {
+	Design_url string `json:"design_url" db:"design_url"`
+	Type       string `json:"type" db:"type"`
+}
+
+type CreateFabricRequest struct {
+	Fabric_url string `json:"fabric_url" db:"fabric_url"`
+	Quantity   int    `json:"quantity" db:"quantity"`
+}
+
+type CreateMaterialRequest struct {
+	Material_name string `json:"material_name" db:"material_name"`
+	Product_id    string `json:"product_id" db:"product_id"`
+	Category      string `json:"category" db:"category"`
+	Quantity      int    `json:"quantity" db:"quantity"`
+}
