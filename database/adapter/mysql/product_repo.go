@@ -22,7 +22,7 @@ func NewProductMySQL(db *sqlx.DB) reposititories.ProductRepository {
 // CreateProduct implements reposititories.ProductRepository.
 func (p *ProductMySQL) CreateProduct(ctx context.Context, req *requests.CreateProductRequest) error {
 
-	product_id := "p" + time.Now().Format("20060102") + time.Now().Format("150405")
+	product_id := "P" + time.Now().Format("20060102") + time.Now().Format("150405")
 
 	_, err := p.db.QueryContext(ctx,
 		"INSERT INTO PRODUCTS (product_id, detail, size, max_quantity, create_by) VALUES ( ?, ?, ?, ?, ?)",
