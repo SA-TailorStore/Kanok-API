@@ -9,8 +9,8 @@ import (
 )
 
 type DesignUseCase interface {
-	CreateDesign(ctx context.Context, req *requests.CreateOrderRequest) error
-	GetDesignByID(ctx context.Context, req *requests.OrderIDRequest) error
+	CreateDesign(ctx context.Context, req *requests.CreateDesignRequest) error
+	GetDesignByID(ctx context.Context, req *requests.DesignIDRequest) error
 }
 
 type designService struct {
@@ -26,11 +26,11 @@ func NewDesignService(reposititory reposititories.DesignRepository, config *conf
 }
 
 // CreateDesign implements DesignUseCase.
-func (d *designService) CreateDesign(ctx context.Context, req *requests.CreateOrderRequest) error {
+func (d *designService) CreateDesign(ctx context.Context, req *requests.CreateDesignRequest) error {
 	panic("unimplemented")
 }
 
 // GetDesignByID implements DesignUseCase.
-func (d *designService) GetDesignByID(ctx context.Context, req *requests.OrderIDRequest) error {
+func (d *designService) GetDesignByID(ctx context.Context, req *requests.DesignIDRequest) error {
 	panic("unimplemented")
 }
