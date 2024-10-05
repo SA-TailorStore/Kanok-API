@@ -12,6 +12,6 @@ type Order struct {
 	Tracking_number string `json:"tracking_number" db:"tracking_number"`
 	Tailor_id       string `json:"tailor_id" db:"tailor_id"`
 	Due_date        string `json:"due_date" db:"due_date"`
-	User_id         string `json:"user_id" db:"user_id"`
+	Create_by       string `json:"create_by" db:"create_by"`
 	Created_at      string `json:"created_at" db:"created_at"`
 }
