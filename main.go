@@ -38,6 +38,10 @@ func main() {
 	orderService := services.NewOrderService(orderRepo, cfg)
 	orderController := controllers.NewOrderController(orderService)
 
+	productRepo := mysql.NewProductMySQL(db)
+	productService := services.NewProductService(productRepo, cfg)
+	productController := controllers.NewProductController(productService)
+
 	// api routes post
 	// User
 	app.Post("/register", userController.Register)
@@ -45,13 +49,19 @@ func main() {
 	app.Post("/login-token", userController.GetUserByJWT)
 	// Order
 	app.Post("/create-order", orderController.CreateOrder)
+	// Product
+	app.Post("/create-product", productController.CreateProduct)
 
 	// api routes get
 	app.Get("/", func(c *fiber.Ctx) error {
 		return c.SendString("Hello, World!")
 	})
-
+	// User
 	app.Get("/users", userController.FindAllUser)
+
+	// Order
+
+	// Product
 
 	if err := app.Listen(":9000"); err != nil {
 		log.Fatal(err)

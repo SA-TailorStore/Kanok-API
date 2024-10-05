@@ -157,6 +157,10 @@ func (u *userService) FindByJWT(ctx context.Context, req *requests.UserJWTReques
 		}
 		user, err := u.reposititory.GetUserByUserID(ctx, user_id)
 
+		if err != nil {
+			return nil, err
+		}
+
 		// Generate JWT token
 		expireAt := time.Now().Add(time.Hour * 1)
 
