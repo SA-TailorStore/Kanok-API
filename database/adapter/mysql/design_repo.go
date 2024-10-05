@@ -19,11 +19,11 @@ func NewDesignMySQL(db *sqlx.DB) reposititories.DesignRepository {
 }
 
 // CreateDesign implements reposititories.DesignRepository.
-func (d *DesignMySQL) CreateDesign(ctx context.Context, req *requests.CreateOrderRequest) error {
+func (d *DesignMySQL) CreateDesign(ctx context.Context, req *requests.CreateDesignRequest) error {
 	panic("unimplemented")
 }
 
 // GetDesignByID implements reposititories.DesignRepository.
-func (d *DesignMySQL) GetDesignByID(ctx context.Context, req *requests.OrderIDRequest) error {
+func (d *DesignMySQL) GetDesignByID(ctx context.Context, req *requests.DesignIDRequest) error {
 	panic("unimplemented")
 }
