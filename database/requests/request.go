@@ -40,8 +40,8 @@ type CreateOrderRequest struct {
 }
 
 type CreateProductRequest struct {
-	Detail    string `json:"detail" db:"detail"`
-	Size      string `json:"size" db:"size"`
-	Quantity  int    `json:"quantity" db:"quantity"`
-	Create_by string `json:"create_by" db:"create_by"`
+	Detail       string `json:"detail" db:"detail"`
+	Size         string `json:"size" db:"size"`
+	Max_quantity int    `json:"max_quantity " db:"max_quantity "`
+	Create_by    string `json:"create_by" db:"create_by"`
 }
