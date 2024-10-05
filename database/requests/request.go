@@ -30,6 +30,15 @@ type OrderIDRequest struct {
 type ProductIDRequest struct {
 	Product_id string `json:"product_id" validate:"required"`
 }
+type DesignIDRequest struct {
+	Design_id string `json:"design_id" validate:"required"`
+}
+type FabricIDRequest struct {
+	Fabric_id string `json:"fabric_id" validate:"required"`
+}
+type MaterialIDRequest struct {
+	Material_id string `json:"material_id" validate:"required"`
+}
 
 type CreateOrderRequest struct {
 	Store_phone   string `json:"store_phone" validate:"required"`
