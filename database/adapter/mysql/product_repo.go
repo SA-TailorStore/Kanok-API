@@ -2,10 +2,10 @@ package mysql
 
 import (
 	"context"
+	"time"
 
 	"github.com/SA-TailorStore/Kanok-API/database/requests"
 	"github.com/SA-TailorStore/Kanok-API/domain/reposititories"
-	"github.com/google/uuid"
 	"github.com/jmoiron/sqlx"
 )
 
@@ -22,13 +22,10 @@ func NewProductMySQL(db *sqlx.DB) reposititories.ProductRepository {
 // CreateProduct implements reposititories.ProductRepository.
 func (p *ProductMySQL) CreateProduct(ctx context.Context, req *requests.CreateProductRequest) error {
 
-	product_id, err := uuid.NewV7()
-	if err != nil {
-		return err
-	}
+	product_id := "p" + time.Now().Format("20060102") + time.Now().Format("150405")
 
-	_, err = p.db.QueryContext(ctx,
-		"INSERT INTO products (product_id, detail, size, quantity, create_by) VALUES ( ?, ?, ?, ?, ?)",
+	_, err := p.db.QueryContext(ctx,
+		"INSERT INTO PRODUCTS (product_id, detail, size, quantity, create_by) VALUES ( ?, ?, ?, ?, ?)",
 		product_id, req.Detail, req.Size, req.Quantity, req.Create_by)
 
 	if err != nil {
