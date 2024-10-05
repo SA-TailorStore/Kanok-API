@@ -31,7 +31,7 @@ func (u *UserMySQL) Create(ctx context.Context, req *requests.UserRegisterReques
 	}
 
 	_, err = u.db.QueryContext(ctx,
-		"INSERT INTO users (user_id, username, password, phone_number, display_name, user_profile_url, role, address) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?)",
+		"INSERT INTO USERS (user_id, username, password, phone_number, display_name, user_profile_url, role, address) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?)",
 		user_id, req.Username, req.Password, req.Phone_number, "-", "-", "user", "-")
 
 	return err
