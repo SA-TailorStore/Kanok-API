@@ -21,6 +21,7 @@ type UserUseCase interface {
 	GetAllUser(ctx context.Context) ([]*responses.UsernameResponse, error)
 	FindByUsername(ctx context.Context, req *requests.UsernameRequest) (*responses.UsernameResponse, error)
 	FindByJWT(ctx context.Context, req *requests.UserJWTRequest) (*responses.UserResponse, error)
+	GenToken(ctx context.Context, req *requests.UserJWTRequest) (*responses.UserJWT, error)
 	FindByID(ctx context.Context, req *requests.UserIDRequest) (*responses.UserResponse, error)
 }
 
@@ -161,6 +162,43 @@ func (u *userService) FindByJWT(ctx context.Context, req *requests.UserJWTReques
 			return nil, err
 		}
 
+		return &responses.UserResponse{
+			User_id:          user.User_id,
+			Username:         user.Username,
+			Display_name:     user.Display_name,
+			User_profile_url: user.User_profile_url,
+			Role:             user.Role,
+			Phone_number:     user.Phone_number,
+			Address:          user.Address,
+			Created_at:       user.Created_at,
+		}, err
+	} else {
+		return nil, exceptions.ErrInvalidToken
+	}
+}
+
+func (u *userService) GenToken(ctx context.Context, req *requests.UserJWTRequest) (*responses.UserJWT, error) {
+	//JWT
+	secret_key := []byte(u.config.JWTSecret)
+
+	token, err := jwt.Parse(req.Token, func(token *jwt.Token) (interface{}, error) {
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, errors.New("unexpected signing method")
+		}
+		return secret_key, nil
+	})
+
+	// Check JWT
+	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid && err == nil {
+		user_id := &requests.UserIDRequest{
+			User_id: claims["user_id"].(string),
+		}
+		user, err := u.reposititory.GetUserByUserID(ctx, user_id)
+
+		if err != nil {
+			return nil, err
+		}
+
 		// Generate JWT token
 		expireAt := time.Now().Add(time.Hour * 1)
 
@@ -177,16 +215,8 @@ func (u *userService) FindByJWT(ctx context.Context, req *requests.UserJWTReques
 			return nil, err
 		}
 
-		return &responses.UserResponse{
-			User_id:          user.User_id,
-			Username:         user.Username,
-			Display_name:     user.Display_name,
-			User_profile_url: user.User_profile_url,
-			Role:             user.Role,
-			Phone_number:     user.Phone_number,
-			Address:          user.Address,
-			Created_at:       user.Created_at,
-			Token:            tokenString,
+		return &responses.UserJWT{
+			Token: tokenString,
 		}, err
 	} else {
 		return nil, exceptions.ErrInvalidToken
@@ -201,18 +231,7 @@ func (u *userService) FindByID(ctx context.Context, req *requests.UserIDRequest)
 		return nil, err
 	}
 
-	// Generate JWT token
-	expireAt := time.Now().Add(time.Hour * 1)
-
-	claims := jwt.MapClaims{
-		"user_id": user.User_id,
-		"exp":     expireAt.Unix(),
-	}
-
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-
 	// Sign the token with the secret
-	tokenString, err := token.SignedString([]byte(u.config.JWTSecret))
 	if err != nil {
 		return nil, err
 	}
@@ -226,7 +245,6 @@ func (u *userService) FindByID(ctx context.Context, req *requests.UserIDRequest)
 		Phone_number:     user.Phone_number,
 		Address:          user.Address,
 		Created_at:       user.Created_at,
-		Token:            tokenString,
 	}, err
 
 }

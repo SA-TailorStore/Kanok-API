@@ -14,7 +14,6 @@ type UserResponse struct {
 	Phone_number     string `json:"phone_number"`
 	Address          string `json:"address"`
 	Created_at       string `json:"created_at"`
-	Token            string `json:"token"`
 }
 
 type UsernameResponse struct {

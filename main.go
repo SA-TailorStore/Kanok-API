@@ -42,15 +42,17 @@ func main() {
 	productService := services.NewProductService(productRepo, cfg)
 	productController := controllers.NewProductController(productService)
 
+	prefix := "/api"
 	// api routes post
 	// User
-	app.Post("/register", userController.Register)
-	app.Post("/login", userController.Login)
-	app.Post("/login-token", userController.GetUserByJWT)
+	app.Post(prefix+"/register", userController.Register)
+	app.Post(prefix+"/login", userController.Login)
+	app.Post(prefix+"/login-token", userController.LoginToken)
+	app.Post(prefix+"/user/jwt", userController.GetUserByJWT)
 	// Order
-	app.Post("/create-order", orderController.CreateOrder)
+	app.Post(prefix+"/create-order", orderController.CreateOrder)
 	// Product
-	app.Post("/create-product", productController.CreateProduct)
+	app.Post(prefix+"/create-product", productController.CreateProduct)
 
 	// api routes get
 	app.Get("/", func(c *fiber.Ctx) error {

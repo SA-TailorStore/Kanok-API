@@ -155,6 +155,44 @@ func (u *userController) GetUserByJWT(c *fiber.Ctx) error {
 	}
 
 	return c.Status(fiber.StatusCreated).JSON(fiber.Map{
+		"message": "OK!",
+		"status":  "200",
+		"data":    user,
+	})
+}
+
+func (u *userController) LoginToken(c *fiber.Ctx) error {
+	// Parse request
+	var req *requests.UserJWTRequest
+
+	if err := c.BodyParser(&req); err != nil {
+		c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"error": err.Error(),
+		})
+	}
+
+	// Validate request
+	if err := utils.ValidateStruct(req); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(err)
+	}
+
+	user, err := u.service.GenToken(c.Context(), req)
+	if err != nil {
+		switch err {
+		case exceptions.ErrInvalidToken:
+			return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
+				"error":  "Unauthorized",
+				"status": "401",
+			})
+		default:
+			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+				"error":  err.Error(),
+				"status": "500",
+			})
+		}
+	}
+
+	return c.Status(fiber.StatusCreated).JSON(fiber.Map{
 		"message": "The session is still alive.",
 		"status":  "201",
 		"token":   user.Token,
