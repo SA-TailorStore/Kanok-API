@@ -139,6 +139,7 @@ func (u *userController) GetUserByJWT(c *fiber.Ctx) error {
 	}
 
 	user, err := u.service.FindByJWT(c.Context(), req)
+
 	if err != nil {
 		switch err {
 		case exceptions.ErrInvalidToken:

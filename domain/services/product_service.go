@@ -5,11 +5,13 @@ import (
 
 	"github.com/SA-TailorStore/Kanok-API/configs"
 	"github.com/SA-TailorStore/Kanok-API/database/requests"
+	"github.com/SA-TailorStore/Kanok-API/database/responses"
 	"github.com/SA-TailorStore/Kanok-API/domain/reposititories"
 )
 
 type ProductUsecase interface {
 	CreateProduct(ctx context.Context, req *requests.CreateProductRequest) error
+	GetProductByOrderID(ctx context.Context, req *requests.OrderIDRequest) ([]*responses.ProductIDResponse, error)
 }
 
 type productService struct {
@@ -33,4 +35,15 @@ func (p *productService) CreateProduct(ctx context.Context, req *requests.Create
 	}
 
 	return err
+}
+
+// GetProductByOrderID implements ProductUsecase.
+func (p *productService) GetProductByOrderID(ctx context.Context, req *requests.OrderIDRequest) ([]*responses.ProductIDResponse, error) {
+	products, err := p.reposititory.GetProductByOrderID(ctx, req)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return products, err
 }

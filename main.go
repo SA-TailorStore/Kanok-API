@@ -53,6 +53,7 @@ func main() {
 	app.Post(prefix+"/create-order", orderController.CreateOrder)
 	// Product
 	app.Post(prefix+"/create-product", productController.CreateProduct)
+	app.Post(prefix+"/get/product/order_id", productController.GetProductByOrderID)
 
 	// api routes get
 	app.Get("/", func(c *fiber.Ctx) error {

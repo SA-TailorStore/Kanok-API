@@ -170,7 +170,7 @@ func (u *userService) FindByJWT(ctx context.Context, req *requests.UserJWTReques
 			Role:             user.Role,
 			Phone_number:     user.Phone_number,
 			Address:          user.Address,
-			Created_at:       user.Created_at,
+			Timestamp:        user.Timestamp,
 		}, err
 	} else {
 		return nil, exceptions.ErrInvalidToken
@@ -239,7 +239,7 @@ func (u *userService) FindByID(ctx context.Context, req *requests.UserIDRequest)
 		Role:             user.Role,
 		Phone_number:     user.Phone_number,
 		Address:          user.Address,
-		Created_at:       user.Created_at,
+		Timestamp:        user.Timestamp,
 	}, err
 
 }
