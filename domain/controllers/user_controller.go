@@ -81,6 +81,7 @@ func (u *userController) Login(c *fiber.Ctx) error {
 
 // Register implements UserHandler.
 func (u *userController) Register(c *fiber.Ctx) error {
+
 	// Parse request
 	var req *requests.UserRegisterRequest
 
@@ -178,6 +179,7 @@ func (u *userController) LoginToken(c *fiber.Ctx) error {
 	}
 
 	user, err := u.service.GenToken(c.Context(), req)
+
 	if err != nil {
 		switch err {
 		case exceptions.ErrInvalidToken:

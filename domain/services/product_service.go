@@ -6,6 +6,7 @@ import (
 	"github.com/SA-TailorStore/Kanok-API/configs"
 	"github.com/SA-TailorStore/Kanok-API/database/requests"
 	"github.com/SA-TailorStore/Kanok-API/database/responses"
+	"github.com/SA-TailorStore/Kanok-API/domain/exceptions"
 	"github.com/SA-TailorStore/Kanok-API/domain/reposititories"
 )
 
@@ -31,7 +32,12 @@ func (p *productService) CreateProduct(ctx context.Context, req *requests.Create
 	err := p.reposititory.CreateProduct(ctx, req)
 
 	if err != nil {
-		return err
+		switch err {
+		case exceptions.ErrProductNotFound:
+			return exceptions.ErrProductNotFound
+		default:
+			return err
+		}
 	}
 
 	return err

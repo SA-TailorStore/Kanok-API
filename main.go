@@ -60,7 +60,7 @@ func main() {
 		return c.SendString("Hello, World!")
 	})
 	// User
-	app.Get("/users", userController.FindAllUser)
+	app.Get(prefix+"/users", userController.FindAllUser)
 
 	// Order
 
