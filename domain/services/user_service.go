@@ -231,11 +231,6 @@ func (u *userService) FindByID(ctx context.Context, req *requests.UserIDRequest)
 		return nil, err
 	}
 
-	// Sign the token with the secret
-	if err != nil {
-		return nil, err
-	}
-
 	return &responses.UserResponse{
 		User_id:          user.User_id,
 		Username:         user.Username,
