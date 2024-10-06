@@ -37,7 +37,8 @@ func (o *orderController) CreateOrder(c *fiber.Ctx) error {
 	}
 
 	// Create Order
-	if err := o.service.CreateOrder(c.Context(), req); err != nil {
+	err := o.service.CreateOrder(c.Context(), req)
+	if err != nil {
 		switch err {
 		case exceptions.ErrInfomation:
 			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{

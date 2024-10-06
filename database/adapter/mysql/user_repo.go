@@ -6,7 +6,6 @@ import (
 
 	"github.com/SA-TailorStore/Kanok-API/database/requests"
 	"github.com/SA-TailorStore/Kanok-API/database/responses"
-	"github.com/SA-TailorStore/Kanok-API/domain/entities"
 	"github.com/SA-TailorStore/Kanok-API/domain/exceptions"
 	"github.com/SA-TailorStore/Kanok-API/domain/reposititories"
 	"github.com/google/uuid"
@@ -38,28 +37,30 @@ func (u *UserMySQL) Create(ctx context.Context, req *requests.UserRegisterReques
 }
 
 // FindAllUser implements reposititories.UserRepository.
-func (u *UserMySQL) GetAllUser(ctx context.Context) ([](entities.User), error) {
-	rows, err := u.db.QueryContext(ctx, "SELECT * FROM users")
+func (u *UserMySQL) GetAllUser(ctx context.Context) ([]*responses.UserResponse, error) {
+	rows, err := u.db.QueryContext(ctx, "SELECT user_id, username, display_name, user_profile_url, role, phone_number, address, timestamp FROM USERS")
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
 
-	var users []entities.User
+	var users []*responses.UserResponse
 	for rows.Next() {
-		var user entities.User
-
-		if err := rows.Scan(&user.User_id, &user.Username, &user.Password,
-			&user.Created_at,
-			&user.Phone_number,
+		var user responses.UserResponse
+		if err := rows.Scan(
+			&user.User_id,
+			&user.Username,
+			&user.Display_name,
 			&user.User_profile_url,
 			&user.Role,
-			&user.Display_name,
-			&user.Address); err != nil {
+			&user.Phone_number,
+			&user.Address,
+			&user.Timestamp,
+		); err != nil {
 			return nil, err
 		}
 
-		users = append(users, user)
+		users = append(users, &user)
 	}
 
 	return users, nil
@@ -70,7 +71,7 @@ func (u *UserMySQL) FindByUsername(ctx context.Context, req *requests.UsernameRe
 
 	var user responses.UsernameResponse
 
-	err := u.db.GetContext(ctx, &user, "SELECT username FROM users WHERE username = ?", req.Username)
+	err := u.db.GetContext(ctx, &user, "SELECT username FROM USERS WHERE username = ?", req.Username)
 	switch err {
 	case sql.ErrNoRows:
 		return &user, nil
@@ -87,7 +88,7 @@ func (u *UserMySQL) GetPasswordByUsername(ctx context.Context, req *requests.Use
 
 	var user responses.UserLoginResponse
 
-	err := u.db.GetContext(ctx, &user, "SELECT user_id,password FROM users WHERE username = ?", req.Username)
+	err := u.db.GetContext(ctx, &user, "SELECT user_id,password FROM USERS WHERE username = ?", req.Username)
 	if err != nil {
 		return nil, exceptions.ErrUserNotFound
 	}
@@ -98,10 +99,15 @@ func (u *UserMySQL) GetPasswordByUsername(ctx context.Context, req *requests.Use
 func (u *UserMySQL) GetUserByUserID(ctx context.Context, req *requests.UserIDRequest) (*responses.UserResponse, error) {
 	var user responses.UserResponse
 
-	err := u.db.GetContext(ctx, &user, "SELECT user_id,username,display_name,user_profile_url,role,phone_number,address,created_at FROM users WHERE user_id = ?", req.User_id)
+	err := u.db.GetContext(ctx, &user, "SELECT user_id,username,display_name,user_profile_url,role,phone_number,address,timestamp FROM USERS WHERE user_id = ?", req.User_id)
 
 	if err != nil {
-		return nil, exceptions.ErrUserNotFound
+		switch err {
+		case sql.ErrNoRows:
+			return nil, exceptions.ErrUserNotFound
+		default:
+			return nil, err
+		}
 	}
 
 	return &user, nil
