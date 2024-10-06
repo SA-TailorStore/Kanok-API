@@ -47,8 +47,8 @@ func main() {
 	// User
 	app.Post(prefix+"/register", userController.Register)
 	app.Post(prefix+"/login", userController.Login)
-	app.Post(prefix+"/login-token", userController.LoginToken)
-	app.Post(prefix+"/user/jwt", userController.GetUserByJWT)
+	app.Post(prefix+"/login/token", userController.LoginToken)
+	app.Post(prefix+"/user/token", userController.GetUserByJWT)
 	// Order
 	app.Post(prefix+"/create-order", orderController.CreateOrder)
 	// Product

@@ -51,8 +51,8 @@ func (o *orderService) CreateOrder(ctx context.Context, req *requests.CreateOrde
 
 	if err != nil {
 		switch err {
-		case exceptions.ErrOrderNotFound:
-			return exceptions.ErrOrderNotFound
+		case exceptions.ErrInfomation:
+			return err
 		default:
 			return err
 		}

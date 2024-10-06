@@ -106,12 +106,15 @@ func (u *userService) Register(ctx context.Context, req *requests.UserRegisterRe
 		return exceptions.ErrDuplicatedUsername
 	}
 
-	if err == exceptions.ErrInvalidPassword {
-		return err
-	}
-
-	if err == exceptions.ErrUsernameFormat {
-		return err
+	if err != nil {
+		switch err {
+		case exceptions.ErrInvalidPassword:
+			return err
+		case exceptions.ErrUsernameFormat:
+			return err
+		default:
+			return err
+		}
 	}
 
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(req.Password), bcrypt.DefaultCost)
@@ -128,8 +131,13 @@ func (u *userService) Register(ctx context.Context, req *requests.UserRegisterRe
 func (u *userService) FindByUsername(ctx context.Context, req *requests.UsernameRequest) (*responses.UsernameResponse, error) {
 	user, err := u.reposititory.FindByUsername(ctx, req)
 
-	if err == exceptions.ErrUserNotFound {
-		return user, err
+	if err != nil {
+		switch err {
+		case exceptions.ErrUserNotFound:
+			return nil, err
+		default:
+			return nil, err
+		}
 	}
 
 	if user != nil {

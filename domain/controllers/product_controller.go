@@ -3,6 +3,7 @@ package controllers
 import (
 	"github.com/SA-TailorStore/Kanok-API/database/adapter/rest"
 	"github.com/SA-TailorStore/Kanok-API/database/requests"
+	"github.com/SA-TailorStore/Kanok-API/domain/exceptions"
 	"github.com/SA-TailorStore/Kanok-API/domain/services"
 	"github.com/SA-TailorStore/Kanok-API/utils"
 	"github.com/gofiber/fiber/v2"
@@ -35,7 +36,18 @@ func (p *productController) CreateProduct(c *fiber.Ctx) error {
 
 	err := p.service.CreateProduct(c.Context(), req)
 	if err != nil {
-		return err
+		switch err {
+		case exceptions.ErrDupicatedProductID:
+			return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
+				"error":  exceptions.ErrDupicatedProductID,
+				"status": "201",
+			})
+		default:
+			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+				"error":  err.Error(),
+				"status": "500",
+			})
+		}
 	}
 
 	return err
@@ -58,12 +70,18 @@ func (p *productController) GetProductByOrderID(c *fiber.Ctx) error {
 
 	produsts, err := p.service.GetProductByOrderID(c.Context(), req)
 	if err != nil {
-		// If there's an error, return a 500 status with the error message
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"status":  "500",
-			"message": "Failed to retrieve products",
-			"error":   err.Error(),
-		})
+		switch err {
+		case exceptions.ErrProductNotFound:
+			return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
+				"error":  "Not found product",
+				"status": "201",
+			})
+		default:
+			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+				"error":  err.Error(),
+				"status": "500",
+			})
+		}
 	}
 
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{
