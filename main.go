@@ -70,8 +70,8 @@ func main() {
 	// Design
 	app.Post(prefix+"/design/add", designController.AddDesign)
 	app.Post(prefix+"/design/update", designController.UpdateDesign)
-	app.Post(prefix+"/design/delete", designController.DeleteDesign)
-	app.Post(prefix+"/design/delete", designController.GetDesignByID)
+	//app.Post(prefix+"/design/delete", designController.DeleteDesign)
+	app.Post(prefix+"/design/get", designController.GetDesignByID)
 
 	// api routes get
 	app.Get("/", func(c *fiber.Ctx) error {

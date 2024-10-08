@@ -2,9 +2,11 @@ package mysql
 
 import (
 	"context"
+	"database/sql"
 
 	"github.com/SA-TailorStore/Kanok-API/database/requests"
 	"github.com/SA-TailorStore/Kanok-API/database/responses"
+	"github.com/SA-TailorStore/Kanok-API/domain/exceptions"
 	"github.com/SA-TailorStore/Kanok-API/domain/reposititories"
 	"github.com/jmoiron/sqlx"
 )
@@ -83,7 +85,13 @@ func (d *DesignMySQL) GetDesignByID(ctx context.Context, req *requests.DesignID)
 
 	err := d.db.GetContext(ctx, &design, "SELECT design_id, design_url, type FROM DESIGNS WHERE design_id = ?", req.Design_id)
 	if err != nil {
-		return nil, err
+		switch err {
+		case sql.ErrNoRows:
+			return nil, exceptions.ErrDesignNotFound
+		default:
+			return nil, err
+		}
+
 	}
 
 	return &design, nil

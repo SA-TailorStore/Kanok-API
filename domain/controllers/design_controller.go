@@ -151,7 +151,7 @@ func (d *designController) GetAllDesigns(c *fiber.Ctx) error {
 	}
 
 	return c.Status(fiber.StatusCreated).JSON(fiber.Map{
-		"message": "Update Address success.",
+		"message": "All Designs",
 		"status":  "201",
 		"data":    designs,
 	})
@@ -182,6 +182,6 @@ func (d *designController) GetDesignByID(c *fiber.Ctx) error {
 	return c.Status(fiber.StatusCreated).JSON(fiber.Map{
 		"message": "Get Design",
 		"data":    res,
-		"status":  "204",
+		"status":  "201",
 	})
 }
