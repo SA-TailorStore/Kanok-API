@@ -1,5 +1,6 @@
 package responses
 
+// USER
 type UserLogin struct {
 	User_id  string `json:"user_id"`
 	Password string `json:"password"`
@@ -36,6 +37,7 @@ type UserJWT struct {
 	Token string `json:"token"`
 }
 
+// ORDER
 type Order struct {
 	Order_id      string `json:"order_id"`
 	Store_phone   string `json:"store_phone"`
@@ -46,6 +48,7 @@ type Order struct {
 	Timestamp     string `json:"timestamp"`
 }
 
+// PRODUCT
 type Product struct {
 	Product_id       string `json:"product_id"`
 	Design_id        string `json:"design_id"`
@@ -60,4 +63,23 @@ type Product struct {
 
 type ProductID struct {
 	Product_id string `json:"product_id"`
+}
+
+// DESIGN
+type Design struct {
+	Design_id  string `json:"design_id" db:"design_id"`
+	Design_url string `json:"design_url" db:"design_url"`
+	Type       string `json:"type" db:"type"`
+}
+
+type DesignID struct {
+	Design_id string `json:"design_id" db:"design_id"`
+}
+
+type Design_url struct {
+	Design_url string `json:"design_url" db:"design_url"`
+}
+
+type DesignType struct {
+	Type string `json:"type" db:"type"`
 }

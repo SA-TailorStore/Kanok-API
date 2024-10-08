@@ -55,12 +55,12 @@ type ProductID struct {
 }
 
 type CreateProduct struct {
-	Design_id    string `json:"design_id" db:"design_id"`
-	Fabric_id    string `json:"fabric_id" db:"fabric_id"`
-	Detail       string `json:"detail" db:"detail"`
-	Size         string `json:"size" db:"size"`
-	Max_quantity int    `json:"max_quantity " db:"max_quantity "`
-	Create_by    string `json:"create_by" db:"create_by"`
+	Design_id      string `json:"design_id" `
+	Fabric_id      string `json:"fabric_id" `
+	Detail         string `json:"detail" `
+	Size           string `json:"size" validate:"required"`
+	Total_quantity int    `json:"total_quantity " validate:"required"`
+	Create_by      string `json:"create_by" validate:"required"`
 }
 
 // DESIGN REQUEST
@@ -68,9 +68,19 @@ type DesignID struct {
 	Design_id string `json:"design_id" validate:"required"`
 }
 
-type CreateDesign struct {
+type AddDesign struct {
+	Design_url string `json:"design_url"`
+	Type       string `json:"type" validate:"required"`
+}
+
+type UpdateDesign struct {
+	Design_ID  string `json:"design_id" db:"design_id"`
 	Design_url string `json:"design_url" db:"design_url"`
 	Type       string `json:"type" db:"type"`
+}
+
+type DeleteDesign struct {
+	Design_ID string `json:"design_id" db:"design_id"`
 }
 
 // FABRIC REQUEST
