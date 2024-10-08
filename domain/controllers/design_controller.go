@@ -21,6 +21,25 @@ func NewDesignController(service services.DesignUseCase) rest.DesignHandler {
 // AddDesign implements rest.DesignHandler.
 func (d *designController) AddDesign(c *fiber.Ctx) error {
 	var req requests.AddDesign
+	// Pull form file
+	fileHeader, err := c.FormFile("image")
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"error":   "Failed to get file",
+			"message": err.Error(),
+		})
+	}
+
+	// Open File
+	file, err := fileHeader.Open()
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"error":   "Failed to open file",
+			"message": err.Error(),
+		})
+	}
+	defer file.Close()
+
 	if err := c.BodyParser(&req); err != nil {
 		c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"error": err.Error(),
@@ -32,7 +51,7 @@ func (d *designController) AddDesign(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusBadRequest).JSON(err)
 	}
 
-	err := d.service.AddDesign(c.Context(), &req)
+	err = d.service.AddDesign(c.Context(), file, &req)
 	if err != nil {
 		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
 			"error":  err.Error(),
@@ -48,6 +67,25 @@ func (d *designController) AddDesign(c *fiber.Ctx) error {
 // UpdateDesign implements rest.DesignHandler.
 func (d *designController) UpdateDesign(c *fiber.Ctx) error {
 	var req requests.UpdateDesign
+	// Pull form file
+	fileHeader, err := c.FormFile("image")
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"error":   "Failed to get file",
+			"message": err.Error(),
+		})
+	}
+
+	// Open File
+	file, err := fileHeader.Open()
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"error":   "Failed to open file",
+			"message": err.Error(),
+		})
+	}
+	defer file.Close()
+
 	if err := c.BodyParser(&req); err != nil {
 		c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"error": err.Error(),
@@ -59,7 +97,7 @@ func (d *designController) UpdateDesign(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusBadRequest).JSON(err)
 	}
 
-	err := d.service.UpdateDesign(c.Context(), &req)
+	err = d.service.UpdateDesign(c.Context(), file, &req)
 	if err != nil {
 		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
 			"error":  err.Error(),

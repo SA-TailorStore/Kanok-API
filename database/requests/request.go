@@ -69,14 +69,14 @@ type DesignID struct {
 }
 
 type AddDesign struct {
-	Design_url string `json:"design_url"`
-	Type       string `json:"type" validate:"required"`
+	Image string `json:"image"`
+	Type  string `json:"type" validate:"required"`
 }
 
 type UpdateDesign struct {
-	Design_ID  string `json:"design_id" db:"design_id"`
-	Design_url string `json:"design_url" db:"design_url"`
-	Type       string `json:"type" db:"type"`
+	Design_ID string `json:"design_id" db:"design_id"`
+	Image     string `json:"image"`
+	Type      string `json:"type" db:"type"`
 }
 
 type DeleteDesign struct {

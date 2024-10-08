@@ -49,7 +49,7 @@ func main() {
 	productController := controllers.NewProductController(productService)
 
 	designRepo := mysql.NewDesignMySQL(db)
-	designService := services.NewDesignService(designRepo, cfg)
+	designService := services.NewDesignService(designRepo, cfg, cld)
 	designController := controllers.NewDesignController(designService)
 
 	prefix := "/api"
