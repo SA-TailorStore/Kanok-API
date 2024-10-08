@@ -12,12 +12,11 @@ import (
 	"github.com/SA-TailorStore/Kanok-API/database/responses"
 	"github.com/SA-TailorStore/Kanok-API/domain/exceptions"
 	"github.com/SA-TailorStore/Kanok-API/domain/reposititories"
+	"github.com/SA-TailorStore/Kanok-API/utils"
 	"github.com/golang-jwt/jwt/v5"
 )
 
 type UserUseCase interface {
-	VerificationJWT(jwtToken string) (*requests.UserID, error)
-	GenerateJWT(user_id string) string
 	GetAllUser(ctx context.Context) ([]*responses.UsernameResponse, error)
 	Login(ctx context.Context, req *requests.UserLogin) (*responses.UserJWT, error)
 	Register(ctx context.Context, req *requests.UserRegister) error
@@ -38,48 +37,6 @@ func NewUserService(reposititory reposititories.UserRepository, config *configs.
 		reposititory: reposititory,
 		config:       config,
 	}
-}
-
-func (u *userService) VerificationJWT(jwtToken string) (*requests.UserID, error) {
-	//JWT
-	secret_key := []byte(u.config.JWTSecret)
-
-	token, err := jwt.Parse(jwtToken, func(token *jwt.Token) (interface{}, error) {
-		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
-			return nil, errors.New("unexpected signing method")
-		}
-		return secret_key, nil
-	})
-
-	// Check JWT
-	claims, ok := token.Claims.(jwt.MapClaims)
-
-	if ok && token.Valid && err == nil {
-		return &requests.UserID{
-			User_id: claims["user_id"].(string),
-		}, nil
-	}
-	return nil, err
-}
-
-func (u *userService) GenerateJWT(user_id string) string {
-	// Generate JWT token
-	expireAt := time.Now().Add(time.Hour * 1)
-
-	claims := jwt.MapClaims{
-		"user_id": user_id,
-		"exp":     expireAt.Unix(),
-	}
-
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-
-	// Sign the token with the secret
-	tokenString, err := token.SignedString([]byte(u.config.JWTSecret))
-	if err != nil {
-		return err.Error()
-	}
-
-	return tokenString
 }
 
 // FindAllUser implements usercases.UserUseCase.
@@ -226,7 +183,7 @@ func (u *userService) FindByJWT(ctx context.Context, req *requests.UserJWT) (*re
 }
 
 func (u *userService) GenToken(ctx context.Context, req *requests.UserJWT) (*responses.UserJWT, error) {
-	user_id, err := u.VerificationJWT(req.Token)
+	id, err := utils.VerificationJWT(req.Token)
 
 	if err != nil {
 		switch err {
@@ -239,13 +196,17 @@ func (u *userService) GenToken(ctx context.Context, req *requests.UserJWT) (*res
 		}
 	}
 
+	user_id := &requests.UserID{
+		User_id: id,
+	}
+
 	user, err := u.reposititory.GetUserByUserID(ctx, user_id)
 
 	if err != nil {
 		return nil, err
 	}
 
-	tokenString := u.GenerateJWT(user.User_id)
+	tokenString := utils.GenerateJWT(user.User_id)
 
 	return &responses.UserJWT{
 		Token: tokenString,
@@ -275,7 +236,7 @@ func (u *userService) FindByID(ctx context.Context, req *requests.UserID) (*resp
 
 // UpdateAddress implements UserUseCase.
 func (u *userService) UpdateAddress(ctx context.Context, req *requests.UserUpdate) error {
-	user_id, err := u.VerificationJWT(req.Token)
+	user_id, err := utils.VerificationJWT(req.Token)
 
 	if err != nil {
 		switch err {
@@ -289,7 +250,7 @@ func (u *userService) UpdateAddress(ctx context.Context, req *requests.UserUpdat
 	}
 
 	req = &requests.UserUpdate{
-		Token:        user_id.User_id,
+		Token:        user_id,
 		Display_name: req.Display_name,
 		Phone_number: req.Phone_number,
 		Address:      req.Address,
