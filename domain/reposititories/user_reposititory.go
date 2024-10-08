@@ -14,4 +14,5 @@ type UserRepository interface {
 	GetPasswordByUsername(ctx context.Context, req *requests.Username) (*responses.UserLoginResponse, error)
 	GetUserByUserID(ctx context.Context, req *requests.UserID) (*responses.UserResponse, error)
 	UpdateAddress(ctx context.Context, req *requests.UserUpdate) error
+	UploadImage(ctx context.Context, req *requests.UserUploadImage) error
 }

@@ -13,6 +13,8 @@ import (
 	"github.com/SA-TailorStore/Kanok-API/domain/exceptions"
 	"github.com/SA-TailorStore/Kanok-API/domain/reposititories"
 	"github.com/SA-TailorStore/Kanok-API/utils"
+	"github.com/cloudinary/cloudinary-go/v2"
+	"github.com/cloudinary/cloudinary-go/v2/api/uploader"
 	"github.com/golang-jwt/jwt/v5"
 )
 
@@ -25,21 +27,23 @@ type UserUseCase interface {
 	GenToken(ctx context.Context, req *requests.UserJWT) (*responses.UserJWT, error)
 	FindByID(ctx context.Context, req *requests.UserID) (*responses.UserResponse, error)
 	UpdateAddress(ctx context.Context, req *requests.UserUpdate) error
+	UploadImage(ctx context.Context, file interface{}, req *requests.UserUploadImage) error
 }
 
 type userService struct {
 	reposititory reposititories.UserRepository
 	config       *configs.Config
+	cloudinary   *cloudinary.Cloudinary
 }
 
-func NewUserService(reposititory reposititories.UserRepository, config *configs.Config) UserUseCase {
+func NewUserService(reposititory reposititories.UserRepository, config *configs.Config, cld *cloudinary.Cloudinary) UserUseCase {
 	return &userService{
 		reposititory: reposititory,
 		config:       config,
+		cloudinary:   cld,
 	}
 }
 
-// FindAllUser implements usercases.UserUseCase.
 func (u *userService) GetAllUser(ctx context.Context) ([]*responses.UsernameResponse, error) {
 	users, err := u.reposititory.GetAllUser(ctx)
 
@@ -57,7 +61,6 @@ func (u *userService) GetAllUser(ctx context.Context) ([]*responses.UsernameResp
 	return usersResponse, err
 }
 
-// Login implements usercases.UserUseCase.
 func (u *userService) Login(ctx context.Context, req *requests.UserLogin) (*responses.UserJWT, error) {
 	username := &requests.Username{
 		Username: req.Username,
@@ -95,7 +98,6 @@ func (u *userService) Login(ctx context.Context, req *requests.UserLogin) (*resp
 	}, nil
 }
 
-// Register implements usercases.UserUseCase.
 func (u *userService) Register(ctx context.Context, req *requests.UserRegister) error {
 
 	err := u.reposititory.FindByUsername(ctx, &requests.Username{Username: req.Username})
@@ -122,7 +124,6 @@ func (u *userService) Register(ctx context.Context, req *requests.UserRegister) 
 	return u.reposititory.Create(ctx, req)
 }
 
-// FindByUsername implements usercases.UserUseCase.
 func (u *userService) FindByUsername(ctx context.Context, req *requests.Username) (*responses.UsernameResponse, error) {
 	err := u.reposititory.FindByUsername(ctx, req)
 
@@ -144,7 +145,6 @@ func (u *userService) FindByUsername(ctx context.Context, req *requests.Username
 	return user, err
 }
 
-// FindByJWT implements UserUseCase.
 func (u *userService) FindByJWT(ctx context.Context, req *requests.UserJWT) (*responses.UserResponse, error) {
 	//JWT
 	secret_key := []byte(u.config.JWTSecret)
@@ -234,7 +234,6 @@ func (u *userService) FindByID(ctx context.Context, req *requests.UserID) (*resp
 	}, err
 }
 
-// UpdateAddress implements UserUseCase.
 func (u *userService) UpdateAddress(ctx context.Context, req *requests.UserUpdate) error {
 	user_id, err := utils.VerificationJWT(req.Token)
 
@@ -265,6 +264,56 @@ func (u *userService) UpdateAddress(ctx context.Context, req *requests.UserUpdat
 		default:
 			return err
 		}
+	}
+
+	return err
+}
+
+func (u *userService) UploadImage(ctx context.Context, file interface{}, req *requests.UserUploadImage) error {
+
+	user_id, err := utils.VerificationJWT(req.Token)
+	if err != nil {
+		return err
+	}
+
+	check, _ := u.reposititory.GetUserByUserID(ctx, &requests.UserID{User_id: user_id})
+
+	if check.User_profile_url != "-" {
+		public_id, err := utils.ExtractPublicID(check.User_profile_url)
+		if err != nil {
+			return err
+		}
+		_, err = u.cloudinary.Upload.Destroy(ctx, uploader.DestroyParams{PublicID: public_id})
+
+		if err != nil {
+			return err
+		}
+		update := &requests.UserUploadImage{
+			Token: user_id,
+			Image: "-",
+		}
+
+		err = u.reposititory.UploadImage(ctx, update)
+		if err != nil {
+			return err
+		}
+
+	}
+
+	response, err := u.cloudinary.Upload.Upload(ctx, file, uploader.UploadParams{})
+
+	if err != nil {
+		return err
+	}
+
+	update := &requests.UserUploadImage{
+		Token: user_id,
+		Image: response.SecureURL,
+	}
+
+	err = u.reposititory.UploadImage(ctx, update)
+	if err != nil {
+		return err
 	}
 
 	return err

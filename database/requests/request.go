@@ -31,6 +31,11 @@ type UserUpdate struct {
 	Address      string `json:"address" validate:"required"`
 }
 
+type UserUploadImage struct {
+	Token string `json:"jwt" form:"jwt" validate:"required"`
+	Image string `json:"image" form:"image" `
+}
+
 // ORDER REQUEST
 type OrderID struct {
 	Order_id string `json:"order_id" validate:"required"`

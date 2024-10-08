@@ -244,7 +244,25 @@ func (u *userController) UpdateAddress(c *fiber.Ctx) error {
 // UploadImage implements rest.UserHandler.
 func (u *userController) UploadImage(c *fiber.Ctx) error {
 	// Parse request
-	var req *requests.UserJWT
+	var req requests.UserUploadImage
+	// Pull form file
+	fileHeader, err := c.FormFile("image")
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"error":   "Failed to get file",
+			"message": err.Error(),
+		})
+	}
+
+	// Open File
+	file, err := fileHeader.Open()
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"error":   "Failed to open file",
+			"message": err.Error(),
+		})
+	}
+	defer file.Close()
 
 	if err := c.BodyParser(&req); err != nil {
 		c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
@@ -256,5 +274,18 @@ func (u *userController) UploadImage(c *fiber.Ctx) error {
 	if err := utils.ValidateStruct(req); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(err)
 	}
-	panic("unimplemented")
+
+	err = u.service.UploadImage(c.Context(), file, &req)
+
+	if err != nil {
+		return c.Status(fiber.StatusCreated).JSON(fiber.Map{
+			"message": err,
+			"status":  "500",
+		})
+	}
+
+	return c.Status(fiber.StatusCreated).JSON(fiber.Map{
+		"message": "Upload Image success.",
+		"status":  "201",
+	})
 }
