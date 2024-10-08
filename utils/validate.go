@@ -2,8 +2,10 @@ package utils
 
 import (
 	"fmt"
+	"regexp"
 	"strings"
 
+	"github.com/SA-TailorStore/Kanok-API/domain/exceptions"
 	valid "github.com/go-playground/validator/v10"
 )
 
@@ -44,11 +46,23 @@ func ValidateStruct[T any](payload T) *ValidateError {
 	return nil
 }
 
-func ValidateUsername(u string) *ValidateError {
+func ValidateUsername(u string) error {
+	re := regexp.MustCompile("^[a-zA-Z0-9_!@]+$")
 
+	if !re.MatchString(u) {
+		return exceptions.ErrInvalidFormatUsername
+	}
 	return nil
 }
-func ValidatePassword(u string) *ValidateError {
+func ValidatePassword(p string) error {
+	if len(p) < 8 {
+		return exceptions.ErrCharLeastPassword
+	}
+
+	re := regexp.MustCompile(`[!@#$%^&*(),.?":{}|<>]`)
+	if !re.MatchString(p) {
+		return exceptions.ErrOneSpecialPassword
+	}
 
 	return nil
 }

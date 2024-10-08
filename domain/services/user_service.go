@@ -99,18 +99,18 @@ func (u *userService) Login(ctx context.Context, req *requests.UserLogin) (*resp
 func (u *userService) Register(ctx context.Context, req *requests.UserRegister) error {
 
 	err := u.reposititory.FindByUsername(ctx, &requests.Username{Username: req.Username})
-
 	if err != nil {
-		switch err {
-		case exceptions.ErrUsernameDuplicated:
-			return err
-		case exceptions.ErrInvalidFormatPassword:
-			return err
-		case exceptions.ErrUsernameFormat:
-			return err
-		default:
-			return err
-		}
+		return err
+	}
+
+	err = utils.ValidateUsername(req.Username)
+	if err != nil {
+		return err
+	}
+
+	err = utils.ValidatePassword(req.Password)
+	if err != nil {
+		return err
 	}
 
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(req.Password), bcrypt.DefaultCost)

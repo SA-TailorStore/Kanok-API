@@ -104,7 +104,7 @@ func (u *userController) Register(c *fiber.Ctx) error {
 				"error":  "Username already registered",
 				"status": "400",
 			})
-		case exceptions.ErrInvalidFormatPassword:
+		case exceptions.ErrCharLeastPassword:
 			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 				"error":  "Password must be at least 8 characters long",
 				"status": "400",
