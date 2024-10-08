@@ -1,46 +1,42 @@
 package requests
 
-type UserRegisterRequest struct {
+// USER REQUEST
+type UserRegister struct {
 	Username     string `json:"username" validate:"required"`
 	Password     string `json:"password" validate:"required"`
 	Phone_number string `json:"phone_number" validate:"required"`
 }
 
-type UserLoginRequest struct {
+type UserLogin struct {
 	Username string `json:"username" validate:"required"`
 	Password string `json:"password" validate:"required"`
 }
 
-type UsernameRequest struct {
+type Username struct {
 	Username string `json:"username" validate:"required"`
 }
 
-type UserJWTRequest struct {
+type UserJWT struct {
 	Token string `json:"token" validate:"required"`
 }
 
-type UserIDRequest struct {
+type UserID struct {
 	User_id string `json:"user_id" validate:"required"`
 }
 
-type OrderIDRequest struct {
+type UserUpdateAddress struct {
+	Token        string `json:"token" validate:"required"`
+	Display_name string `json:"display_name" validate:"required"`
+	Phone_number string `json:"phone_number" validate:"required"`
+	Address      string `json:"address" validate:"required"`
+}
+
+// ORDER REQUEST
+type OrderID struct {
 	Order_id string `json:"order_id" validate:"required"`
 }
 
-type ProductIDRequest struct {
-	Product_id string `json:"product_id" validate:"required"`
-}
-type DesignIDRequest struct {
-	Design_id string `json:"design_id" validate:"required"`
-}
-type FabricIDRequest struct {
-	Fabric_id string `json:"fabric_id" validate:"required"`
-}
-type MaterialIDRequest struct {
-	Material_id string `json:"material_id" validate:"required"`
-}
-
-type CreateOrderRequest struct {
+type CreateOrder struct {
 	Store_phone   string `json:"store_phone" validate:"required"`
 	Store_address string `json:"store_address" validate:"required"`
 	User_phone    string `json:"user_phone" validate:"required"`
@@ -48,7 +44,12 @@ type CreateOrderRequest struct {
 	Create_by     string `json:"create_by" validate:"required"`
 }
 
-type CreateProductRequest struct {
+// PRODUCT REQUEST
+type ProductID struct {
+	Product_id string `json:"product_id" validate:"required"`
+}
+
+type CreateProduct struct {
 	Design_id    string `json:"design_id" db:"design_id"`
 	Fabric_id    string `json:"fabric_id" db:"fabric_id"`
 	Detail       string `json:"detail" db:"detail"`
@@ -57,17 +58,32 @@ type CreateProductRequest struct {
 	Create_by    string `json:"create_by" db:"create_by"`
 }
 
-type CreateDesignRequest struct {
+// DESIGN REQUEST
+type DesignID struct {
+	Design_id string `json:"design_id" validate:"required"`
+}
+
+type CreateDesign struct {
 	Design_url string `json:"design_url" db:"design_url"`
 	Type       string `json:"type" db:"type"`
 }
 
-type CreateFabricRequest struct {
+// FABRIC REQUEST
+type FabricID struct {
+	Fabric_id string `json:"fabric_id" validate:"required"`
+}
+
+type CreateFabric struct {
 	Fabric_url string `json:"fabric_url" db:"fabric_url"`
 	Quantity   int    `json:"quantity" db:"quantity"`
 }
 
-type CreateMaterialRequest struct {
+// METERIAL REQUEST
+type MaterialID struct {
+	Material_id string `json:"material_id" validate:"required"`
+}
+
+type CreateMaterial struct {
 	Material_name string `json:"material_name" db:"material_name"`
 	Product_id    string `json:"product_id" db:"product_id"`
 	Category      string `json:"category" db:"category"`

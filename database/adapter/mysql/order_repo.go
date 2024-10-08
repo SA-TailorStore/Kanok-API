@@ -23,7 +23,7 @@ func NewOrderMySQL(db *sqlx.DB) reposititories.OrderRepository {
 }
 
 // CreateOrder implements reposititories.OrderRepository.
-func (o *OrderMySQL) CreateOrder(ctx context.Context, req *requests.CreateOrderRequest) error {
+func (o *OrderMySQL) CreateOrder(ctx context.Context, req *requests.CreateOrder) error {
 	order_id := "O" + time.Now().Format("20060102") + time.Now().Format("150405")
 	_, err := o.db.QueryContext(ctx,
 		"INSERT INTO ORDERS (order_id, is_payment, store_phone, store_address, user_phone, user_address, due_date, create_by) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?)",
@@ -42,6 +42,6 @@ func (o *OrderMySQL) CreateOrder(ctx context.Context, req *requests.CreateOrderR
 }
 
 // GetOrderByID implements reposititories.OrderRepository.
-func (o *OrderMySQL) GetOrderByID(ctx context.Context, req *requests.OrderIDRequest) error {
+func (o *OrderMySQL) GetOrderByID(ctx context.Context, req *requests.OrderID) error {
 	panic("unimplemented")
 }

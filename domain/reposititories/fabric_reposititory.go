@@ -7,5 +7,5 @@ import (
 )
 
 type FabricRepository interface {
-	CreateFabric(ctx context.Context, req *requests.CreateFabricRequest) error
+	CreateFabric(ctx context.Context, req *requests.CreateFabric) error
 }

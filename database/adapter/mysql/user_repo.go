@@ -3,6 +3,7 @@ package mysql
 import (
 	"context"
 	"database/sql"
+	"fmt"
 
 	"github.com/SA-TailorStore/Kanok-API/database/requests"
 	"github.com/SA-TailorStore/Kanok-API/database/responses"
@@ -23,7 +24,7 @@ func NewUserMySQL(db *sqlx.DB) reposititories.UserRepository {
 }
 
 // Create implements reposititories.UserRepository.
-func (u *UserMySQL) Create(ctx context.Context, req *requests.UserRegisterRequest) error {
+func (u *UserMySQL) Create(ctx context.Context, req *requests.UserRegister) error {
 	user_id, err := uuid.NewV7()
 	if err != nil {
 		return err
@@ -67,7 +68,7 @@ func (u *UserMySQL) GetAllUser(ctx context.Context) ([]*responses.UserResponse, 
 }
 
 // FindByUsername implements reposititories.UserRepository.
-func (u *UserMySQL) FindByUsername(ctx context.Context, req *requests.UsernameRequest) (*responses.UsernameResponse, error) {
+func (u *UserMySQL) FindByUsername(ctx context.Context, req *requests.Username) (*responses.UsernameResponse, error) {
 
 	var user responses.UsernameResponse
 
@@ -76,15 +77,14 @@ func (u *UserMySQL) FindByUsername(ctx context.Context, req *requests.UsernameRe
 	case sql.ErrNoRows:
 		return &user, nil
 	case nil:
-		return nil, exceptions.ErrDuplicatedUsername
+		return nil, exceptions.ErrUsernameDuplicated
 	default:
 		return nil, err
 	}
-
 }
 
 // GetUserByUsername implements reposititories.UserRepository.
-func (u *UserMySQL) GetPasswordByUsername(ctx context.Context, req *requests.UsernameRequest) (*responses.UserLoginResponse, error) {
+func (u *UserMySQL) GetPasswordByUsername(ctx context.Context, req *requests.Username) (*responses.UserLoginResponse, error) {
 
 	var user responses.UserLoginResponse
 
@@ -96,7 +96,7 @@ func (u *UserMySQL) GetPasswordByUsername(ctx context.Context, req *requests.Use
 	return &user, nil
 }
 
-func (u *UserMySQL) GetUserByUserID(ctx context.Context, req *requests.UserIDRequest) (*responses.UserResponse, error) {
+func (u *UserMySQL) GetUserByUserID(ctx context.Context, req *requests.UserID) (*responses.UserResponse, error) {
 	var user responses.UserResponse
 
 	err := u.db.GetContext(ctx, &user, "SELECT user_id,username,display_name,user_profile_url,role,phone_number,address,timestamp FROM USERS WHERE user_id = ?", req.User_id)
@@ -111,4 +111,15 @@ func (u *UserMySQL) GetUserByUserID(ctx context.Context, req *requests.UserIDReq
 	}
 
 	return &user, nil
+}
+
+// UpdateAddress implements reposititories.UserRepository.
+func (u *UserMySQL) UpdateAddress(ctx context.Context, req *requests.UserUpdateAddress) error {
+	result, err := u.db.ExecContext(ctx, "UPDATE USERS SET display_name = ?, phone_number = ?, address = ? WHERE user_id = ?", req.Display_name, req.Phone_number, req.Address, req.Token)
+
+	if err != nil {
+		return err
+	}
+	fmt.Println(result.RowsAffected())
+	return err
 }

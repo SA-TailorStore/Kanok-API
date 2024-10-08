@@ -9,8 +9,8 @@ import (
 )
 
 type MaterialUseCase interface {
-	CreateMaterial(ctx context.Context, req *requests.CreateMaterialRequest) error
-	GetMaterialByID(ctx context.Context, req *requests.MaterialIDRequest) error
+	CreateMaterial(ctx context.Context, req *requests.CreateMaterial) error
+	GetMaterialByID(ctx context.Context, req *requests.MaterialID) error
 }
 
 type materialService struct {
@@ -26,11 +26,11 @@ func NewMaterialService(reposititory reposititories.MaterialRepository, config *
 }
 
 // CreateMaterial implements MaterialUseCase.
-func (m *materialService) CreateMaterial(ctx context.Context, req *requests.CreateMaterialRequest) error {
+func (m *materialService) CreateMaterial(ctx context.Context, req *requests.CreateMaterial) error {
 	panic("unimplemented")
 }
 
 // GetMaterialByID implements MaterialUseCase.
-func (m *materialService) GetMaterialByID(ctx context.Context, req *requests.MaterialIDRequest) error {
+func (m *materialService) GetMaterialByID(ctx context.Context, req *requests.MaterialID) error {
 	panic("unimplemented")
 }

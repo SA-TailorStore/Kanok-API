@@ -8,9 +8,10 @@ import (
 )
 
 type UserRepository interface {
-	Create(ctx context.Context, req *requests.UserRegisterRequest) error
+	Create(ctx context.Context, req *requests.UserRegister) error
 	GetAllUser(ctx context.Context) ([]*responses.UserResponse, error)
-	FindByUsername(ctx context.Context, req *requests.UsernameRequest) (*responses.UsernameResponse, error)
-	GetPasswordByUsername(ctx context.Context, req *requests.UsernameRequest) (*responses.UserLoginResponse, error)
-	GetUserByUserID(ctx context.Context, req *requests.UserIDRequest) (*responses.UserResponse, error)
+	FindByUsername(ctx context.Context, req *requests.Username) (*responses.UsernameResponse, error)
+	GetPasswordByUsername(ctx context.Context, req *requests.Username) (*responses.UserLoginResponse, error)
+	GetUserByUserID(ctx context.Context, req *requests.UserID) (*responses.UserResponse, error)
+	UpdateAddress(ctx context.Context, req *requests.UserUpdateAddress) error
 }

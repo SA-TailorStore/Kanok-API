@@ -9,8 +9,8 @@ import (
 )
 
 type FabricUseCase interface {
-	CreateFabric(ctx context.Context, req *requests.CreateFabricRequest) error
-	GetFabricByID(ctx context.Context, req *requests.FabricIDRequest) error
+	CreateFabric(ctx context.Context, req *requests.CreateFabric) error
+	GetFabricByID(ctx context.Context, req *requests.FabricID) error
 }
 
 type fabricService struct {
@@ -26,11 +26,11 @@ func NewFabricService(reposititory reposititories.FabricRepository, config *conf
 }
 
 // CreateFabric implements FabricUseCase.
-func (f *fabricService) CreateFabric(ctx context.Context, req *requests.CreateFabricRequest) error {
+func (f *fabricService) CreateFabric(ctx context.Context, req *requests.CreateFabric) error {
 	panic("unimplemented")
 }
 
 // GetFabricByID implements FabricUseCase.
-func (f *fabricService) GetFabricByID(ctx context.Context, req *requests.FabricIDRequest) error {
+func (f *fabricService) GetFabricByID(ctx context.Context, req *requests.FabricID) error {
 	panic("unimplemented")
 }

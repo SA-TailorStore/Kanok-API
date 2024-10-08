@@ -42,7 +42,7 @@ func (u *userController) FindAllUser(c *fiber.Ctx) error {
 // Login implements UserHandler.
 func (u *userController) Login(c *fiber.Ctx) error {
 	// Parse request
-	var req *requests.UserLoginRequest
+	var req *requests.UserLogin
 
 	if err := c.BodyParser(&req); err != nil {
 		c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
@@ -83,7 +83,7 @@ func (u *userController) Login(c *fiber.Ctx) error {
 func (u *userController) Register(c *fiber.Ctx) error {
 
 	// Parse request
-	var req *requests.UserRegisterRequest
+	var req *requests.UserRegister
 
 	if err := c.BodyParser(&req); err != nil {
 		c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
@@ -99,7 +99,7 @@ func (u *userController) Register(c *fiber.Ctx) error {
 	// Register user
 	if err := u.service.Register(c.Context(), req); err != nil {
 		switch err {
-		case exceptions.ErrDuplicatedUsername:
+		case exceptions.ErrUsernameDuplicated:
 			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 				"error":  "Username already registered",
 				"status": "400",
@@ -126,7 +126,7 @@ func (u *userController) Register(c *fiber.Ctx) error {
 
 func (u *userController) GetUserByJWT(c *fiber.Ctx) error {
 	// Parse request
-	var req *requests.UserJWTRequest
+	var req *requests.UserJWT
 
 	if err := c.BodyParser(&req); err != nil {
 		c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
@@ -165,7 +165,7 @@ func (u *userController) GetUserByJWT(c *fiber.Ctx) error {
 
 func (u *userController) LoginToken(c *fiber.Ctx) error {
 	// Parse request
-	var req *requests.UserJWTRequest
+	var req *requests.UserJWT
 
 	if err := c.BodyParser(&req); err != nil {
 		c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
@@ -200,4 +200,61 @@ func (u *userController) LoginToken(c *fiber.Ctx) error {
 		"status":  "201",
 		"token":   user.Token,
 	})
+}
+
+// UpdateAddress implements rest.UserHandler.
+func (u *userController) UpdateAddress(c *fiber.Ctx) error {
+	// Parse request
+	var req *requests.UserUpdateAddress
+
+	if err := c.BodyParser(&req); err != nil {
+		c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"error": err.Error(),
+		})
+	}
+
+	// Validate request
+	if err := utils.ValidateStruct(req); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(err)
+	}
+
+	err := u.service.UpdateAddress(c.Context(), req)
+	if err != nil {
+		switch err {
+		case exceptions.ErrInvalidToken:
+			return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
+				"error":  "Invaild Token",
+				"status": "401",
+			})
+		default:
+			return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
+				"error":  err.Error(),
+				"status": "500",
+			})
+		}
+
+	}
+
+	return c.Status(fiber.StatusCreated).JSON(fiber.Map{
+		"message": "Update Address success.",
+		"status":  "201",
+	})
+}
+
+// UploadImage implements rest.UserHandler.
+func (u *userController) UploadImage(c *fiber.Ctx) error {
+	// Parse request
+	var req *requests.UserJWT
+
+	if err := c.BodyParser(&req); err != nil {
+		c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"error": err.Error(),
+		})
+	}
+
+	// Validate request
+	if err := utils.ValidateStruct(req); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(err)
+	}
+	panic("unimplemented")
 }

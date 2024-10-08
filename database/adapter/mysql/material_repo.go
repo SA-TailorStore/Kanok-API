@@ -19,6 +19,6 @@ func NewMaterialMySQL(db *sqlx.DB) reposititories.MaterialRepository {
 }
 
 // CreateMaterial implements reposititories.MaterialRepository.
-func (m *MaterialMySQL) CreateMaterial(ctx context.Context, req *requests.CreateMaterialRequest) error {
+func (m *MaterialMySQL) CreateMaterial(ctx context.Context, req *requests.CreateMaterial) error {
 	panic("unimplemented")
 }

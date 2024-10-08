@@ -11,8 +11,8 @@ import (
 )
 
 type ProductUsecase interface {
-	CreateProduct(ctx context.Context, req *requests.CreateProductRequest) error
-	GetProductByOrderID(ctx context.Context, req *requests.OrderIDRequest) ([]*responses.ProductIDResponse, error)
+	CreateProduct(ctx context.Context, req *requests.CreateProduct) error
+	GetProductByOrderID(ctx context.Context, req *requests.OrderID) ([]*responses.ProductIDResponse, error)
 }
 
 type productService struct {
@@ -28,7 +28,7 @@ func NewProductService(reposititory reposititories.ProductRepository, config *co
 }
 
 // CreateProduct implements ProductUsecase.
-func (p *productService) CreateProduct(ctx context.Context, req *requests.CreateProductRequest) error {
+func (p *productService) CreateProduct(ctx context.Context, req *requests.CreateProduct) error {
 	err := p.reposititory.CreateProduct(ctx, req)
 
 	if err != nil {
@@ -44,7 +44,7 @@ func (p *productService) CreateProduct(ctx context.Context, req *requests.Create
 }
 
 // GetProductByOrderID implements ProductUsecase.
-func (p *productService) GetProductByOrderID(ctx context.Context, req *requests.OrderIDRequest) ([]*responses.ProductIDResponse, error) {
+func (p *productService) GetProductByOrderID(ctx context.Context, req *requests.OrderID) ([]*responses.ProductIDResponse, error) {
 	products, err := p.reposititory.GetProductByOrderID(ctx, req)
 
 	if err != nil {

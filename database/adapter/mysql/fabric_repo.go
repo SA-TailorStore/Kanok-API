@@ -19,6 +19,6 @@ func NewFabricMySQL(db *sqlx.DB) reposititories.FabricRepository {
 }
 
 // CreateFabric implements reposititories.FabricRepository.
-func (f *FabricMySQL) CreateFabric(ctx context.Context, req *requests.CreateFabricRequest) error {
+func (f *FabricMySQL) CreateFabric(ctx context.Context, req *requests.CreateFabric) error {
 	panic("unimplemented")
 }
