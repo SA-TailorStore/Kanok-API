@@ -141,18 +141,12 @@ func (u *userService) Login(ctx context.Context, req *requests.UserLogin) (*resp
 // Register implements usercases.UserUseCase.
 func (u *userService) Register(ctx context.Context, req *requests.UserRegister) error {
 
-	username := requests.Username{
-		Username: req.Username,
-	}
-
-	user, err := u.reposititory.FindByUsername(ctx, &username)
-
-	if user == nil {
-		return exceptions.ErrUsernameDuplicated
-	}
+	err := u.reposititory.FindByUsername(ctx, &requests.Username{Username: req.Username})
 
 	if err != nil {
 		switch err {
+		case exceptions.ErrUsernameDuplicated:
+			return err
 		case exceptions.ErrInvalidFormatPassword:
 			return err
 		case exceptions.ErrUsernameFormat:
@@ -173,10 +167,12 @@ func (u *userService) Register(ctx context.Context, req *requests.UserRegister) 
 
 // FindByUsername implements usercases.UserUseCase.
 func (u *userService) FindByUsername(ctx context.Context, req *requests.Username) (*responses.UsernameResponse, error) {
-	user, err := u.reposititory.FindByUsername(ctx, req)
+	err := u.reposititory.FindByUsername(ctx, req)
 
 	if err != nil {
 		switch err {
+		case exceptions.ErrUsernameDuplicated:
+			return nil, err
 		case exceptions.ErrUserNotFound:
 			return nil, err
 		default:
@@ -184,8 +180,8 @@ func (u *userService) FindByUsername(ctx context.Context, req *requests.Username
 		}
 	}
 
-	if user != nil {
-		return user, exceptions.ErrUsernameDuplicated
+	user := &responses.UsernameResponse{
+		Username: req.Username,
 	}
 
 	return user, err

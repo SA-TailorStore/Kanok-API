@@ -43,3 +43,12 @@ func ValidateStruct[T any](payload T) *ValidateError {
 
 	return nil
 }
+
+func ValidateUsername(u string) *ValidateError {
+
+	return nil
+}
+func ValidatePassword(u string) *ValidateError {
+
+	return nil
+}

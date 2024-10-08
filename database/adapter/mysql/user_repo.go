@@ -3,6 +3,7 @@ package mysql
 import (
 	"context"
 	"database/sql"
+	"fmt"
 
 	"github.com/SA-TailorStore/Kanok-API/database/requests"
 	"github.com/SA-TailorStore/Kanok-API/database/responses"
@@ -67,18 +68,19 @@ func (u *UserMySQL) GetAllUser(ctx context.Context) ([]*responses.UserResponse, 
 }
 
 // FindByUsername implements reposititories.UserRepository.
-func (u *UserMySQL) FindByUsername(ctx context.Context, req *requests.Username) (*responses.UsernameResponse, error) {
+func (u *UserMySQL) FindByUsername(ctx context.Context, req *requests.Username) error {
 
 	var user responses.UsernameResponse
 
 	err := u.db.GetContext(ctx, &user, "SELECT username FROM USERS WHERE username = ?", req.Username)
+	fmt.Println(err)
 	switch err {
-	case sql.ErrNoRows:
-		return &user, nil
+	case sql.ErrNoRows: // user found
+		return nil
 	case nil:
-		return nil, exceptions.ErrUsernameDuplicated
+		return exceptions.ErrUsernameDuplicated
 	default:
-		return nil, err
+		return err
 	}
 }
 
