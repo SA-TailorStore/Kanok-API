@@ -63,9 +63,9 @@ func main() {
 	app.Post(prefix+"/upload-image", userController.UploadImage)
 
 	// Order
-	app.Post(prefix+"/create-order", orderController.CreateOrder)
+	app.Post(prefix+"/order/create", orderController.CreateOrder)
 	// Product
-	app.Post(prefix+"/create-product", productController.CreateProduct)
+	app.Post(prefix+"/product/create", productController.CreateProduct)
 	app.Post(prefix+"/get/product/order_id", productController.GetProductByOrderID)
 	// Design
 	app.Post(prefix+"/design/add", designController.AddDesign)
