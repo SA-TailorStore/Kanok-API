@@ -2,9 +2,11 @@ package utils
 
 import (
 	"errors"
+	"strings"
 	"time"
 
 	"github.com/SA-TailorStore/Kanok-API/configs"
+	"github.com/SA-TailorStore/Kanok-API/domain/exceptions"
 	"github.com/gofiber/fiber/v2"
 	"github.com/golang-jwt/jwt/v5"
 )
@@ -33,8 +35,18 @@ func VerificationJWT(jwtToken string) (string, error) {
 
 	if ok && token.Valid && err == nil {
 		return claims["user_id"].(string), nil
+	} else {
+		parts := strings.Split(err.Error(), ":")
+		err = errors.New(parts[0])
+		switch err.Error() {
+		case jwt.ErrTokenMalformed.Error():
+			return "", exceptions.ErrInvalidToken
+		case jwt.ErrTokenInvalidClaims.Error():
+			return "", exceptions.ErrExpiredToken
+		default:
+			return "", err
+		}
 	}
-	return "", err
 }
 
 func GenerateJWT(user_id string) string {

@@ -1,7 +1,7 @@
 package utils
 
 import (
-	"fmt"
+	"errors"
 	"net/url"
 	"path"
 	"strings"
@@ -22,7 +22,7 @@ func ExtractPublicID(imageURL string) (string, error) {
 
 	// ตรวจสอบว่า URL มีรูปแบบถูกต้องหรือไม่
 	if len(parts) < 4 || parts[len(parts)-1] == "" {
-		return "", fmt.Errorf("Invalid URL format")
+		return "", errors.New("invalid URL format")
 	}
 
 	// ดึงชื่อไฟล์ตัวสุดท้ายออกจาก path เช่น sample.jpg

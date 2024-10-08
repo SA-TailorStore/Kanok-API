@@ -3,6 +3,7 @@ package controllers
 import (
 	"github.com/SA-TailorStore/Kanok-API/database/adapter/rest"
 	"github.com/SA-TailorStore/Kanok-API/database/requests"
+	"github.com/SA-TailorStore/Kanok-API/domain/exceptions"
 	"github.com/SA-TailorStore/Kanok-API/domain/services"
 	"github.com/SA-TailorStore/Kanok-API/utils"
 	"github.com/gofiber/fiber/v2"
@@ -53,10 +54,18 @@ func (d *designController) AddDesign(c *fiber.Ctx) error {
 
 	err = d.service.AddDesign(c.Context(), file, &req)
 	if err != nil {
-		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
-			"error":  err.Error(),
-			"status": "500",
-		})
+		switch err {
+		case err:
+			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+				"error":  err.Error(),
+				"status": "400",
+			})
+		default:
+			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+				"error":  err.Error(),
+				"status": "500",
+			})
+		}
 	}
 	return c.Status(fiber.StatusCreated).JSON(fiber.Map{
 		"message": "Add Design Success.",
@@ -99,15 +108,23 @@ func (d *designController) UpdateDesign(c *fiber.Ctx) error {
 
 	err = d.service.UpdateDesign(c.Context(), file, &req)
 	if err != nil {
-		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
-			"error":  err.Error(),
-			"status": "500",
-		})
+		switch err {
+		case err:
+			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+				"error":  err.Error(),
+				"status": "400",
+			})
+		default:
+			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+				"error":  err.Error(),
+				"status": "500",
+			})
+		}
 	}
 
-	return c.Status(fiber.StatusCreated).JSON(fiber.Map{
+	return c.Status(fiber.StatusNoContent).JSON(fiber.Map{
 		"message": "Update Design success.",
-		"status":  "201",
+		"status":  "204",
 	})
 }
 
@@ -127,10 +144,18 @@ func (d *designController) DeleteDesign(c *fiber.Ctx) error {
 
 	err := d.service.DeleteDesign(c.Context(), &req)
 	if err != nil {
-		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
-			"error":  err.Error(),
-			"status": "500",
-		})
+		switch err {
+		case err:
+			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+				"error":  err.Error(),
+				"status": "400",
+			})
+		default:
+			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+				"error":  err.Error(),
+				"status": "500",
+			})
+		}
 	}
 
 	return c.Status(fiber.StatusCreated).JSON(fiber.Map{
@@ -144,15 +169,23 @@ func (d *designController) GetAllDesigns(c *fiber.Ctx) error {
 
 	designs, err := d.service.GetAllDesigns(c.Context())
 	if err != nil {
-		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
-			"error":  err.Error(),
-			"status": "500",
-		})
+		switch err {
+		case err:
+			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+				"error":  err.Error(),
+				"status": "400",
+			})
+		default:
+			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+				"error":  err.Error(),
+				"status": "500",
+			})
+		}
 	}
 
-	return c.Status(fiber.StatusCreated).JSON(fiber.Map{
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{
 		"message": "All Designs",
-		"status":  "201",
+		"status":  "200",
 		"data":    designs,
 	})
 }
@@ -174,14 +207,22 @@ func (d *designController) GetDesignByID(c *fiber.Ctx) error {
 
 	res, err := d.service.GetDesignByID(c.Context(), &req)
 	if err != nil {
-		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
-			"error":  err.Error(),
-			"status": "500",
-		})
+		switch err {
+		case exceptions.ErrDesignNotFound:
+			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+				"error":  err.Error(),
+				"status": "400",
+			})
+		default:
+			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+				"error":  err.Error(),
+				"status": "500",
+			})
+		}
 	}
-	return c.Status(fiber.StatusCreated).JSON(fiber.Map{
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{
 		"message": "Get Design",
 		"data":    res,
-		"status":  "201",
+		"status":  "200",
 	})
 }

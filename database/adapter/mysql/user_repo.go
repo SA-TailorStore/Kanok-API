@@ -127,7 +127,6 @@ func (u *UserMySQL) UpdateAddress(ctx context.Context, req *requests.UserUpdate)
 
 func (u *UserMySQL) UploadImage(ctx context.Context, req *requests.UserUploadImage) error {
 	_, err := u.db.ExecContext(ctx, "UPDATE USERS SET user_profile_url = ? WHERE user_id = ?", req.Image, req.Token)
-
 	if err != nil {
 		return err
 	}
