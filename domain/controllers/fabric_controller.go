@@ -16,8 +16,23 @@ func NewFabricController(service services.FabricUseCase) rest.FabricHandler {
 	}
 }
 
-// CreateFabric implements rest.FabricHandler.
-func (f *fabricController) CreateFabric(c *fiber.Ctx) error {
+// AddFabric implements rest.FabricHandler.
+func (f *fabricController) AddFabric(c *fiber.Ctx) error {
+	panic("unimplemented")
+}
+
+// UpdateFabric implements rest.FabricHandler.
+func (f *fabricController) UpdateFabric(c *fiber.Ctx) error {
+	panic("unimplemented")
+}
+
+// DeleteFabric implements rest.FabricHandler.
+func (f *fabricController) DeleteFabric(c *fiber.Ctx) error {
+	panic("unimplemented")
+}
+
+// GetAllFabrics implements rest.FabricHandler.
+func (f *fabricController) GetAllFabrics(c *fiber.Ctx) error {
 	panic("unimplemented")
 }
 

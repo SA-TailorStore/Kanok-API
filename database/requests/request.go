@@ -88,9 +88,15 @@ type FabricID struct {
 	Fabric_id string `json:"fabric_id" validate:"required"`
 }
 
-type CreateFabric struct {
-	Fabric_url string `json:"fabric_url" db:"fabric_url"`
-	Quantity   int    `json:"quantity" db:"quantity"`
+type AddFabric struct {
+	Fabric_url string `json:"fabric_url" `
+	Quantity   int    `json:"quantity" validate:"required"`
+}
+
+type UpdateFabric struct {
+	Fabric_id  string `json:"fabric_id" validate:"required"`
+	Fabric_url string `json:"fabric_url" `
+	Quantity   int    `json:"quantity" validate:"required"`
 }
 
 // METERIAL REQUEST

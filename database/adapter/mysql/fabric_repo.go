@@ -18,7 +18,27 @@ func NewFabricMySQL(db *sqlx.DB) reposititories.FabricRepository {
 	}
 }
 
-// CreateFabric implements reposititories.FabricRepository.
-func (f *FabricMySQL) CreateFabric(ctx context.Context, req *requests.CreateFabric) error {
+// AddFabric implements reposititories.FabricRepository.
+func (f *FabricMySQL) AddFabric(ctx context.Context, req *requests.AddFabric) error {
+	panic("unimplemented")
+}
+
+// DeleteFabric implements reposititories.FabricRepository.
+func (f *FabricMySQL) DeleteFabric(ctx context.Context, req *requests.FabricID) error {
+	panic("unimplemented")
+}
+
+// GetAllFabrics implements reposititories.FabricRepository.
+func (f *FabricMySQL) GetAllFabrics(ctx context.Context) error {
+	panic("unimplemented")
+}
+
+// GetFabricByID implements reposititories.FabricRepository.
+func (f *FabricMySQL) GetFabricByID(ctx context.Context, req *requests.FabricID) error {
+	panic("unimplemented")
+}
+
+// UpdateFabric implements reposititories.FabricRepository.
+func (f *FabricMySQL) UpdateFabric(ctx context.Context, req *requests.UpdateFabric) error {
 	panic("unimplemented")
 }
