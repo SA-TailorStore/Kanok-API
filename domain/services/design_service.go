@@ -111,7 +111,11 @@ func (d *designService) DeleteDesign(ctx context.Context, req *requests.DesignID
 
 // GetAllDesigns implements DesignUseCase.
 func (d *designService) GetAllDesigns(ctx context.Context) ([]*responses.Design, error) {
-	var designs []*responses.Design
+	designs, err := d.reposititory.GetAllDesigns(ctx)
+	if err != nil {
+		return nil, err
+	}
+
 	return designs, nil
 }
 

@@ -58,8 +58,23 @@ func (d *DesignMySQL) DeleteDesign(ctx context.Context, req *requests.DesignID) 
 
 // GetAllDesigns implements reposititories.DesignRepository.
 func (d *DesignMySQL) GetAllDesigns(ctx context.Context) ([]*responses.Design, error) {
+	rows, err := d.db.QueryContext(ctx, "SELECT design_id, design_url, type FROM DESIGNS")
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
 
-	return nil, nil
+	var designs []*responses.Design
+	for rows.Next() {
+		var design responses.Design
+		err := rows.Scan(&design.Design_id, &design.Design_url, &design.Type)
+		if err != nil {
+			return nil, err
+		}
+		designs = append(designs, &design)
+	}
+
+	return designs, nil
 }
 
 // GetDesignByID implements reposititories.DesignRepository.
