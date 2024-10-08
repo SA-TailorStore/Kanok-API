@@ -9,6 +9,7 @@ import (
 	"github.com/SA-TailorStore/Kanok-API/database/adapter/mysql"
 	"github.com/SA-TailorStore/Kanok-API/domain/controllers"
 	"github.com/SA-TailorStore/Kanok-API/domain/services"
+	"github.com/cloudinary/cloudinary-go/v2"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/gofiber/fiber/v2"
 	"github.com/jmoiron/sqlx"
@@ -17,9 +18,14 @@ import (
 func main() {
 	app := fiber.New()
 
+	cfg := configs.NewConfig()
+	cld, err := cloudinary.NewFromURL(cfg.Cloudinary_url)
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	ctx := context.Background()
 
-	cfg := configs.NewConfig()
 	fmt.Printf("%s:%s@tcp(%s:%s)/%s", cfg.DBUsername, cfg.DBPassword, cfg.DBHost, cfg.DBPort, cfg.DBName)
 	fmt.Println()
 	db, err := sqlx.ConnectContext(ctx, "mysql", fmt.Sprintf("%s:%s@tcp(%s:%s)/%s", cfg.DBUsername, cfg.DBPassword, cfg.DBHost, cfg.DBPort, cfg.DBName))
@@ -31,7 +37,7 @@ func main() {
 	defer db.Close()
 
 	userRepo := mysql.NewUserMySQL(db)
-	userService := services.NewUserService(userRepo, cfg)
+	userService := services.NewUserService(userRepo, cfg, cld)
 	userController := controllers.NewUserController(userService)
 
 	orderRepo := mysql.NewOrderMySQL(db)
@@ -50,6 +56,7 @@ func main() {
 	app.Post(prefix+"/login/token", userController.LoginToken)
 	app.Post(prefix+"/user/token", userController.GetUserByJWT)
 	app.Post(prefix+"/user/update/address", userController.UpdateAddress)
+	app.Post(prefix+"/upload-image", userController.UploadImage)
 
 	// Order
 	app.Post(prefix+"/create-order", orderController.CreateOrder)

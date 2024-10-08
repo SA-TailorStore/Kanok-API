@@ -38,16 +38,16 @@ func (u *UserMySQL) Create(ctx context.Context, req *requests.UserRegister) erro
 }
 
 // FindAllUser implements reposititories.UserRepository.
-func (u *UserMySQL) GetAllUser(ctx context.Context) ([]*responses.UserResponse, error) {
+func (u *UserMySQL) GetAllUser(ctx context.Context) ([]*responses.User, error) {
 	rows, err := u.db.QueryContext(ctx, "SELECT user_id, username, display_name, user_profile_url, role, phone_number, address, timestamp FROM USERS")
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
 
-	var users []*responses.UserResponse
+	var users []*responses.User
 	for rows.Next() {
-		var user responses.UserResponse
+		var user responses.User
 		if err := rows.Scan(
 			&user.User_id,
 			&user.Username,
@@ -70,7 +70,7 @@ func (u *UserMySQL) GetAllUser(ctx context.Context) ([]*responses.UserResponse, 
 // FindByUsername implements reposititories.UserRepository.
 func (u *UserMySQL) FindByUsername(ctx context.Context, req *requests.Username) error {
 
-	var user responses.UsernameResponse
+	var user responses.Username
 
 	err := u.db.GetContext(ctx, &user, "SELECT username FROM USERS WHERE username = ?", req.Username)
 	fmt.Println(err)
@@ -85,9 +85,9 @@ func (u *UserMySQL) FindByUsername(ctx context.Context, req *requests.Username) 
 }
 
 // GetUserByUsername implements reposititories.UserRepository.
-func (u *UserMySQL) GetPasswordByUsername(ctx context.Context, req *requests.Username) (*responses.UserLoginResponse, error) {
+func (u *UserMySQL) GetPasswordByUsername(ctx context.Context, req *requests.Username) (*responses.UserLogin, error) {
 
-	var user responses.UserLoginResponse
+	var user responses.UserLogin
 
 	err := u.db.GetContext(ctx, &user, "SELECT user_id,password FROM USERS WHERE username = ?", req.Username)
 	if err != nil {
@@ -97,8 +97,8 @@ func (u *UserMySQL) GetPasswordByUsername(ctx context.Context, req *requests.Use
 	return &user, nil
 }
 
-func (u *UserMySQL) GetUserByUserID(ctx context.Context, req *requests.UserID) (*responses.UserResponse, error) {
-	var user responses.UserResponse
+func (u *UserMySQL) GetUserByUserID(ctx context.Context, req *requests.UserID) (*responses.User, error) {
+	var user responses.User
 
 	err := u.db.GetContext(ctx, &user, "SELECT user_id,username,display_name,user_profile_url,role,phone_number,address,timestamp FROM USERS WHERE user_id = ?", req.User_id)
 
@@ -124,3 +124,23 @@ func (u *UserMySQL) UpdateAddress(ctx context.Context, req *requests.UserUpdate)
 
 	return err
 }
+
+func (u *UserMySQL) UploadImage(ctx context.Context, req *requests.UserUploadImage) error {
+	_, err := u.db.ExecContext(ctx, "UPDATE USERS SET user_profile_url = ? WHERE user_id = ?", req.Image, req.Token)
+
+	if err != nil {
+		return err
+	}
+
+	return err
+}
+
+// func (u *UserMySQL) DeleteImage(ctx context.Context, req *requests.UserUploadImage) error {
+// 	_, err := u.db.ExecContext(ctx, "UPDATE USERS SET display_name = ? WHERE user_id = ?", req.Image, req.Token)
+
+// 	if err != nil {
+// 		return err
+// 	}
+
+// 	return err
+// }

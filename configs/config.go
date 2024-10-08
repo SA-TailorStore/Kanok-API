@@ -7,12 +7,13 @@ import (
 )
 
 type Config struct {
-	DBHost     string `mapstructure:"DB_HOST"`
-	DBName     string `mapstructure:"DB_DATABASE"`
-	DBUsername string `mapstructure:"DB_USERNAME"`
-	DBPassword string `mapstructure:"DB_PASSWORD"`
-	DBPort     string `mapstructure:"DB_PORT"`
-	JWTSecret  string `mapstructure:"JWT_SECRET"`
+	DBHost         string `mapstructure:"DB_HOST"`
+	DBName         string `mapstructure:"DB_DATABASE"`
+	DBUsername     string `mapstructure:"DB_USERNAME"`
+	DBPassword     string `mapstructure:"DB_PASSWORD"`
+	DBPort         string `mapstructure:"DB_PORT"`
+	JWTSecret      string `mapstructure:"JWT_SECRET"`
+	Cloudinary_url string `mapstructure:"CLOUDINARY_URL"`
 }
 
 func NewConfig() *Config {
