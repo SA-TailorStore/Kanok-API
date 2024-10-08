@@ -3,7 +3,6 @@ package mysql
 import (
 	"context"
 	"database/sql"
-	"fmt"
 
 	"github.com/SA-TailorStore/Kanok-API/database/requests"
 	"github.com/SA-TailorStore/Kanok-API/database/responses"
@@ -90,7 +89,7 @@ func (u *UserMySQL) GetPasswordByUsername(ctx context.Context, req *requests.Use
 
 	err := u.db.GetContext(ctx, &user, "SELECT user_id,password FROM USERS WHERE username = ?", req.Username)
 	if err != nil {
-		return nil, exceptions.ErrUserNotFound
+		return nil, exceptions.ErrWrongUsername
 	}
 
 	return &user, nil
@@ -114,12 +113,12 @@ func (u *UserMySQL) GetUserByUserID(ctx context.Context, req *requests.UserID) (
 }
 
 // UpdateAddress implements reposititories.UserRepository.
-func (u *UserMySQL) UpdateAddress(ctx context.Context, req *requests.UserUpdateAddress) error {
-	result, err := u.db.ExecContext(ctx, "UPDATE USERS SET display_name = ?, phone_number = ?, address = ? WHERE user_id = ?", req.Display_name, req.Phone_number, req.Address, req.Token)
+func (u *UserMySQL) UpdateAddress(ctx context.Context, req *requests.UserUpdate) error {
+	_, err := u.db.ExecContext(ctx, "UPDATE USERS SET display_name = ?, phone_number = ?, address = ? WHERE user_id = ?", req.Display_name, req.Phone_number, req.Address, req.Token)
 
 	if err != nil {
 		return err
 	}
-	fmt.Println(result.RowsAffected())
+
 	return err
 }

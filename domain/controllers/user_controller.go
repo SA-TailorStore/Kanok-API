@@ -104,7 +104,7 @@ func (u *userController) Register(c *fiber.Ctx) error {
 				"error":  "Username already registered",
 				"status": "400",
 			})
-		case exceptions.ErrInvalidPassword:
+		case exceptions.ErrInvalidFormatPassword:
 			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 				"error":  "Password must be at least 8 characters long",
 				"status": "400",
@@ -205,7 +205,7 @@ func (u *userController) LoginToken(c *fiber.Ctx) error {
 // UpdateAddress implements rest.UserHandler.
 func (u *userController) UpdateAddress(c *fiber.Ctx) error {
 	// Parse request
-	var req *requests.UserUpdateAddress
+	var req *requests.UserUpdate
 
 	if err := c.BodyParser(&req); err != nil {
 		c.Status(fiber.StatusBadRequest).JSON(fiber.Map{

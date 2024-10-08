@@ -24,7 +24,7 @@ type UserID struct {
 	User_id string `json:"user_id" validate:"required"`
 }
 
-type UserUpdateAddress struct {
+type UserUpdate struct {
 	Token        string `json:"token" validate:"required"`
 	Display_name string `json:"display_name" validate:"required"`
 	Phone_number string `json:"phone_number" validate:"required"`

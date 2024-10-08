@@ -13,5 +13,5 @@ type UserRepository interface {
 	FindByUsername(ctx context.Context, req *requests.Username) (*responses.UsernameResponse, error)
 	GetPasswordByUsername(ctx context.Context, req *requests.Username) (*responses.UserLoginResponse, error)
 	GetUserByUserID(ctx context.Context, req *requests.UserID) (*responses.UserResponse, error)
-	UpdateAddress(ctx context.Context, req *requests.UserUpdateAddress) error
+	UpdateAddress(ctx context.Context, req *requests.UserUpdate) error
 }

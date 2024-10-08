@@ -3,7 +3,6 @@ package services
 import (
 	"context"
 	"errors"
-	"fmt"
 	"time"
 
 	"golang.org/x/crypto/bcrypt"
@@ -26,7 +25,7 @@ type UserUseCase interface {
 	FindByJWT(ctx context.Context, req *requests.UserJWT) (*responses.UserResponse, error)
 	GenToken(ctx context.Context, req *requests.UserJWT) (*responses.UserJWT, error)
 	FindByID(ctx context.Context, req *requests.UserID) (*responses.UserResponse, error)
-	UpdateAddress(ctx context.Context, req *requests.UserUpdateAddress) error
+	UpdateAddress(ctx context.Context, req *requests.UserUpdate) error
 }
 
 type userService struct {
@@ -54,9 +53,7 @@ func (u *userService) VerificationJWT(jwtToken string) (*requests.UserID, error)
 
 	// Check JWT
 	claims, ok := token.Claims.(jwt.MapClaims)
-	fmt.Println(ok)
-	fmt.Println(token.Valid)
-	fmt.Println(err)
+
 	if ok && token.Valid && err == nil {
 		return &requests.UserID{
 			User_id: claims["user_id"].(string),
@@ -111,13 +108,13 @@ func (u *userService) Login(ctx context.Context, req *requests.UserLogin) (*resp
 
 	user, err := u.reposititory.GetPasswordByUsername(ctx, username)
 	// Check if user exist
-	if err == exceptions.ErrUserNotFound {
-		return nil, exceptions.ErrUserNotFound
+	if err != nil {
+		return nil, err
 	}
 
 	// Compare password
 	if bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(req.Password)) != nil {
-		return nil, exceptions.ErrLoginFailed
+		return nil, exceptions.ErrWrongPassword
 	}
 
 	// Generate JWT token
@@ -156,7 +153,7 @@ func (u *userService) Register(ctx context.Context, req *requests.UserRegister) 
 
 	if err != nil {
 		switch err {
-		case exceptions.ErrInvalidPassword:
+		case exceptions.ErrInvalidFormatPassword:
 			return err
 		case exceptions.ErrUsernameFormat:
 			return err
@@ -281,7 +278,7 @@ func (u *userService) FindByID(ctx context.Context, req *requests.UserID) (*resp
 }
 
 // UpdateAddress implements UserUseCase.
-func (u *userService) UpdateAddress(ctx context.Context, req *requests.UserUpdateAddress) error {
+func (u *userService) UpdateAddress(ctx context.Context, req *requests.UserUpdate) error {
 	user_id, err := u.VerificationJWT(req.Token)
 
 	if err != nil {
@@ -295,7 +292,7 @@ func (u *userService) UpdateAddress(ctx context.Context, req *requests.UserUpdat
 		}
 	}
 
-	req = &requests.UserUpdateAddress{
+	req = &requests.UserUpdate{
 		Token:        user_id.User_id,
 		Display_name: req.Display_name,
 		Phone_number: req.Phone_number,
