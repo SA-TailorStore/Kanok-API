@@ -26,8 +26,8 @@ func (p *ProductMySQL) CreateProduct(ctx context.Context, req *requests.CreatePr
 	product_id := "P" + time.Now().Format("20060102") + time.Now().Format("150405")
 
 	_, err := p.db.QueryContext(ctx,
-		"INSERT INTO PRODUCTS (product_id, design_id, fabric_id, detail, size, max_quantity, create_by) VALUES ( ?, ?, ?, ?, ?, ?, ?)",
-		product_id, req.Design_id, req.Fabric_id, req.Detail, req.Size, req.Max_quantity, req.Create_by)
+		"INSERT INTO PRODUCTS (product_id, design_id, fabric_id, detail, size, total_quantity, create_by) VALUES ( ?, ?, ?, ?, ?, ?, ?)",
+		product_id, req.Design_id, req.Fabric_id, req.Detail, req.Size, req.Total_quantity, req.Create_by)
 
 	if err != nil {
 		return err

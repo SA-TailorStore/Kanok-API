@@ -5,6 +5,9 @@ import (
 )
 
 type DesignHandler interface {
-	CreateDesign(c *fiber.Ctx) error
+	AddDesign(c *fiber.Ctx) error
+	UpdateDesign(c *fiber.Ctx) error
+	DeleteDesign(c *fiber.Ctx) error
+	GetAllDesigns(c *fiber.Ctx) error
 	GetDesignByID(c *fiber.Ctx) error
 }

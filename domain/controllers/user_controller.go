@@ -112,7 +112,8 @@ func (u *userController) Register(c *fiber.Ctx) error {
 
 		default:
 			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-				"error": err.Error(),
+				"error":  err.Error(),
+				"status": "500",
 			})
 		}
 	}
@@ -145,7 +146,12 @@ func (u *userController) GetUserByJWT(c *fiber.Ctx) error {
 		switch err {
 		case exceptions.ErrInvalidToken:
 			return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
-				"error":  "Unauthorized",
+				"error":  err.Error(),
+				"status": "401",
+			})
+		case exceptions.ErrExpiredToken:
+			return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
+				"error":  err.Error(),
 				"status": "401",
 			})
 		default:
@@ -184,7 +190,12 @@ func (u *userController) LoginToken(c *fiber.Ctx) error {
 		switch err {
 		case exceptions.ErrInvalidToken:
 			return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
-				"error":  "Unauthorized",
+				"error":  err.Error(),
+				"status": "401",
+			})
+		case exceptions.ErrExpiredToken:
+			return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
+				"error":  err.Error(),
 				"status": "401",
 			})
 		default:
@@ -223,7 +234,12 @@ func (u *userController) UpdateAddress(c *fiber.Ctx) error {
 		switch err {
 		case exceptions.ErrInvalidToken:
 			return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
-				"error":  "Invaild Token",
+				"error":  err.Error(),
+				"status": "401",
+			})
+		case exceptions.ErrExpiredToken:
+			return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
+				"error":  err.Error(),
 				"status": "401",
 			})
 		default:
@@ -276,12 +292,24 @@ func (u *userController) UploadImage(c *fiber.Ctx) error {
 	}
 
 	res, err := u.service.UploadImage(c.Context(), file, &req)
-
 	if err != nil {
-		return c.Status(fiber.StatusCreated).JSON(fiber.Map{
-			"message": err,
-			"status":  "500",
-		})
+		switch err {
+		case exceptions.ErrInvalidToken:
+			return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
+				"error":  err.Error(),
+				"status": "401",
+			})
+		case exceptions.ErrExpiredToken:
+			return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
+				"error":  err.Error(),
+				"status": "401",
+			})
+		default:
+			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+				"error":  err.Error(),
+				"status": "500",
+			})
+		}
 	}
 
 	return c.Status(fiber.StatusCreated).JSON(fiber.Map{

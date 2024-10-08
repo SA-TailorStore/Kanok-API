@@ -48,6 +48,10 @@ func main() {
 	productService := services.NewProductService(productRepo, cfg)
 	productController := controllers.NewProductController(productService)
 
+	designRepo := mysql.NewDesignMySQL(db)
+	designService := services.NewDesignService(designRepo, cfg, cld)
+	designController := controllers.NewDesignController(designService)
+
 	prefix := "/api"
 	// api routes post
 	// User
@@ -59,10 +63,15 @@ func main() {
 	app.Post(prefix+"/upload-image", userController.UploadImage)
 
 	// Order
-	app.Post(prefix+"/create-order", orderController.CreateOrder)
+	app.Post(prefix+"/order/create", orderController.CreateOrder)
 	// Product
-	app.Post(prefix+"/create-product", productController.CreateProduct)
+	app.Post(prefix+"/product/create", productController.CreateProduct)
 	app.Post(prefix+"/get/product/order_id", productController.GetProductByOrderID)
+	// Design
+	app.Post(prefix+"/design/add", designController.AddDesign)
+	app.Post(prefix+"/design/update", designController.UpdateDesign)
+	app.Post(prefix+"/design/delete", designController.DeleteDesign)
+	app.Post(prefix+"/design/get", designController.GetDesignByID)
 
 	// api routes get
 	app.Get("/", func(c *fiber.Ctx) error {
@@ -74,6 +83,9 @@ func main() {
 	// Order
 
 	// Product
+
+	// Design
+	app.Get(prefix+"/designs", designController.GetAllDesigns)
 
 	if err := app.Listen(":9000"); err != nil {
 		log.Fatal(err)
