@@ -10,8 +10,8 @@ import (
 )
 
 type OrderUseCase interface {
-	CreateOrder(ctx context.Context, req *requests.CreateOrderRequest) error
-	GetOrderByID(ctx context.Context, req *requests.OrderIDRequest) error
+	CreateOrder(ctx context.Context, req *requests.CreateOrder) error
+	GetOrderByID(ctx context.Context, req *requests.OrderID) error
 }
 
 type orderService struct {
@@ -27,7 +27,7 @@ func NewOrderService(reposititory reposititories.OrderRepository, config *config
 }
 
 // GetOrder implements OrderUseCase.
-func (o *orderService) GetOrderByID(ctx context.Context, req *requests.OrderIDRequest) error {
+func (o *orderService) GetOrderByID(ctx context.Context, req *requests.OrderID) error {
 
 	err := o.reposititory.GetOrderByID(ctx, req)
 
@@ -45,7 +45,7 @@ func (o *orderService) GetOrderByID(ctx context.Context, req *requests.OrderIDRe
 }
 
 // CreateOrder implements OrderUseCase.
-func (o *orderService) CreateOrder(ctx context.Context, req *requests.CreateOrderRequest) error {
+func (o *orderService) CreateOrder(ctx context.Context, req *requests.CreateOrder) error {
 
 	err := o.reposititory.CreateOrder(ctx, req)
 

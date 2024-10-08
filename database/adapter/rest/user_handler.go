@@ -10,4 +10,6 @@ type UserHandler interface {
 	FindAllUser(c *fiber.Ctx) error
 	GetUserByJWT(c *fiber.Ctx) error
 	LoginToken(c *fiber.Ctx) error
+	UpdateAddress(c *fiber.Ctx) error
+	UploadImage(c *fiber.Ctx) error
 }

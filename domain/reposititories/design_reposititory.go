@@ -7,6 +7,6 @@ import (
 )
 
 type DesignRepository interface {
-	CreateDesign(ctx context.Context, req *requests.CreateDesignRequest) error
-	GetDesignByID(ctx context.Context, req *requests.DesignIDRequest) error
+	CreateDesign(ctx context.Context, req *requests.CreateDesign) error
+	GetDesignByID(ctx context.Context, req *requests.DesignID) error
 }

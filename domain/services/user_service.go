@@ -12,17 +12,19 @@ import (
 	"github.com/SA-TailorStore/Kanok-API/database/responses"
 	"github.com/SA-TailorStore/Kanok-API/domain/exceptions"
 	"github.com/SA-TailorStore/Kanok-API/domain/reposititories"
+	"github.com/SA-TailorStore/Kanok-API/utils"
 	"github.com/golang-jwt/jwt/v5"
 )
 
 type UserUseCase interface {
-	Register(ctx context.Context, req *requests.UserRegisterRequest) error
-	Login(ctx context.Context, req *requests.UserLoginRequest) (*responses.UserJWT, error)
 	GetAllUser(ctx context.Context) ([]*responses.UsernameResponse, error)
-	FindByUsername(ctx context.Context, req *requests.UsernameRequest) (*responses.UsernameResponse, error)
-	FindByJWT(ctx context.Context, req *requests.UserJWTRequest) (*responses.UserResponse, error)
-	GenToken(ctx context.Context, req *requests.UserJWTRequest) (*responses.UserJWT, error)
-	FindByID(ctx context.Context, req *requests.UserIDRequest) (*responses.UserResponse, error)
+	Login(ctx context.Context, req *requests.UserLogin) (*responses.UserJWT, error)
+	Register(ctx context.Context, req *requests.UserRegister) error
+	FindByUsername(ctx context.Context, req *requests.Username) (*responses.UsernameResponse, error)
+	FindByJWT(ctx context.Context, req *requests.UserJWT) (*responses.UserResponse, error)
+	GenToken(ctx context.Context, req *requests.UserJWT) (*responses.UserJWT, error)
+	FindByID(ctx context.Context, req *requests.UserID) (*responses.UserResponse, error)
+	UpdateAddress(ctx context.Context, req *requests.UserUpdate) error
 }
 
 type userService struct {
@@ -56,20 +58,20 @@ func (u *userService) GetAllUser(ctx context.Context) ([]*responses.UsernameResp
 }
 
 // Login implements usercases.UserUseCase.
-func (u *userService) Login(ctx context.Context, req *requests.UserLoginRequest) (*responses.UserJWT, error) {
-	username := &requests.UsernameRequest{
+func (u *userService) Login(ctx context.Context, req *requests.UserLogin) (*responses.UserJWT, error) {
+	username := &requests.Username{
 		Username: req.Username,
 	}
 
 	user, err := u.reposititory.GetPasswordByUsername(ctx, username)
 	// Check if user exist
-	if err == exceptions.ErrUserNotFound {
-		return nil, exceptions.ErrUserNotFound
+	if err != nil {
+		return nil, err
 	}
 
 	// Compare password
 	if bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(req.Password)) != nil {
-		return nil, exceptions.ErrLoginFailed
+		return nil, exceptions.ErrWrongPassword
 	}
 
 	// Generate JWT token
@@ -94,27 +96,21 @@ func (u *userService) Login(ctx context.Context, req *requests.UserLoginRequest)
 }
 
 // Register implements usercases.UserUseCase.
-func (u *userService) Register(ctx context.Context, req *requests.UserRegisterRequest) error {
+func (u *userService) Register(ctx context.Context, req *requests.UserRegister) error {
 
-	username := requests.UsernameRequest{
-		Username: req.Username,
-	}
-
-	user, err := u.reposititory.FindByUsername(ctx, &username)
-
-	if user == nil {
-		return exceptions.ErrDuplicatedUsername
-	}
-
+	err := u.reposititory.FindByUsername(ctx, &requests.Username{Username: req.Username})
 	if err != nil {
-		switch err {
-		case exceptions.ErrInvalidPassword:
-			return err
-		case exceptions.ErrUsernameFormat:
-			return err
-		default:
-			return err
-		}
+		return err
+	}
+
+	err = utils.ValidateUsername(req.Username)
+	if err != nil {
+		return err
+	}
+
+	err = utils.ValidatePassword(req.Password)
+	if err != nil {
+		return err
 	}
 
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(req.Password), bcrypt.DefaultCost)
@@ -124,15 +120,16 @@ func (u *userService) Register(ctx context.Context, req *requests.UserRegisterRe
 
 	req.Password = string(hashedPassword)
 	return u.reposititory.Create(ctx, req)
-
 }
 
 // FindByUsername implements usercases.UserUseCase.
-func (u *userService) FindByUsername(ctx context.Context, req *requests.UsernameRequest) (*responses.UsernameResponse, error) {
-	user, err := u.reposititory.FindByUsername(ctx, req)
+func (u *userService) FindByUsername(ctx context.Context, req *requests.Username) (*responses.UsernameResponse, error) {
+	err := u.reposititory.FindByUsername(ctx, req)
 
 	if err != nil {
 		switch err {
+		case exceptions.ErrUsernameDuplicated:
+			return nil, err
 		case exceptions.ErrUserNotFound:
 			return nil, err
 		default:
@@ -140,15 +137,15 @@ func (u *userService) FindByUsername(ctx context.Context, req *requests.Username
 		}
 	}
 
-	if user != nil {
-		return user, exceptions.ErrDuplicatedUsername
+	user := &responses.UsernameResponse{
+		Username: req.Username,
 	}
 
 	return user, err
 }
 
 // FindByJWT implements UserUseCase.
-func (u *userService) FindByJWT(ctx context.Context, req *requests.UserJWTRequest) (*responses.UserResponse, error) {
+func (u *userService) FindByJWT(ctx context.Context, req *requests.UserJWT) (*responses.UserResponse, error) {
 	//JWT
 	secret_key := []byte(u.config.JWTSecret)
 
@@ -161,7 +158,7 @@ func (u *userService) FindByJWT(ctx context.Context, req *requests.UserJWTReques
 
 	// Check JWT
 	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid && err == nil {
-		user_id := &requests.UserIDRequest{
+		user_id := &requests.UserID{
 			User_id: claims["user_id"].(string),
 		}
 		user, err := u.reposititory.GetUserByUserID(ctx, user_id)
@@ -185,53 +182,39 @@ func (u *userService) FindByJWT(ctx context.Context, req *requests.UserJWTReques
 	}
 }
 
-func (u *userService) GenToken(ctx context.Context, req *requests.UserJWTRequest) (*responses.UserJWT, error) {
-	//JWT
-	secret_key := []byte(u.config.JWTSecret)
+func (u *userService) GenToken(ctx context.Context, req *requests.UserJWT) (*responses.UserJWT, error) {
+	id, err := utils.VerificationJWT(req.Token)
 
-	token, err := jwt.Parse(req.Token, func(token *jwt.Token) (interface{}, error) {
-		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
-			return nil, errors.New("unexpected signing method")
-		}
-		return secret_key, nil
-	})
-
-	// Check JWT
-	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid && err == nil {
-		user_id := &requests.UserIDRequest{
-			User_id: claims["user_id"].(string),
-		}
-		user, err := u.reposititory.GetUserByUserID(ctx, user_id)
-
-		if err != nil {
+	if err != nil {
+		switch err {
+		case exceptions.ErrExpiredToken:
+			return nil, err
+		case exceptions.ErrInvalidToken:
+			return nil, err
+		default:
 			return nil, err
 		}
-
-		// Generate JWT token
-		expireAt := time.Now().Add(time.Hour * 1)
-
-		claims := jwt.MapClaims{
-			"user_id": user.User_id,
-			"exp":     expireAt.Unix(),
-		}
-
-		token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-
-		// Sign the token with the secret
-		tokenString, err := token.SignedString([]byte(u.config.JWTSecret))
-		if err != nil {
-			return nil, err
-		}
-
-		return &responses.UserJWT{
-			Token: tokenString,
-		}, err
-	} else {
-		return nil, exceptions.ErrInvalidToken
 	}
+
+	user_id := &requests.UserID{
+		User_id: id,
+	}
+
+	user, err := u.reposititory.GetUserByUserID(ctx, user_id)
+
+	if err != nil {
+		return nil, err
+	}
+
+	tokenString := utils.GenerateJWT(user.User_id)
+
+	return &responses.UserJWT{
+		Token: tokenString,
+	}, err
+
 }
 
-func (u *userService) FindByID(ctx context.Context, req *requests.UserIDRequest) (*responses.UserResponse, error) {
+func (u *userService) FindByID(ctx context.Context, req *requests.UserID) (*responses.UserResponse, error) {
 
 	user, err := u.reposititory.GetUserByUserID(ctx, req)
 
@@ -249,5 +232,40 @@ func (u *userService) FindByID(ctx context.Context, req *requests.UserIDRequest)
 		Address:          user.Address,
 		Timestamp:        user.Timestamp,
 	}, err
+}
 
+// UpdateAddress implements UserUseCase.
+func (u *userService) UpdateAddress(ctx context.Context, req *requests.UserUpdate) error {
+	user_id, err := utils.VerificationJWT(req.Token)
+
+	if err != nil {
+		switch err {
+		case exceptions.ErrExpiredToken:
+			return err
+		case exceptions.ErrInvalidToken:
+			return err
+		default:
+			return err
+		}
+	}
+
+	req = &requests.UserUpdate{
+		Token:        user_id,
+		Display_name: req.Display_name,
+		Phone_number: req.Phone_number,
+		Address:      req.Address,
+	}
+
+	err = u.reposititory.UpdateAddress(ctx, req)
+
+	if err != nil {
+		switch err {
+		case exceptions.ErrUserNotFound:
+			return err
+		default:
+			return err
+		}
+	}
+
+	return err
 }

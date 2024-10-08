@@ -7,6 +7,6 @@ import (
 )
 
 type OrderRepository interface {
-	CreateOrder(ctx context.Context, req *requests.CreateOrderRequest) error
-	GetOrderByID(ctx context.Context, req *requests.OrderIDRequest) error
+	CreateOrder(ctx context.Context, req *requests.CreateOrder) error
+	GetOrderByID(ctx context.Context, req *requests.OrderID) error
 }

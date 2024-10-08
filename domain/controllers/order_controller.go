@@ -22,7 +22,7 @@ func NewOrderController(service services.OrderUseCase) rest.OrderHandler {
 // CreateOrder implements rest.OrderHandler.
 func (o *orderController) CreateOrder(c *fiber.Ctx) error {
 	// Parse request
-	var req *requests.CreateOrderRequest
+	var req *requests.CreateOrder
 
 	if err := c.BodyParser(&req); err != nil {
 		c.Status(fiber.StatusBadRequest).JSON(fiber.Map{

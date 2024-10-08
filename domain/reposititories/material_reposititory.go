@@ -7,5 +7,5 @@ import (
 )
 
 type MaterialRepository interface {
-	CreateMaterial(ctx context.Context, req *requests.CreateMaterialRequest) error
+	CreateMaterial(ctx context.Context, req *requests.CreateMaterial) error
 }
