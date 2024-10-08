@@ -6,5 +6,5 @@ type Material struct {
 	Product_id    string `json:"product_id" db:"product_id"`
 	Category      string `json:"category" db:"category"`
 	Quantity      int    `json:"quantity" db:"quantity"`
-	Create_at     string `json:"create_at" db:"create_at"`
+	Timestamp     string `json:"timestamp" db:"timestamp"`
 }

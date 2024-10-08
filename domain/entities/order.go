@@ -13,5 +13,5 @@ type Order struct {
 	Tailor_id       string `json:"tailor_id" db:"tailor_id"`
 	Due_date        string `json:"due_date" db:"due_date"`
 	Create_by       string `json:"create_by" db:"create_by"`
-	Created_at      string `json:"created_at" db:"created_at"`
+	Timestamp       string `json:"timestamp" db:"timestamp"`
 }
