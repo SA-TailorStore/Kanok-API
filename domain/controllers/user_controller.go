@@ -275,7 +275,7 @@ func (u *userController) UploadImage(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusBadRequest).JSON(err)
 	}
 
-	err = u.service.UploadImage(c.Context(), file, &req)
+	res, err := u.service.UploadImage(c.Context(), file, &req)
 
 	if err != nil {
 		return c.Status(fiber.StatusCreated).JSON(fiber.Map{
@@ -285,7 +285,8 @@ func (u *userController) UploadImage(c *fiber.Ctx) error {
 	}
 
 	return c.Status(fiber.StatusCreated).JSON(fiber.Map{
-		"message": "Upload Image success.",
+		"url":     res.User_profile_url,
+		"message": "Upload Image success",
 		"status":  "201",
 	})
 }

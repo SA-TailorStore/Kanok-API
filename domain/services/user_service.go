@@ -19,15 +19,15 @@ import (
 )
 
 type UserUseCase interface {
-	GetAllUser(ctx context.Context) ([]*responses.UsernameResponse, error)
+	GetAllUser(ctx context.Context) ([]*responses.Username, error)
 	Login(ctx context.Context, req *requests.UserLogin) (*responses.UserJWT, error)
 	Register(ctx context.Context, req *requests.UserRegister) error
-	FindByUsername(ctx context.Context, req *requests.Username) (*responses.UsernameResponse, error)
-	FindByJWT(ctx context.Context, req *requests.UserJWT) (*responses.UserResponse, error)
+	FindByUsername(ctx context.Context, req *requests.Username) (*responses.Username, error)
+	FindByJWT(ctx context.Context, req *requests.UserJWT) (*responses.User, error)
 	GenToken(ctx context.Context, req *requests.UserJWT) (*responses.UserJWT, error)
-	FindByID(ctx context.Context, req *requests.UserID) (*responses.UserResponse, error)
+	FindByID(ctx context.Context, req *requests.UserID) (*responses.User, error)
 	UpdateAddress(ctx context.Context, req *requests.UserUpdate) error
-	UploadImage(ctx context.Context, file interface{}, req *requests.UserUploadImage) error
+	UploadImage(ctx context.Context, file interface{}, req *requests.UserUploadImage) (*responses.UserProUrl, error)
 }
 
 type userService struct {
@@ -44,16 +44,16 @@ func NewUserService(reposititory reposititories.UserRepository, config *configs.
 	}
 }
 
-func (u *userService) GetAllUser(ctx context.Context) ([]*responses.UsernameResponse, error) {
+func (u *userService) GetAllUser(ctx context.Context) ([]*responses.Username, error) {
 	users, err := u.reposititory.GetAllUser(ctx)
 
 	if err != nil {
 		return nil, err
 	}
 
-	usersResponse := make([]*responses.UsernameResponse, 0)
+	usersResponse := make([]*responses.Username, 0)
 	for _, user := range users {
-		usersResponse = append(usersResponse, &responses.UsernameResponse{
+		usersResponse = append(usersResponse, &responses.Username{
 			Username: user.Username,
 		})
 	}
@@ -124,7 +124,7 @@ func (u *userService) Register(ctx context.Context, req *requests.UserRegister) 
 	return u.reposititory.Create(ctx, req)
 }
 
-func (u *userService) FindByUsername(ctx context.Context, req *requests.Username) (*responses.UsernameResponse, error) {
+func (u *userService) FindByUsername(ctx context.Context, req *requests.Username) (*responses.Username, error) {
 	err := u.reposititory.FindByUsername(ctx, req)
 
 	if err != nil {
@@ -138,14 +138,14 @@ func (u *userService) FindByUsername(ctx context.Context, req *requests.Username
 		}
 	}
 
-	user := &responses.UsernameResponse{
+	user := &responses.Username{
 		Username: req.Username,
 	}
 
 	return user, err
 }
 
-func (u *userService) FindByJWT(ctx context.Context, req *requests.UserJWT) (*responses.UserResponse, error) {
+func (u *userService) FindByJWT(ctx context.Context, req *requests.UserJWT) (*responses.User, error) {
 	//JWT
 	secret_key := []byte(u.config.JWTSecret)
 
@@ -167,7 +167,7 @@ func (u *userService) FindByJWT(ctx context.Context, req *requests.UserJWT) (*re
 			return nil, err
 		}
 
-		return &responses.UserResponse{
+		return &responses.User{
 			User_id:          user.User_id,
 			Username:         user.Username,
 			Display_name:     user.Display_name,
@@ -214,7 +214,7 @@ func (u *userService) GenToken(ctx context.Context, req *requests.UserJWT) (*res
 
 }
 
-func (u *userService) FindByID(ctx context.Context, req *requests.UserID) (*responses.UserResponse, error) {
+func (u *userService) FindByID(ctx context.Context, req *requests.UserID) (*responses.User, error) {
 
 	user, err := u.reposititory.GetUserByUserID(ctx, req)
 
@@ -222,7 +222,7 @@ func (u *userService) FindByID(ctx context.Context, req *requests.UserID) (*resp
 		return nil, err
 	}
 
-	return &responses.UserResponse{
+	return &responses.User{
 		User_id:          user.User_id,
 		Username:         user.Username,
 		Display_name:     user.Display_name,
@@ -269,11 +269,11 @@ func (u *userService) UpdateAddress(ctx context.Context, req *requests.UserUpdat
 	return err
 }
 
-func (u *userService) UploadImage(ctx context.Context, file interface{}, req *requests.UserUploadImage) error {
+func (u *userService) UploadImage(ctx context.Context, file interface{}, req *requests.UserUploadImage) (*responses.UserProUrl, error) {
 
 	user_id, err := utils.VerificationJWT(req.Token)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	check, _ := u.reposititory.GetUserByUserID(ctx, &requests.UserID{User_id: user_id})
@@ -281,12 +281,12 @@ func (u *userService) UploadImage(ctx context.Context, file interface{}, req *re
 	if check.User_profile_url != "-" {
 		public_id, err := utils.ExtractPublicID(check.User_profile_url)
 		if err != nil {
-			return err
+			return nil, err
 		}
 		_, err = u.cloudinary.Upload.Destroy(ctx, uploader.DestroyParams{PublicID: public_id})
 
 		if err != nil {
-			return err
+			return nil, err
 		}
 		update := &requests.UserUploadImage{
 			Token: user_id,
@@ -295,7 +295,7 @@ func (u *userService) UploadImage(ctx context.Context, file interface{}, req *re
 
 		err = u.reposititory.UploadImage(ctx, update)
 		if err != nil {
-			return err
+			return nil, err
 		}
 
 	}
@@ -303,7 +303,7 @@ func (u *userService) UploadImage(ctx context.Context, file interface{}, req *re
 	response, err := u.cloudinary.Upload.Upload(ctx, file, uploader.UploadParams{})
 
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	update := &requests.UserUploadImage{
@@ -313,8 +313,8 @@ func (u *userService) UploadImage(ctx context.Context, file interface{}, req *re
 
 	err = u.reposititory.UploadImage(ctx, update)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	return err
+	return &responses.UserProUrl{User_profile_url: response.SecureURL}, err
 }
