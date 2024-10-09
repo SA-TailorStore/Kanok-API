@@ -88,6 +88,9 @@ func main() {
 	app.Post(prefix+"/fabric/get", fabricController.GetFabricByID)
 
 	// Material
+	app.Post(prefix+"/material/add", materialController.AddMaterial)
+	app.Post(prefix+"/material/update", materialController.UpdateMaterial)
+	app.Post(prefix+"/material/delete", materialController.DeleteMaterial)
 	app.Post(prefix+"/material/get", materialController.GetMaterialByID)
 
 	// api routes get
@@ -108,6 +111,8 @@ func main() {
 	app.Get(prefix+"/fabrics", fabricController.GetAllFabrics)
 
 	// Material
+	app.Get(prefix+"/materials", materialController.GetAllMaterials)
+
 	if err := app.Listen(":9000"); err != nil {
 		log.Fatal(err)
 	}

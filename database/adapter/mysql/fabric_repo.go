@@ -29,6 +29,7 @@ func (f *FabricMySQL) AddFabric(ctx context.Context, req *requests.AddFabric) er
 
 	return nil
 }
+
 func (f *FabricMySQL) UpdateFabric(ctx context.Context, req *requests.UpdateFabric) error {
 	query := "UPDATE FABRICS SET fabric_url = ?, quantity = ? WHERE fabric_id = ?"
 

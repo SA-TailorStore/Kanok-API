@@ -5,6 +5,9 @@ import (
 )
 
 type MaterialHandler interface {
-	CreateMaterial(c *fiber.Ctx) error
+	AddMaterial(c *fiber.Ctx) error
+	UpdateMaterial(c *fiber.Ctx) error
+	DeleteMaterial(c *fiber.Ctx) error
+	GetAllMaterials(c *fiber.Ctx) error
 	GetMaterialByID(c *fiber.Ctx) error
 }
