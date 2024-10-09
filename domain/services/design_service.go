@@ -60,6 +60,7 @@ func (d *designService) UpdateDesign(ctx context.Context, file interface{}, req 
 	if err != nil {
 		return err
 	}
+
 	if temp.Design_url != "-" {
 		public_id, err := utils.ExtractPublicID(temp.Design_url)
 		if err != nil {
@@ -121,11 +122,8 @@ func (d *designService) GetAllDesigns(ctx context.Context) ([]*responses.Design,
 
 // GetDesignByID implements DesignUseCase.
 func (d *designService) GetDesignByID(ctx context.Context, req *requests.DesignID) (*responses.Design, error) {
-	design_id := &requests.DesignID{
-		Design_id: req.Design_id,
-	}
 
-	design, err := d.reposititory.GetDesignByID(ctx, design_id)
+	design, err := d.reposititory.GetDesignByID(ctx, req)
 	if err != nil {
 		return nil, err
 	}

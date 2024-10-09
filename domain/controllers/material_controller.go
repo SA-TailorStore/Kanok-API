@@ -6,22 +6,22 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-type meterialController struct {
+type materialController struct {
 	service services.MaterialUseCase
 }
 
-func NewMeterialController(service services.MaterialUseCase) rest.MaterialHandler {
-	return &meterialController{
+func NewMaterialController(service services.MaterialUseCase) rest.MaterialHandler {
+	return &materialController{
 		service: service,
 	}
 }
 
 // CreateMaterial implements rest.MaterialHandler.
-func (m *meterialController) CreateMaterial(c *fiber.Ctx) error {
+func (m *materialController) CreateMaterial(c *fiber.Ctx) error {
 	panic("unimplemented")
 }
 
 // GetMaterialByID implements rest.MaterialHandler.
-func (m *meterialController) GetMaterialByID(c *fiber.Ctx) error {
+func (m *materialController) GetMaterialByID(c *fiber.Ctx) error {
 	panic("unimplemented")
 }

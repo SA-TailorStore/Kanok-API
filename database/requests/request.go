@@ -55,9 +55,9 @@ type ProductID struct {
 }
 
 type CreateProduct struct {
-	Design_id      string `json:"design_id" `
-	Fabric_id      string `json:"fabric_id" `
-	Detail         string `json:"detail" `
+	Design_id      string `json:"design_id" validate:"required"`
+	Fabric_id      string `json:"fabric_id" validate:"required"`
+	Detail         string `json:"detail" validate:"required"`
 	Size           string `json:"size" validate:"required"`
 	Total_quantity int    `json:"total_quantity " validate:"required"`
 	Create_by      string `json:"create_by" validate:"required"`
@@ -74,13 +74,13 @@ type AddDesign struct {
 }
 
 type UpdateDesign struct {
-	Design_ID string `json:"design_id" db:"design_id"`
+	Design_ID string `json:"design_id" validate:"required"`
 	Image     string `json:"image"`
-	Type      string `json:"type" db:"type"`
+	Type      string `json:"type" validate:"required"`
 }
 
 type DeleteDesign struct {
-	Design_ID string `json:"design_id" db:"design_id"`
+	Design_ID string `json:"design_id" validate:"required"`
 }
 
 // FABRIC REQUEST
@@ -89,14 +89,18 @@ type FabricID struct {
 }
 
 type AddFabric struct {
-	Fabric_url string `json:"fabric_url" `
-	Quantity   int    `json:"quantity" validate:"required"`
+	Image    string `json:"image" `
+	Quantity int    `json:"quantity" validate:"required"`
 }
 
 type UpdateFabric struct {
-	Fabric_id  string `json:"fabric_id" validate:"required"`
-	Fabric_url string `json:"fabric_url" `
-	Quantity   int    `json:"quantity" validate:"required"`
+	Fabric_id string `json:"fabric_id" validate:"required"`
+	Image     string `json:"image" `
+	Quantity  int    `json:"quantity" validate:"required"`
+}
+type UpdateFabrics struct {
+	Fabric_id string `json:"fabric_id" validate:"required"`
+	Quantity  int    `json:"quantity" validate:"required"`
 }
 
 // METERIAL REQUEST
@@ -105,8 +109,7 @@ type MaterialID struct {
 }
 
 type CreateMaterial struct {
-	Material_name string `json:"material_name" db:"material_name"`
-	Product_id    string `json:"product_id" db:"product_id"`
-	Category      string `json:"category" db:"category"`
-	Quantity      int    `json:"quantity" db:"quantity"`
+	Material_name string `json:"material_name" validate:"required"`
+	Category      string `json:"category" validate:"required"`
+	Quantity      int    `json:"quantity" validate:"required"`
 }

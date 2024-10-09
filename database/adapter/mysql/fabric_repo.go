@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/SA-TailorStore/Kanok-API/database/requests"
+	"github.com/SA-TailorStore/Kanok-API/database/responses"
 	"github.com/SA-TailorStore/Kanok-API/domain/reposititories"
 	"github.com/jmoiron/sqlx"
 )
@@ -18,27 +19,83 @@ func NewFabricMySQL(db *sqlx.DB) reposititories.FabricRepository {
 	}
 }
 
-// AddFabric implements reposititories.FabricRepository.
 func (f *FabricMySQL) AddFabric(ctx context.Context, req *requests.AddFabric) error {
-	panic("unimplemented")
+	query := "INSERT INTO FABRICS (fabric_url,quantity) VALUES (?,?)"
+
+	_, err := f.db.QueryContext(ctx, query, req.Image, req.Quantity)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+func (f *FabricMySQL) UpdateFabric(ctx context.Context, req *requests.UpdateFabric) error {
+	query := "UPDATE FABRICS SET fabric_url = ?, quantity = ? WHERE fabric_id = ?"
+
+	_, err := f.db.ExecContext(ctx, query, req.Image, req.Quantity, req.Fabric_id)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
-// DeleteFabric implements reposititories.FabricRepository.
+func (f *FabricMySQL) UpdateFabrics(ctx context.Context, req []*requests.UpdateFabrics) error {
+	query := "UPDATE FABRICS SET quantity = ? WHERE fabric_id = ?"
+
+	for _, value := range req {
+
+		_, err := f.db.ExecContext(ctx, query, value.Quantity, value.Fabric_id)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
 func (f *FabricMySQL) DeleteFabric(ctx context.Context, req *requests.FabricID) error {
-	panic("unimplemented")
+	query := "DELETE FROM FABRICS WHERE fabric_id = ?"
+
+	_, err := f.db.QueryContext(ctx, query, req.Fabric_id)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
-// GetAllFabrics implements reposititories.FabricRepository.
-func (f *FabricMySQL) GetAllFabrics(ctx context.Context) error {
-	panic("unimplemented")
+func (f *FabricMySQL) GetAllFabrics(ctx context.Context) ([]*responses.Fabric, error) {
+	query := "SELECT fabric_id, fabric_url, quantity FROM FABRICS"
+
+	rows, err := f.db.QueryContext(ctx, query)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var fabrics []*responses.Fabric
+	for rows.Next() {
+		var fabric responses.Fabric
+		err := rows.Scan(&fabric.Fabric_id, &fabric.Fabric_url, &fabric.Quantity)
+		if err != nil {
+			return nil, err
+		}
+		fabrics = append(fabrics, &fabric)
+	}
+
+	return fabrics, nil
 }
 
 // GetFabricByID implements reposititories.FabricRepository.
-func (f *FabricMySQL) GetFabricByID(ctx context.Context, req *requests.FabricID) error {
-	panic("unimplemented")
-}
+func (f *FabricMySQL) GetFabricByID(ctx context.Context, req *requests.FabricID) (*responses.Fabric, error) {
+	query := "SELECT fabric_id, fabric_url, quantity FROM FABRICS WHERE fabric_id = ?"
 
-// UpdateFabric implements reposititories.FabricRepository.
-func (f *FabricMySQL) UpdateFabric(ctx context.Context, req *requests.UpdateFabric) error {
-	panic("unimplemented")
+	var fabric responses.Fabric
+	err := f.db.GetContext(ctx, &fabric, query, req.Fabric_id)
+	if err != nil {
+		return &fabric, err
+	}
+
+	return &fabric, nil
+
 }

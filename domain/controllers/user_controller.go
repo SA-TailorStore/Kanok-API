@@ -251,9 +251,9 @@ func (u *userController) UpdateAddress(c *fiber.Ctx) error {
 
 	}
 
-	return c.Status(fiber.StatusCreated).JSON(fiber.Map{
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{
 		"message": "Update Address success.",
-		"status":  "201",
+		"status":  "204",
 	})
 }
 
@@ -312,9 +312,9 @@ func (u *userController) UploadImage(c *fiber.Ctx) error {
 		}
 	}
 
-	return c.Status(fiber.StatusCreated).JSON(fiber.Map{
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{
 		"url":     res.User_profile_url,
 		"message": "Upload Image success",
-		"status":  "201",
+		"status":  "204",
 	})
 }
