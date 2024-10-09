@@ -44,7 +44,7 @@ func (m *MaterialMySQL) UpdateMaterial(ctx context.Context, req *requests.Update
 
 // DeleteMaterial implements reposititories.MaterialRepository.
 func (m *MaterialMySQL) DeleteMaterial(ctx context.Context, req *requests.MaterialID) error {
-	query := "DELETE FROM MATERIALS WHERE material_id"
+	query := "DELETE FROM MATERIALS WHERE material_id = ?"
 
 	_, err := m.db.QueryContext(ctx, query, req.Material_id)
 	if err != nil {
