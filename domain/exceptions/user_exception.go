@@ -15,4 +15,6 @@ var (
 	ErrLoginFailed            = errors.New("login failed")
 	ErrInvalidToken           = errors.New("invalid token")
 	ErrExpiredToken           = errors.New("token is expired")
+	ErrPhoneNumber            = errors.New("invalid phone number")
+	ErrLeastPhoneNumber       = errors.New("phone number must be at least 10")
 )

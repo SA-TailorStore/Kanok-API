@@ -22,7 +22,6 @@ func NewProductMySQL(db *sqlx.DB) reposititories.ProductRepository {
 	}
 }
 
-// CreateProduct implements reposititories.ProductRepository.
 func (p *ProductMySQL) CreateProduct(ctx context.Context, req *requests.CreateProduct) error {
 	// Validate
 	query := `SELECT design_id FROM DESIGNS WHERE design_id = ?`
@@ -67,18 +66,20 @@ func (p *ProductMySQL) CreateProduct(ctx context.Context, req *requests.CreatePr
 	return err
 }
 
-// GetProductByOrderID implements reposititories.ProductRepository.
 func (p *ProductMySQL) GetProductByOrderID(ctx context.Context, req *requests.OrderID) ([]*responses.ProductID, error) {
-	query := `SELECT product_id FROM PRODUCTS WHERE created_by = ?`
-	rows, err := p.db.QueryContext(ctx, query, req.Order_id)
+	query := `
+	SELECT 
+		product_id 
+	FROM PRODUCTS WHERE created_by = ?
+	`
 
+	rows, err := p.db.QueryContext(ctx, query, req.Order_id)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
 
 	var products []*responses.ProductID
-
 	for rows.Next() {
 		var product_id responses.ProductID
 		if err := rows.Scan(&product_id.Product_id); err != nil {
@@ -92,19 +93,18 @@ func (p *ProductMySQL) GetProductByOrderID(ctx context.Context, req *requests.Or
 }
 
 func (p *ProductMySQL) GetProductByID(ctx context.Context, req *requests.ProductID) (*responses.Product, error) {
-	query :=
-		`SELECT 
-	product_id,
-	design_id,
-	fabric_id,
-	detail,
-	size,
-	process_quantity,
-	total_quantity,
-	created_by,
-	timestamp
-	FROM PRODUCTS
-	WHERE product_id = ?`
+	query := `
+	SELECT 
+		product_id,
+		design_id,
+		fabric_id,
+		detail,
+		size,
+		process_quantity,
+		total_quantity,
+		created_by,
+		timestamp
+	FROM PRODUCTS WHERE product_id = ?`
 
 	var product responses.Product
 	err := p.db.GetContext(ctx, &product,

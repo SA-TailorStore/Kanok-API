@@ -23,20 +23,38 @@ func NewUserMySQL(db *sqlx.DB) reposititories.UserRepository {
 }
 
 func (u *UserMySQL) Create(ctx context.Context, req *requests.UserRegister) error {
+	query := `
+	INSERT INTO USERS
+	(user_id, username, password, phone_number) 
+	VALUES ( ?, ?, ?, ?)
+	`
+
 	user_id, err := uuid.NewV7()
 	if err != nil {
 		return err
 	}
 
-	_, err = u.db.QueryContext(ctx,
-		"INSERT INTO USERS (user_id, username, password, phone_number, display_name, user_profile_url, role, address) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?)",
-		user_id, req.Username, req.Password, req.Phone_number, "-", "-", "user", "-")
+	_, err = u.db.QueryContext(ctx, query,
+		user_id, req.Username, req.Password, req.Phone_number)
 
 	return err
 }
 
 func (u *UserMySQL) GetAllUser(ctx context.Context) ([]*responses.User, error) {
-	rows, err := u.db.QueryContext(ctx, "SELECT user_id, username, display_name, user_profile_url, role, phone_number, address, timestamp FROM USERS")
+
+	query := `
+	SELECT 
+		user_id, 
+		username, 
+		display_name, 
+		user_profile_url, 
+		role, 
+		phone_number, 
+		address, 
+		timestamp 
+	FROM USERS
+	`
+	rows, err := u.db.QueryContext(ctx, query)
 	if err != nil {
 		return nil, err
 	}
@@ -66,9 +84,10 @@ func (u *UserMySQL) GetAllUser(ctx context.Context) ([]*responses.User, error) {
 
 func (u *UserMySQL) FindByUsername(ctx context.Context, req *requests.Username) error {
 
+	query := `SELECT username FROM USERS WHERE username = ?`
 	var user responses.Username
 
-	err := u.db.GetContext(ctx, &user, "SELECT username FROM USERS WHERE username = ?", req.Username)
+	err := u.db.GetContext(ctx, &user, query, req.Username)
 	switch err {
 	case sql.ErrNoRows: // user found
 		return nil
@@ -81,9 +100,11 @@ func (u *UserMySQL) FindByUsername(ctx context.Context, req *requests.Username) 
 
 func (u *UserMySQL) GetPasswordByUsername(ctx context.Context, req *requests.Username) (*responses.UserLogin, error) {
 
+	query := `SELECT user_id,password FROM USERS WHERE username = ?`
+
 	var user responses.UserLogin
 
-	err := u.db.GetContext(ctx, &user, "SELECT user_id,password FROM USERS WHERE username = ?", req.Username)
+	err := u.db.GetContext(ctx, &user, query, req.Username)
 	if err != nil {
 		return nil, exceptions.ErrWrongUsername
 	}
@@ -92,9 +113,23 @@ func (u *UserMySQL) GetPasswordByUsername(ctx context.Context, req *requests.Use
 }
 
 func (u *UserMySQL) GetUserByUserID(ctx context.Context, req *requests.UserID) (*responses.User, error) {
+
+	query := `
+	SELECT 
+		user_id,
+		username,
+		display_name,
+		user_profile_url,
+		role,
+		phone_number,
+		address,
+		timestamp 
+	FROM USERS WHERE user_id = ?
+	`
+
 	var user responses.User
 
-	err := u.db.GetContext(ctx, &user, "SELECT user_id,username,display_name,user_profile_url,role,phone_number,address,timestamp FROM USERS WHERE user_id = ?", req.User_id)
+	err := u.db.GetContext(ctx, &user, query, req.User_id)
 
 	if err != nil {
 		switch err {
@@ -109,7 +144,17 @@ func (u *UserMySQL) GetUserByUserID(ctx context.Context, req *requests.UserID) (
 }
 
 func (u *UserMySQL) UpdateAddress(ctx context.Context, req *requests.UserUpdate) error {
-	_, err := u.db.ExecContext(ctx, "UPDATE USERS SET display_name = ?, phone_number = ?, address = ? WHERE user_id = ?", req.Display_name, req.Phone_number, req.Address, req.Token)
+
+	query := `
+	UPDATE USERS 
+	SET 
+		display_name = ?, 
+		phone_number = ?, 
+		address = ? 
+	WHERE user_id = ?
+	`
+
+	_, err := u.db.ExecContext(ctx, query, req.Display_name, req.Phone_number, req.Address, req.Token)
 
 	if err != nil {
 		return err
@@ -119,7 +164,15 @@ func (u *UserMySQL) UpdateAddress(ctx context.Context, req *requests.UserUpdate)
 }
 
 func (u *UserMySQL) UploadImage(ctx context.Context, req *requests.UserUploadImage) error {
-	_, err := u.db.ExecContext(ctx, "UPDATE USERS SET user_profile_url = ? WHERE user_id = ?", req.Image, req.Token)
+
+	query := `
+	UPDATE USERS 
+	SET 
+		user_profile_url = ? 
+	WHERE user_id = ?
+	`
+
+	_, err := u.db.ExecContext(ctx, query, req.Image, req.Token)
 	if err != nil {
 		return err
 	}

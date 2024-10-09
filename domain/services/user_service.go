@@ -51,51 +51,14 @@ func (u *userService) GetAllUser(ctx context.Context) ([]*responses.Username, er
 		return nil, err
 	}
 
-	usersResponse := make([]*responses.Username, 0)
+	usernamesRes := make([]*responses.Username, 0)
 	for _, user := range users {
-		usersResponse = append(usersResponse, &responses.Username{
+		usernamesRes = append(usernamesRes, &responses.Username{
 			Username: user.Username,
 		})
 	}
 
-	return usersResponse, err
-}
-
-func (u *userService) Login(ctx context.Context, req *requests.UserLogin) (*responses.UserJWT, error) {
-	username := &requests.Username{
-		Username: req.Username,
-	}
-
-	user, err := u.reposititory.GetPasswordByUsername(ctx, username)
-	// Check if user exist
-	if err != nil {
-		return nil, err
-	}
-
-	// Compare password
-	if bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(req.Password)) != nil {
-		return nil, exceptions.ErrWrongPassword
-	}
-
-	// Generate JWT token
-	expireAt := time.Now().Add(time.Hour * 1)
-
-	claims := jwt.MapClaims{
-		"user_id": user.User_id,
-		"exp":     expireAt.Unix(),
-	}
-
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-
-	// Sign the token with the secret
-	tokenString, err := token.SignedString([]byte(u.config.JWTSecret))
-	if err != nil {
-		return nil, err
-	}
-
-	return &responses.UserJWT{
-		Token: tokenString,
-	}, nil
+	return usernamesRes, err
 }
 
 func (u *userService) Register(ctx context.Context, req *requests.UserRegister) error {
@@ -124,7 +87,46 @@ func (u *userService) Register(ctx context.Context, req *requests.UserRegister) 
 	return u.reposititory.Create(ctx, req)
 }
 
+func (u *userService) Login(ctx context.Context, req *requests.UserLogin) (*responses.UserJWT, error) {
+
+	username := &requests.Username{
+		Username: req.Username,
+	}
+
+	res, err := u.reposititory.GetPasswordByUsername(ctx, username)
+	// Check if user exist
+	if err != nil {
+		return nil, err
+	}
+
+	// Compare password
+	if bcrypt.CompareHashAndPassword([]byte(res.Password), []byte(req.Password)) != nil {
+		return nil, exceptions.ErrWrongPassword
+	}
+
+	// Generate JWT token
+	expireAt := time.Now().Add(time.Hour * 1)
+
+	claims := jwt.MapClaims{
+		"user_id": res.User_id,
+		"exp":     expireAt.Unix(),
+	}
+
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+
+	// Sign the token with the secret
+	tokenString, err := token.SignedString([]byte(u.config.JWTSecret))
+	if err != nil {
+		return nil, err
+	}
+
+	return &responses.UserJWT{
+		Token: tokenString,
+	}, nil
+}
+
 func (u *userService) FindByUsername(ctx context.Context, req *requests.Username) (*responses.Username, error) {
+
 	err := u.reposititory.FindByUsername(ctx, req)
 
 	if err != nil {
@@ -183,6 +185,7 @@ func (u *userService) FindByJWT(ctx context.Context, req *requests.UserJWT) (*re
 }
 
 func (u *userService) GenToken(ctx context.Context, req *requests.UserJWT) (*responses.UserJWT, error) {
+
 	id, err := utils.VerificationJWT(req.Token)
 
 	if err != nil {
@@ -200,18 +203,17 @@ func (u *userService) GenToken(ctx context.Context, req *requests.UserJWT) (*res
 		User_id: id,
 	}
 
-	user, err := u.reposititory.GetUserByUserID(ctx, user_id)
+	res, err := u.reposititory.GetUserByUserID(ctx, user_id)
 
 	if err != nil {
 		return nil, err
 	}
 
-	tokenString := utils.GenerateJWT(user.User_id)
+	tokenString := utils.GenerateJWT(res.User_id)
 
 	return &responses.UserJWT{
 		Token: tokenString,
 	}, err
-
 }
 
 func (u *userService) FindByID(ctx context.Context, req *requests.UserID) (*responses.User, error) {
@@ -235,6 +237,7 @@ func (u *userService) FindByID(ctx context.Context, req *requests.UserID) (*resp
 }
 
 func (u *userService) UpdateAddress(ctx context.Context, req *requests.UserUpdate) error {
+
 	user_id, err := utils.VerificationJWT(req.Token)
 
 	if err != nil {
@@ -276,10 +279,10 @@ func (u *userService) UploadImage(ctx context.Context, file interface{}, req *re
 		return nil, err
 	}
 
-	check, _ := u.reposititory.GetUserByUserID(ctx, &requests.UserID{User_id: user_id})
+	res, _ := u.reposititory.GetUserByUserID(ctx, &requests.UserID{User_id: user_id})
 
-	if check.User_profile_url != "-" {
-		public_id, err := utils.ExtractPublicID(check.User_profile_url)
+	if res.User_profile_url != "-" {
+		public_id, err := utils.ExtractPublicID(res.User_profile_url)
 		if err != nil {
 			return nil, err
 		}
@@ -300,7 +303,7 @@ func (u *userService) UploadImage(ctx context.Context, file interface{}, req *re
 
 	}
 
-	response, err := u.cloudinary.Upload.Upload(ctx, file, uploader.UploadParams{})
+	resCloud, err := u.cloudinary.Upload.Upload(ctx, file, uploader.UploadParams{})
 
 	if err != nil {
 		return nil, err
@@ -308,7 +311,7 @@ func (u *userService) UploadImage(ctx context.Context, file interface{}, req *re
 
 	update := &requests.UserUploadImage{
 		Token: user_id,
-		Image: response.SecureURL,
+		Image: resCloud.SecureURL,
 	}
 
 	err = u.reposititory.UploadImage(ctx, update)
@@ -316,5 +319,5 @@ func (u *userService) UploadImage(ctx context.Context, file interface{}, req *re
 		return nil, err
 	}
 
-	return &responses.UserProUrl{User_profile_url: response.SecureURL}, err
+	return &responses.UserProUrl{User_profile_url: resCloud.SecureURL}, err
 }

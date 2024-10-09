@@ -46,23 +46,36 @@ func ValidateStruct[T any](payload T) *ValidateError {
 	return nil
 }
 
-func ValidateUsername(u string) error {
+func ValidateUsername(username string) error {
 	re := regexp.MustCompile("^[a-zA-Z0-9_!@]+$")
 
-	if !re.MatchString(u) {
+	if !re.MatchString(username) {
 		return exceptions.ErrInvalidFormatUsername
 	}
 	return nil
 }
-func ValidatePassword(p string) error {
-	if len(p) < 8 {
+
+func ValidatePassword(pass string) error {
+	if len(pass) < 8 {
 		return exceptions.ErrCharLeastPassword
 	}
 
 	re := regexp.MustCompile(`[!@#$%^&*(),.?":{}|<>]`)
-	if !re.MatchString(p) {
+	if !re.MatchString(pass) {
 		return exceptions.ErrOneSpecialPassword
 	}
 
+	return nil
+}
+
+func ValidatePhoneNumber(phone string) error {
+	if len(phone) < 10 {
+		return exceptions.ErrLeastPhoneNumber
+	}
+
+	re := regexp.MustCompile(`^0[2689][0-9]{8}$`)
+	if !re.MatchString(phone) {
+		return exceptions.ErrPhoneNumber
+	}
 	return nil
 }

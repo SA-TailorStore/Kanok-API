@@ -27,7 +27,6 @@ func NewProductService(reposititory reposititories.ProductRepository, config *co
 	}
 }
 
-// CreateProduct implements ProductUsecase.
 func (p *productService) CreateProduct(ctx context.Context, req *requests.CreateProduct) error {
 	err := p.reposititory.CreateProduct(ctx, req)
 
@@ -38,7 +37,6 @@ func (p *productService) CreateProduct(ctx context.Context, req *requests.Create
 	return nil
 }
 
-// GetProductByOrderID implements ProductUsecase.
 func (p *productService) GetProductByOrderID(ctx context.Context, req *requests.OrderID) ([]*responses.ProductID, error) {
 	products, err := p.reposititory.GetProductByOrderID(ctx, req)
 

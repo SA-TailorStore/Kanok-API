@@ -22,9 +22,13 @@ func NewOrderMySQL(db *sqlx.DB) reposititories.OrderRepository {
 
 // CreateOrder implements reposititories.OrderRepository.
 func (o *OrderMySQL) CreateOrder(ctx context.Context, req *requests.CreateOrder) error {
-	query := `INSERT INTO ORDERS
+
+	query := `
+	INSERT INTO ORDERS
 	(order_id, store_phone, store_address, user_phone, user_address, created_by) 
-	VALUES ( ?, ?, ?, ?, ?, ?)`
+	VALUES ( ?, ?, ?, ?, ?, ?)
+	`
+
 	order_id := "O" + time.Now().Format("20060102") + time.Now().Format("150405")
 	_, err := o.db.QueryContext(ctx, query,
 		order_id,
@@ -33,7 +37,6 @@ func (o *OrderMySQL) CreateOrder(ctx context.Context, req *requests.CreateOrder)
 		req.User_phone,
 		req.User_address,
 		req.Created_by)
-
 	if err != nil {
 		return err
 	}
@@ -42,20 +45,20 @@ func (o *OrderMySQL) CreateOrder(ctx context.Context, req *requests.CreateOrder)
 
 // GetOrderByID implements reposititories.OrderRepository.
 func (o *OrderMySQL) GetOrderByID(ctx context.Context, req *requests.OrderID) (*responses.Order, error) {
-	query :=
-		`SELECT 
-	is_payment,
-	status,
-	store_phone,
-	store_address,
-	user_phone,
-	user_address,
-	price,
-	due_date,
-	tracking_number,
-	tailor_id,
-	created_by,
-	timestamp
+	query := `
+	SELECT 
+		is_payment,
+		status,
+		store_phone,
+		store_address,
+		user_phone,
+		user_address,
+		price,
+		due_date,
+		tracking_number,
+		tailor_id,
+		created_by,
+		timestamp
 	FROM ORDERS WHERE order_id = ?`
 	var order responses.Order
 

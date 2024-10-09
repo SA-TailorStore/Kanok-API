@@ -19,7 +19,6 @@ func NewOrderController(service services.OrderUseCase) rest.OrderHandler {
 	}
 }
 
-// CreateOrder implements rest.OrderHandler.
 func (o *orderController) CreateOrder(c *fiber.Ctx) error {
 	// Parse request
 	var req *requests.CreateOrder
@@ -58,10 +57,8 @@ func (o *orderController) CreateOrder(c *fiber.Ctx) error {
 		"status":  "201",
 		"user_id": req.Created_by,
 	})
-
 }
 
-// GetOrderByID implements rest.OrderHandler.
 func (o *orderController) GetOrderByID(c *fiber.Ctx) error {
 	// Parse request
 	var req *requests.OrderID

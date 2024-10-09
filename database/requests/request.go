@@ -66,8 +66,8 @@ type ProductOrderID struct {
 }
 
 type CreateProduct struct {
-	Design_id      string `json:"design_id" validate:"required"`
-	Fabric_id      string `json:"fabric_id" validate:"required"`
+	Design_id      int    `json:"design_id" validate:"required"`
+	Fabric_id      int    `json:"fabric_id" validate:"required"`
 	Detail         string `json:"detail" validate:"required"`
 	Size           string `json:"size" validate:"required"`
 	Total_quantity int    `json:"total_quantity" validate:"required"`
@@ -84,7 +84,7 @@ type UpdateProduct struct {
 
 // DESIGN REQUEST
 type DesignID struct {
-	Design_id string `json:"design_id" validate:"required"`
+	Design_id int `json:"design_id" validate:"required"`
 }
 
 type AddDesign struct {
@@ -93,18 +93,18 @@ type AddDesign struct {
 }
 
 type UpdateDesign struct {
-	Design_ID string `json:"design_id" validate:"required"`
+	Design_ID int    `json:"design_id" validate:"required"`
 	Image     string `json:"image"`
-	Type      string `json:"type" validate:"required"`
+	Type      string `json:"type"`
 }
 
 type DeleteDesign struct {
-	Design_ID string `json:"design_id" validate:"required"`
+	Design_ID int `json:"design_id" validate:"required"`
 }
 
 // FABRIC REQUEST
 type FabricID struct {
-	Fabric_id string `json:"fabric_id" validate:"required"`
+	Fabric_id int `json:"fabric_id" validate:"required"`
 }
 
 type AddFabric struct {
@@ -113,33 +113,27 @@ type AddFabric struct {
 }
 
 type UpdateFabric struct {
-	Fabric_id string `json:"fabric_id" validate:"required"`
-	Image     string `json:"image" `
-	Quantity  int    `json:"quantity" validate:"required"`
+	Fabric_id int    `json:"fabric_id" validate:"required"`
+	Image     string `json:"image"`
+	Quantity  int    `json:"quantity"`
 }
 type UpdateFabrics struct {
-	Fabric_id string `json:"fabric_id" validate:"required"`
-	Quantity  int    `json:"quantity" validate:"required"`
+	Fabric_id int `json:"fabric_id" validate:"required"`
+	Quantity  int `json:"quantity" validate:"required"`
 }
 
 // METERIAL REQUEST
 type MaterialID struct {
-	Material_id string `json:"material_id" validate:"required"`
-}
-
-type Material struct {
-	Material_id   string `json:"material_id" validate:"required"`
-	Material_name string `json:"material_name" validate:"required"`
-	Amount        int    `json:"amount" validate:"required"`
+	Material_id int `json:"material_id" validate:"required"`
 }
 
 type AddMaterial struct {
 	Material_name string `json:"material_name" validate:"required"`
-	Amount        int    `json:"amount" validate:"required"`
+	Amount        int    `json:"amount"`
 }
 
 type UpdateMaterial struct {
-	Material_id   string `json:"material_id" validate:"required"`
-	Material_name string `json:"material_name" validate:"required"`
-	Amount        int    `json:"amount" validate:"required"`
+	Material_id   int    `json:"material_id" validate:"required"`
+	Material_name string `json:"material_name"`
+	Amount        int    `json:"amount"`
 }
