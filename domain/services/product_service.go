@@ -11,6 +11,7 @@ import (
 
 type ProductUsecase interface {
 	CreateProduct(ctx context.Context, req *requests.CreateProduct) error
+	GetProductByID(ctx context.Context, req *requests.ProductID) (*responses.Product, error)
 	GetProductByOrderID(ctx context.Context, req *requests.OrderID) ([]*responses.ProductID, error)
 }
 
@@ -46,4 +47,14 @@ func (p *productService) GetProductByOrderID(ctx context.Context, req *requests.
 	}
 
 	return products, err
+}
+
+func (p *productService) GetProductByID(ctx context.Context, req *requests.ProductID) (*responses.Product, error) {
+	res, err := p.reposititory.GetProductByID(ctx, req)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return res, nil
 }

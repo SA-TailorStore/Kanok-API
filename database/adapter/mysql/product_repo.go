@@ -2,6 +2,7 @@ package mysql
 
 import (
 	"context"
+	"database/sql"
 	"time"
 
 	"github.com/SA-TailorStore/Kanok-API/database/requests"
@@ -68,7 +69,7 @@ func (p *ProductMySQL) CreateProduct(ctx context.Context, req *requests.CreatePr
 
 // GetProductByOrderID implements reposititories.ProductRepository.
 func (p *ProductMySQL) GetProductByOrderID(ctx context.Context, req *requests.OrderID) ([]*responses.ProductID, error) {
-	query := `SELECT product_id FROM ORDERS WHERE order_id = ?`
+	query := `SELECT product_id FROM PRODUCTS WHERE created_by = ?`
 	rows, err := p.db.QueryContext(ctx, query, req.Order_id)
 
 	if err != nil {
@@ -79,12 +80,12 @@ func (p *ProductMySQL) GetProductByOrderID(ctx context.Context, req *requests.Or
 	var products []*responses.ProductID
 
 	for rows.Next() {
-		var product_id *responses.ProductID
-		if err := rows.Scan(&product_id); err != nil {
+		var product_id responses.ProductID
+		if err := rows.Scan(&product_id.Product_id); err != nil {
 			return nil, err
 		}
 
-		products = append(products, product_id)
+		products = append(products, &product_id)
 	}
 
 	return products, err
@@ -93,24 +94,30 @@ func (p *ProductMySQL) GetProductByOrderID(ctx context.Context, req *requests.Or
 func (p *ProductMySQL) GetProductByID(ctx context.Context, req *requests.ProductID) (*responses.Product, error) {
 	query :=
 		`SELECT 
-	product_id, 
-	design_id, 
-	fabric_id, 
-	detail, 
-	size, 
-	process_quantity, 
-	total_quantity, 
-	created_by, 
-	timestamp 
-	FROM PRODUCTS 
+	product_id,
+	design_id,
+	fabric_id,
+	detail,
+	size,
+	process_quantity,
+	total_quantity,
+	created_by,
+	timestamp
+	FROM PRODUCTS
 	WHERE product_id = ?`
 
-	var product *responses.Product
-	err := p.db.GetContext(ctx, &product, query, req.Product_id)
+	var product responses.Product
+	err := p.db.GetContext(ctx, &product,
+		query, req.Product_id)
 
 	if err != nil {
-		return nil, err
+		switch err {
+		case sql.ErrNoRows:
+			return &product, exceptions.ErrProductNotFound
+		default:
+			return &product, err
+		}
 	}
 
-	return product, err
+	return &product, err
 }

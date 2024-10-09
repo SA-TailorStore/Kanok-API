@@ -73,14 +73,18 @@ func main() {
 	// Order
 	app.Post(prefix+"/order/create", orderController.CreateOrder)
 	app.Post(prefix+"/order/get", orderController.GetOrderByID)
+
 	// Product
 	app.Post(prefix+"/product/create", productController.CreateProduct)
-	app.Post(prefix+"/product/get", productController.GetProductByOrderID)
+	app.Post(prefix+"/product/get", productController.GetProductByID)
+	app.Post(prefix+"/product/get/order", productController.GetProductByOrderID)
+
 	// Design
 	app.Post(prefix+"/design/add", designController.AddDesign)
 	app.Post(prefix+"/design/update", designController.UpdateDesign)
 	app.Post(prefix+"/design/delete", designController.DeleteDesign)
 	app.Post(prefix+"/design/get", designController.GetDesignByID)
+
 	// Fabric
 	app.Post(prefix+"/fabric/add", fabricController.AddFabric)
 	app.Post(prefix+"/fabric/update", fabricController.UpdateFabric)
