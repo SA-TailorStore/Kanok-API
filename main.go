@@ -52,6 +52,14 @@ func main() {
 	designService := services.NewDesignService(designRepo, cfg, cld)
 	designController := controllers.NewDesignController(designService)
 
+	fabricRepo := mysql.NewFabricMySQL(db)
+	fabricService := services.NewFabricService(fabricRepo, cfg, cld)
+	fabricController := controllers.NewFabricController(fabricService)
+
+	materialRepo := mysql.NewMaterialMySQL(db)
+	materialService := services.NewMaterialService(materialRepo, cfg)
+	materialController := controllers.NewMaterialController(materialService)
+
 	prefix := "/api"
 	// api routes post
 	// User
@@ -72,6 +80,15 @@ func main() {
 	app.Post(prefix+"/design/update", designController.UpdateDesign)
 	app.Post(prefix+"/design/delete", designController.DeleteDesign)
 	app.Post(prefix+"/design/get", designController.GetDesignByID)
+	// Fabric
+	app.Post(prefix+"/fabric/add", fabricController.AddFabric)
+	app.Post(prefix+"/fabric/update", fabricController.UpdateFabric)
+	app.Post(prefix+"/fabric/updates", fabricController.UpdateFabrics)
+	app.Post(prefix+"/fabric/delete", fabricController.DeleteFabric)
+	app.Post(prefix+"/fabric/get", fabricController.GetFabricByID)
+
+	// Material
+	app.Post(prefix+"/material/get", materialController.GetMaterialByID)
 
 	// api routes get
 	app.Get("/", func(c *fiber.Ctx) error {
@@ -87,6 +104,10 @@ func main() {
 	// Design
 	app.Get(prefix+"/designs", designController.GetAllDesigns)
 
+	// Fabric
+	app.Get(prefix+"/fabrics", fabricController.GetAllFabrics)
+
+	// Material
 	if err := app.Listen(":9000"); err != nil {
 		log.Fatal(err)
 	}

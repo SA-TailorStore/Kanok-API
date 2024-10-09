@@ -76,10 +76,29 @@ type DesignID struct {
 	Design_id string `json:"design_id" db:"design_id"`
 }
 
-type Design_url struct {
+type DesignURL struct {
 	Design_url string `json:"design_url" db:"design_url"`
 }
 
 type DesignType struct {
 	Type string `json:"type" db:"type"`
+}
+
+// FABRIC
+type Fabric struct {
+	Fabric_id  string `json:"fabric_id" db:"fabric_id"`
+	Fabric_url string `json:"fabric_url" db:"fabric_url"`
+	Quantity   int    `json:"quantity" db:"quantity"`
+}
+
+type FabricID struct {
+	Fabric_id string `json:"fabric_id" db:"fabric_id"`
+}
+
+type FabricURL struct {
+	Fabric_url string `json:"fabric_url" db:"fabric_url"`
+}
+
+type FabricType struct {
+	Quantity int `json:"quantity" db:"quantity"`
 }

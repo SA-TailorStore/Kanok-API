@@ -122,7 +122,7 @@ func (d *designController) UpdateDesign(c *fiber.Ctx) error {
 		}
 	}
 
-	return c.Status(fiber.StatusNoContent).JSON(fiber.Map{
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{
 		"message": "Update Design success.",
 		"status":  "204",
 	})

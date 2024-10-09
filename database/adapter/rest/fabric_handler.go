@@ -5,6 +5,10 @@ import (
 )
 
 type FabricHandler interface {
-	CreateFabric(c *fiber.Ctx) error
+	AddFabric(c *fiber.Ctx) error
+	UpdateFabric(c *fiber.Ctx) error
+	UpdateFabrics(c *fiber.Ctx) error
+	DeleteFabric(c *fiber.Ctx) error
 	GetFabricByID(c *fiber.Ctx) error
+	GetAllFabrics(c *fiber.Ctx) error
 }
