@@ -37,10 +37,10 @@ func (p *productController) CreateProduct(c *fiber.Ctx) error {
 	err := p.service.CreateProduct(c.Context(), req)
 	if err != nil {
 		switch err {
-		case exceptions.ErrDupicatedProductID:
-			return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
-				"error":  exceptions.ErrDupicatedProductID,
-				"status": "201",
+		case err:
+			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+				"error":  err,
+				"status": "400",
 			})
 		default:
 			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
@@ -50,7 +50,10 @@ func (p *productController) CreateProduct(c *fiber.Ctx) error {
 		}
 	}
 
-	return err
+	return c.Status(fiber.StatusCreated).JSON(fiber.Map{
+		"status":  "201",
+		"message": "Product Create Success",
+	})
 }
 
 // GetProductByOrderID implements rest.ProductHandler.
@@ -72,9 +75,9 @@ func (p *productController) GetProductByOrderID(c *fiber.Ctx) error {
 	if err != nil {
 		switch err {
 		case exceptions.ErrProductNotFound:
-			return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
+			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 				"error":  "Not found product",
-				"status": "201",
+				"status": "400",
 			})
 		default:
 			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{

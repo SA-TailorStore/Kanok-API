@@ -54,7 +54,7 @@ func (o *orderController) CreateOrder(c *fiber.Ctx) error {
 	}
 
 	return c.Status(fiber.StatusCreated).JSON(fiber.Map{
-		"message": "Order successfully",
+		"message": "Order success",
 		"status":  "201",
 		"user_id": req.Create_by,
 	})

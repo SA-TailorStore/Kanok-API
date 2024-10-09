@@ -22,12 +22,20 @@ func NewProductMySQL(db *sqlx.DB) reposititories.ProductRepository {
 
 // CreateProduct implements reposititories.ProductRepository.
 func (p *ProductMySQL) CreateProduct(ctx context.Context, req *requests.CreateProduct) error {
+	query := `"INSERT INTO PRODUCTS
+	(product_id, design_id, fabric_id, detail, size, total_quantity, create_by) 
+	VALUES ( ?, ?, ?, ?, ?, ?, ?)"`
 
 	product_id := "P" + time.Now().Format("20060102") + time.Now().Format("150405")
 
-	_, err := p.db.QueryContext(ctx,
-		"INSERT INTO PRODUCTS (product_id, design_id, fabric_id, detail, size, total_quantity, create_by) VALUES ( ?, ?, ?, ?, ?, ?, ?)",
-		product_id, req.Design_id, req.Fabric_id, req.Detail, req.Size, req.Total_quantity, req.Create_by)
+	_, err := p.db.QueryContext(ctx, query,
+		product_id,
+		req.Design_id,
+		req.Fabric_id,
+		req.Detail,
+		req.Size,
+		req.Total_quantity,
+		req.Create_by)
 
 	if err != nil {
 		return err
@@ -38,8 +46,8 @@ func (p *ProductMySQL) CreateProduct(ctx context.Context, req *requests.CreatePr
 
 // GetProductByOrderID implements reposititories.ProductRepository.
 func (p *ProductMySQL) GetProductByOrderID(ctx context.Context, req *requests.OrderID) ([]*responses.ProductID, error) {
-
-	rows, err := p.db.QueryContext(ctx, "SELECT product_id FROM ORDERS WHERE order_id = ?", req.Order_id)
+	query := `"SELECT product_id FROM ORDERS WHERE order_id = ?"`
+	rows, err := p.db.QueryContext(ctx, query, req.Order_id)
 
 	if err != nil {
 		return nil, err
@@ -58,4 +66,29 @@ func (p *ProductMySQL) GetProductByOrderID(ctx context.Context, req *requests.Or
 	}
 
 	return products, err
+}
+
+func (p *ProductMySQL) GetProductByID(ctx context.Context, req *requests.ProductID) (*responses.Product, error) {
+	query :=
+		`"SELECT 
+	product_id, 
+	design_id, 
+	fabric_id, 
+	detail, 
+	size, 
+	process_quantity, 
+	total_quantity, 
+	created_by, 
+	timestamp 
+	FROM PRODUCTS 
+	WHERE product_id = ?"`
+
+	var product *responses.Product
+	err := p.db.GetContext(ctx, &product, query, req.Product_id)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return product, err
 }

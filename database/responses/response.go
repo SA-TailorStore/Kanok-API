@@ -56,7 +56,7 @@ type Product struct {
 	Detail           string `json:"detail"`
 	Size             string `json:"size"`
 	Process_quantity int    `json:"process_quantity"`
-	Max_quantity     int    `json:"max_quantity"`
+	Total_quantity   int    `json:"total_quantity"`
 	Created_by       string `json:"created_by"`
 	Timestamp        string `json:"timestamp"`
 }

@@ -3,7 +3,6 @@ package mysql
 import (
 	"context"
 	"database/sql"
-	"fmt"
 
 	"github.com/SA-TailorStore/Kanok-API/database/requests"
 	"github.com/SA-TailorStore/Kanok-API/database/responses"
@@ -23,7 +22,6 @@ func NewUserMySQL(db *sqlx.DB) reposititories.UserRepository {
 	}
 }
 
-// Create implements reposititories.UserRepository.
 func (u *UserMySQL) Create(ctx context.Context, req *requests.UserRegister) error {
 	user_id, err := uuid.NewV7()
 	if err != nil {
@@ -37,7 +35,6 @@ func (u *UserMySQL) Create(ctx context.Context, req *requests.UserRegister) erro
 	return err
 }
 
-// FindAllUser implements reposititories.UserRepository.
 func (u *UserMySQL) GetAllUser(ctx context.Context) ([]*responses.User, error) {
 	rows, err := u.db.QueryContext(ctx, "SELECT user_id, username, display_name, user_profile_url, role, phone_number, address, timestamp FROM USERS")
 	if err != nil {
@@ -67,13 +64,11 @@ func (u *UserMySQL) GetAllUser(ctx context.Context) ([]*responses.User, error) {
 	return users, nil
 }
 
-// FindByUsername implements reposititories.UserRepository.
 func (u *UserMySQL) FindByUsername(ctx context.Context, req *requests.Username) error {
 
 	var user responses.Username
 
 	err := u.db.GetContext(ctx, &user, "SELECT username FROM USERS WHERE username = ?", req.Username)
-	fmt.Println(err)
 	switch err {
 	case sql.ErrNoRows: // user found
 		return nil
@@ -84,7 +79,6 @@ func (u *UserMySQL) FindByUsername(ctx context.Context, req *requests.Username) 
 	}
 }
 
-// GetUserByUsername implements reposititories.UserRepository.
 func (u *UserMySQL) GetPasswordByUsername(ctx context.Context, req *requests.Username) (*responses.UserLogin, error) {
 
 	var user responses.UserLogin
@@ -114,7 +108,6 @@ func (u *UserMySQL) GetUserByUserID(ctx context.Context, req *requests.UserID) (
 	return &user, nil
 }
 
-// UpdateAddress implements reposititories.UserRepository.
 func (u *UserMySQL) UpdateAddress(ctx context.Context, req *requests.UserUpdate) error {
 	_, err := u.db.ExecContext(ctx, "UPDATE USERS SET display_name = ?, phone_number = ?, address = ? WHERE user_id = ?", req.Display_name, req.Phone_number, req.Address, req.Token)
 
@@ -133,13 +126,3 @@ func (u *UserMySQL) UploadImage(ctx context.Context, req *requests.UserUploadIma
 
 	return err
 }
-
-// func (u *UserMySQL) DeleteImage(ctx context.Context, req *requests.UserUploadImage) error {
-// 	_, err := u.db.ExecContext(ctx, "UPDATE USERS SET display_name = ? WHERE user_id = ?", req.Image, req.Token)
-
-// 	if err != nil {
-// 		return err
-// 	}
-
-// 	return err
-// }
