@@ -6,6 +6,7 @@ import (
 	"github.com/SA-TailorStore/Kanok-API/configs"
 	"github.com/SA-TailorStore/Kanok-API/database/requests"
 	"github.com/SA-TailorStore/Kanok-API/database/responses"
+	"github.com/SA-TailorStore/Kanok-API/domain/exceptions"
 	"github.com/SA-TailorStore/Kanok-API/domain/reposititories"
 	"github.com/SA-TailorStore/Kanok-API/utils"
 	"github.com/cloudinary/cloudinary-go/v2"
@@ -130,9 +131,23 @@ func (f *fabricService) UpdateFabrics(ctx context.Context, req []*requests.Updat
 }
 
 func (f *fabricService) DeleteFabric(ctx context.Context, req *requests.FabricID) error {
-	err := f.reposititory.DeleteFabric(ctx, req)
 
+	res, err := f.reposititory.GetFabricByID(ctx, &requests.FabricID{Fabric_id: req.Fabric_id})
 	if err != nil {
+		return exceptions.ErrFabricNotFound
+	}
+
+	public_id, err := utils.ExtractPublicID(res.Fabric_url)
+	if err != nil {
+		return err
+	}
+
+	_, err = f.cloudinary.Upload.Destroy(ctx, uploader.DestroyParams{PublicID: public_id})
+	if err != nil {
+		return err
+	}
+
+	if err := f.reposititory.DeleteFabric(ctx, req); err != nil {
 		return err
 	}
 

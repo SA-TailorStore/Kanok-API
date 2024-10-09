@@ -6,6 +6,7 @@ import (
 	"github.com/SA-TailorStore/Kanok-API/configs"
 	"github.com/SA-TailorStore/Kanok-API/database/requests"
 	"github.com/SA-TailorStore/Kanok-API/database/responses"
+	"github.com/SA-TailorStore/Kanok-API/domain/exceptions"
 	"github.com/SA-TailorStore/Kanok-API/domain/reposititories"
 	"github.com/SA-TailorStore/Kanok-API/utils"
 	"github.com/cloudinary/cloudinary-go/v2"
@@ -119,10 +120,25 @@ func (d *designService) UpdateDesign(ctx context.Context, file interface{}, req 
 
 func (d *designService) DeleteDesign(ctx context.Context, req *requests.DesignID) error {
 
-	err := d.reposititory.DeleteDesign(ctx, req)
+	res, err := d.reposititory.GetDesignByID(ctx, &requests.DesignID{Design_id: req.Design_id})
+	if err != nil {
+		return exceptions.ErrDesignNotFound
+	}
+
+	public_id, err := utils.ExtractPublicID(res.Design_url)
 	if err != nil {
 		return err
 	}
+
+	_, err = d.cloudinary.Upload.Destroy(ctx, uploader.DestroyParams{PublicID: public_id})
+	if err != nil {
+		return err
+	}
+
+	if err := d.reposititory.DeleteDesign(ctx, req); err != nil {
+		return err
+	}
+
 	return nil
 }
 
