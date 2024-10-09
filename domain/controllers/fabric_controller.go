@@ -18,29 +18,8 @@ func NewFabricController(service services.FabricUseCase) rest.FabricHandler {
 	}
 }
 
-// AddFabric implements rest.FabricHandler.
 func (f *fabricController) AddFabric(c *fiber.Ctx) error {
 	var req requests.AddFabric
-	// Pull form file
-	fileHeader, err := c.FormFile("image")
-	if err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"error":   "Failed to get file",
-			"status":  "400",
-			"message": err.Error(),
-		})
-	}
-
-	// Open File
-	file, err := fileHeader.Open()
-	if err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"error":   "Failed to open file",
-			"status":  "400",
-			"message": err.Error(),
-		})
-	}
-	defer file.Close()
 
 	if err := c.BodyParser(&req); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
@@ -52,6 +31,11 @@ func (f *fabricController) AddFabric(c *fiber.Ctx) error {
 	// Validate request
 	if err := utils.ValidateStruct(req); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(err)
+	}
+
+	file, err := utils.OpenFile(c)
+	if err != nil {
+		return err
 	}
 
 	err = f.service.AddFabric(c.Context(), file, &req)
@@ -75,29 +59,9 @@ func (f *fabricController) AddFabric(c *fiber.Ctx) error {
 	})
 }
 
-// UpdateFabric implements rest.FabricHandler.
 func (f *fabricController) UpdateFabric(c *fiber.Ctx) error {
 	var req requests.UpdateFabric
 	// Pull form file
-	fileHeader, err := c.FormFile("image")
-	if err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"error":   "Failed to get file",
-			"status":  "400",
-			"message": err.Error(),
-		})
-	}
-
-	// Open File
-	file, err := fileHeader.Open()
-	if err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"error":   "Failed to open file",
-			"status":  "400",
-			"message": err.Error(),
-		})
-	}
-	defer file.Close()
 
 	if err := c.BodyParser(&req); err != nil {
 		c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
@@ -109,6 +73,11 @@ func (f *fabricController) UpdateFabric(c *fiber.Ctx) error {
 	// Validate request
 	if err := utils.ValidateStruct(req); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(err)
+	}
+
+	file, err := utils.OpenFile(c)
+	if err != nil {
+		return err
 	}
 
 	err = f.service.UpdateFabric(c.Context(), file, &req)
@@ -163,13 +132,12 @@ func (f *fabricController) UpdateFabrics(c *fiber.Ctx) error {
 		}
 	}
 
-	return c.Status(fiber.StatusOK).JSON(fiber.Map{
+	return c.Status(fiber.StatusNoContent).JSON(fiber.Map{
 		"message": "Update Fabrics Success.",
 		"status":  "204",
 	})
 }
 
-// DeleteFabric implements rest.FabricHandler.
 func (f *fabricController) DeleteFabric(c *fiber.Ctx) error {
 	var req requests.FabricID
 
@@ -185,8 +153,7 @@ func (f *fabricController) DeleteFabric(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusBadRequest).JSON(err)
 	}
 
-	err := f.service.DeleteFabric(c.Context(), &req)
-	if err != nil {
+	if err := f.service.DeleteFabric(c.Context(), &req); err != nil {
 		switch err {
 		case err:
 			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
@@ -206,7 +173,6 @@ func (f *fabricController) DeleteFabric(c *fiber.Ctx) error {
 	})
 }
 
-// GetAllFabrics implements rest.FabricHandler.
 func (f *fabricController) GetAllFabrics(c *fiber.Ctx) error {
 
 	res, err := f.service.GetAllFabrics(c.Context())
@@ -231,7 +197,6 @@ func (f *fabricController) GetAllFabrics(c *fiber.Ctx) error {
 	})
 }
 
-// GetFabricByID implements rest.FabricHandler.
 func (f *fabricController) GetFabricByID(c *fiber.Ctx) error {
 	var req requests.FabricID
 

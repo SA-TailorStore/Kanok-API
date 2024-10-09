@@ -23,7 +23,9 @@ func NewDesignMySQL(db *sqlx.DB) reposititories.DesignRepository {
 
 // AddDesign implements reposititories.DesignRepository.
 func (d *DesignMySQL) AddDesign(ctx context.Context, req *requests.AddDesign) error {
-	query := "INSERT INTO DESIGNS (design_url,type) VALUES (?,?)"
+	query := `
+	INSERT INTO DESIGNS (design_url,type) 
+	VALUES (?,?)`
 
 	_, err := d.db.QueryContext(ctx, query, req.Image, req.Type)
 	if err != nil {
@@ -35,7 +37,12 @@ func (d *DesignMySQL) AddDesign(ctx context.Context, req *requests.AddDesign) er
 
 // UpdateDesign implements reposititories.DesignRepository.
 func (d *DesignMySQL) UpdateDesign(ctx context.Context, req *requests.UpdateDesign) error {
-	query := "UPDATE DESIGNS SET design_url = ?, type = ? WHERE design_id = ?"
+	query := `
+	UPDATE DESIGNS 
+	SET 
+	design_url = ?, 
+	type = ? 
+	WHERE design_id = ?`
 
 	_, err := d.db.ExecContext(ctx, query, req.Image, req.Type, req.Design_ID)
 	if err != nil {
@@ -59,7 +66,12 @@ func (d *DesignMySQL) DeleteDesign(ctx context.Context, req *requests.DesignID) 
 
 // GetAllDesigns implements reposititories.DesignRepository.
 func (d *DesignMySQL) GetAllDesigns(ctx context.Context) ([]*responses.Design, error) {
-	query := "SELECT design_id, design_url, type FROM DESIGNS"
+	query := `
+		SELECT
+	design_id, 
+	design_url, 
+	type 
+	FROM DESIGNS`
 
 	rows, err := d.db.QueryContext(ctx, query)
 	if err != nil {
@@ -82,7 +94,12 @@ func (d *DesignMySQL) GetAllDesigns(ctx context.Context) ([]*responses.Design, e
 
 // GetDesignByID implements reposititories.DesignRepository.
 func (d *DesignMySQL) GetDesignByID(ctx context.Context, req *requests.DesignID) (*responses.Design, error) {
-	query := "SELECT design_id, design_url, type FROM DESIGNS WHERE design_id = ?"
+	query :=
+		`SELECT 
+	design_id, 
+	design_url, 
+	type 
+	FROM DESIGNS WHERE design_id = ?`
 
 	var design responses.Design
 

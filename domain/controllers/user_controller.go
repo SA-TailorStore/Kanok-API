@@ -263,24 +263,6 @@ func (u *userController) UpdateAddress(c *fiber.Ctx) error {
 func (u *userController) UploadImage(c *fiber.Ctx) error {
 	// Parse request
 	var req requests.UserUploadImage
-	// Pull form file
-	fileHeader, err := c.FormFile("image")
-	if err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"error":   "Failed to get file",
-			"message": err.Error(),
-		})
-	}
-
-	// Open File
-	file, err := fileHeader.Open()
-	if err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"error":   "Failed to open file",
-			"message": err.Error(),
-		})
-	}
-	defer file.Close()
 
 	if err := c.BodyParser(&req); err != nil {
 		c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
@@ -291,6 +273,11 @@ func (u *userController) UploadImage(c *fiber.Ctx) error {
 	// Validate request
 	if err := utils.ValidateStruct(req); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(err)
+	}
+
+	file, err := utils.OpenFile(c)
+	if err != nil {
+		return err
 	}
 
 	res, err := u.service.UploadImage(c.Context(), file, &req)

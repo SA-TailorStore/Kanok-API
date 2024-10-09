@@ -19,8 +19,8 @@ func NewDesignController(service services.DesignUseCase) rest.DesignHandler {
 	}
 }
 
-// AddDesign implements rest.DesignHandler.
 func (d *designController) AddDesign(c *fiber.Ctx) error {
+	// Parse Request
 	var req requests.AddDesign
 	// Pull form file
 	fileHeader, err := c.FormFile("image")
@@ -73,27 +73,9 @@ func (d *designController) AddDesign(c *fiber.Ctx) error {
 	})
 }
 
-// UpdateDesign implements rest.DesignHandler.
 func (d *designController) UpdateDesign(c *fiber.Ctx) error {
+	// Parse Request
 	var req requests.UpdateDesign
-	// Pull form file
-	fileHeader, err := c.FormFile("image")
-	if err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"error":   "Failed to get file",
-			"message": err.Error(),
-		})
-	}
-
-	// Open File
-	file, err := fileHeader.Open()
-	if err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"error":   "Failed to open file",
-			"message": err.Error(),
-		})
-	}
-	defer file.Close()
 
 	if err := c.BodyParser(&req); err != nil {
 		c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
@@ -106,8 +88,12 @@ func (d *designController) UpdateDesign(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusBadRequest).JSON(err)
 	}
 
-	err = d.service.UpdateDesign(c.Context(), file, &req)
+	file, err := utils.OpenFile(c)
 	if err != nil {
+		return err
+	}
+
+	if err := d.service.UpdateDesign(c.Context(), file, &req); err != nil {
 		switch err {
 		case err:
 			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
@@ -122,13 +108,12 @@ func (d *designController) UpdateDesign(c *fiber.Ctx) error {
 		}
 	}
 
-	return c.Status(fiber.StatusOK).JSON(fiber.Map{
+	return c.Status(fiber.StatusNoContent).JSON(fiber.Map{
 		"message": "Update Design success.",
 		"status":  "204",
 	})
 }
 
-// DeleteDesign implements rest.DesignHandler.
 func (d *designController) DeleteDesign(c *fiber.Ctx) error {
 	var req requests.DesignID
 	if err := c.BodyParser(&req); err != nil {
@@ -164,7 +149,6 @@ func (d *designController) DeleteDesign(c *fiber.Ctx) error {
 	})
 }
 
-// GetAllDesigns implements rest.DesignHandler.
 func (d *designController) GetAllDesigns(c *fiber.Ctx) error {
 
 	designs, err := d.service.GetAllDesigns(c.Context())
@@ -190,8 +174,8 @@ func (d *designController) GetAllDesigns(c *fiber.Ctx) error {
 	})
 }
 
-// GetDesignByID implements rest.DesignHandler.
 func (d *designController) GetDesignByID(c *fiber.Ctx) error {
+	// Parse Requset
 	var req requests.DesignID
 
 	if err := c.BodyParser(&req); err != nil {

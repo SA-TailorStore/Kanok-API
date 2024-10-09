@@ -214,7 +214,6 @@ func (u *userService) GenToken(ctx context.Context, req *requests.UserJWT) (*res
 	return &responses.UserJWT{
 		Token: tokenString,
 	}, err
-
 }
 
 func (u *userService) FindByID(ctx context.Context, req *requests.UserID) (*responses.User, error) {

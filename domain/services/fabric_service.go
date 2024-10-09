@@ -56,42 +56,59 @@ func (f *fabricService) AddFabric(ctx context.Context, file interface{}, req *re
 }
 
 func (f *fabricService) UpdateFabric(ctx context.Context, file interface{}, req *requests.UpdateFabric) error {
+
 	temp, err := f.reposititory.GetFabricByID(ctx, &requests.FabricID{Fabric_id: req.Fabric_id})
 	if err != nil {
 		return err
 	}
 
-	if temp.Fabric_url != "-" {
-		public_id, err := utils.ExtractPublicID(temp.Fabric_url)
-		if err != nil {
-			return err
-		}
-		_, err = f.cloudinary.Upload.Destroy(ctx, uploader.DestroyParams{PublicID: public_id})
-
-		if err != nil {
-			return err
-		}
-		update := &requests.UpdateFabric{
-			Fabric_id: temp.Fabric_id,
-			Image:     "-",
+	if req.Quantity == 0 {
+		req = &requests.UpdateFabric{
+			Fabric_id: req.Fabric_id,
+			Image:     temp.Fabric_url,
 			Quantity:  temp.Quantity,
 		}
+	}
 
-		err = f.reposititory.UpdateFabric(ctx, update)
+	if file != nil {
+		if temp.Fabric_url != "-" {
+			public_id, err := utils.ExtractPublicID(temp.Fabric_url)
+			if err != nil {
+				return err
+			}
+			_, err = f.cloudinary.Upload.Destroy(ctx, uploader.DestroyParams{PublicID: public_id})
+
+			if err != nil {
+				return err
+			}
+			update := &requests.UpdateFabric{
+				Fabric_id: temp.Fabric_id,
+				Image:     "-",
+				Quantity:  temp.Quantity,
+			}
+
+			err = f.reposititory.UpdateFabric(ctx, update)
+			if err != nil {
+				return err
+			}
+		}
+
+		res, err := f.cloudinary.Upload.Upload(ctx, file, uploader.UploadParams{})
 		if err != nil {
 			return err
 		}
-	}
 
-	res, err := f.cloudinary.Upload.Upload(ctx, file, uploader.UploadParams{})
-	if err != nil {
-		return err
-	}
-
-	req = &requests.UpdateFabric{
-		Fabric_id: req.Fabric_id,
-		Image:     res.SecureURL,
-		Quantity:  req.Quantity,
+		req = &requests.UpdateFabric{
+			Fabric_id: req.Fabric_id,
+			Image:     res.SecureURL,
+			Quantity:  req.Quantity,
+		}
+	} else {
+		req = &requests.UpdateFabric{
+			Fabric_id: req.Fabric_id,
+			Image:     temp.Fabric_url,
+			Quantity:  req.Quantity,
+		}
 	}
 
 	err = f.reposititory.UpdateFabric(ctx, req)

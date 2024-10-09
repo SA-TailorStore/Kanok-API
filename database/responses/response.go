@@ -76,13 +76,13 @@ type ProductID struct {
 
 // DESIGN
 type Design struct {
-	Design_id  string `json:"design_id" db:"design_id"`
+	Design_id  int    `json:"design_id" db:"design_id"`
 	Design_url string `json:"design_url" db:"design_url"`
 	Type       string `json:"type" db:"type"`
 }
 
 type DesignID struct {
-	Design_id string `json:"design_id" db:"design_id"`
+	Design_id int `json:"design_id" db:"design_id"`
 }
 
 type DesignURL struct {
@@ -95,13 +95,13 @@ type DesignType struct {
 
 // FABRIC
 type Fabric struct {
-	Fabric_id  string `json:"fabric_id" db:"fabric_id"`
+	Fabric_id  int    `json:"fabric_id" db:"fabric_id"`
 	Fabric_url string `json:"fabric_url" db:"fabric_url"`
 	Quantity   int    `json:"quantity" db:"quantity"`
 }
 
 type FabricID struct {
-	Fabric_id string `json:"fabric_id" db:"fabric_id"`
+	Fabric_id int `json:"fabric_id" db:"fabric_id"`
 }
 
 type FabricURL struct {
@@ -114,7 +114,7 @@ type FabricType struct {
 
 // MATERIAL
 type Material struct {
-	Material_id   string `json:"material_id" db:"material_id"`
+	Material_id   int    `json:"material_id" db:"material_id"`
 	Material_name string `json:"material_name" db:"material_name"`
 	Amount        int    `json:"amount" db:"amount"`
 }
