@@ -39,7 +39,7 @@ func (p *productController) CreateProduct(c *fiber.Ctx) error {
 		switch err {
 		case err:
 			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-				"error":  err,
+				"error":  err.Error(),
 				"status": "400",
 			})
 		default:

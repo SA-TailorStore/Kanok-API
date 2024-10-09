@@ -56,12 +56,48 @@ func (o *orderController) CreateOrder(c *fiber.Ctx) error {
 	return c.Status(fiber.StatusCreated).JSON(fiber.Map{
 		"message": "Order success",
 		"status":  "201",
-		"user_id": req.Create_by,
+		"user_id": req.Created_by,
 	})
 
 }
 
 // GetOrderByID implements rest.OrderHandler.
 func (o *orderController) GetOrderByID(c *fiber.Ctx) error {
-	panic("unimplemented")
+	// Parse request
+	var req *requests.OrderID
+
+	if err := c.BodyParser(&req); err != nil {
+		c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"error":  err.Error(),
+			"status": "500",
+		})
+	}
+
+	// Validate request
+	if err := utils.ValidateStruct(req); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(err)
+	}
+
+	// Create Order
+	res, err := o.service.GetOrderByID(c.Context(), req)
+	if err != nil {
+		switch err {
+		case err:
+			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+				"error":  err.Error(),
+				"status": "400",
+			})
+		default:
+			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+				"error":  err.Error(),
+				"status": "500",
+			})
+		}
+	}
+
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{
+		"message": "Get Order",
+		"status":  "200",
+		"data":    res,
+	})
 }

@@ -23,7 +23,6 @@ func NewDesignMySQL(db *sqlx.DB) reposititories.DesignRepository {
 
 // AddDesign implements reposititories.DesignRepository.
 func (d *DesignMySQL) AddDesign(ctx context.Context, req *requests.AddDesign) error {
-
 	query := "INSERT INTO DESIGNS (design_url,type) VALUES (?,?)"
 
 	_, err := d.db.QueryContext(ctx, query, req.Image, req.Type)
@@ -60,7 +59,9 @@ func (d *DesignMySQL) DeleteDesign(ctx context.Context, req *requests.DesignID) 
 
 // GetAllDesigns implements reposititories.DesignRepository.
 func (d *DesignMySQL) GetAllDesigns(ctx context.Context) ([]*responses.Design, error) {
-	rows, err := d.db.QueryContext(ctx, "SELECT design_id, design_url, type FROM DESIGNS")
+	query := "SELECT design_id, design_url, type FROM DESIGNS"
+
+	rows, err := d.db.QueryContext(ctx, query)
 	if err != nil {
 		return nil, err
 	}
@@ -81,9 +82,11 @@ func (d *DesignMySQL) GetAllDesigns(ctx context.Context) ([]*responses.Design, e
 
 // GetDesignByID implements reposititories.DesignRepository.
 func (d *DesignMySQL) GetDesignByID(ctx context.Context, req *requests.DesignID) (*responses.Design, error) {
+	query := "SELECT design_id, design_url, type FROM DESIGNS WHERE design_id = ?"
+
 	var design responses.Design
 
-	err := d.db.GetContext(ctx, &design, "SELECT design_id, design_url, type FROM DESIGNS WHERE design_id = ?", req.Design_id)
+	err := d.db.GetContext(ctx, &design, query, req.Design_id)
 	if err != nil {
 		switch err {
 		case sql.ErrNoRows:

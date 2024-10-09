@@ -53,7 +53,7 @@ type CreateOrder struct {
 	Store_address string `json:"store_address" validate:"required"`
 	User_phone    string `json:"user_phone" validate:"required"`
 	User_address  string `json:"user_address" validate:"required"`
-	Create_by     string `json:"create_by" validate:"required"`
+	Created_by    string `json:"created_by" validate:"required"`
 }
 
 // PRODUCT REQUEST
@@ -70,8 +70,8 @@ type CreateProduct struct {
 	Fabric_id      string `json:"fabric_id" validate:"required"`
 	Detail         string `json:"detail" validate:"required"`
 	Size           string `json:"size" validate:"required"`
-	Total_quantity int    `json:"total_quantity " validate:"required"`
-	Create_by      string `json:"create_by" validate:"required"`
+	Total_quantity int    `json:"total_quantity" validate:"required"`
+	Created_by     string `json:"created_by" validate:"required"`
 }
 type UpdateProduct struct {
 	Product_id     string `json:"product_id" validate:"required"`
