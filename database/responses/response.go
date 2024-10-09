@@ -39,13 +39,22 @@ type UserJWT struct {
 
 // ORDER
 type Order struct {
-	Order_id      string `json:"order_id"`
-	Store_phone   string `json:"store_phone"`
-	Store_address string `json:"store_address"`
-	User_phone    string `json:"user_phone"`
-	User_address  string `json:"user_address"`
-	Created_by    string `json:"created_by"`
-	Timestamp     string `json:"timestamp"`
+	Is_payment      int    `json:"is_payment"`
+	Status          string `json:"status"`
+	Store_phone     string `json:"store_phone"`
+	Store_address   string `json:"store_address"`
+	User_phone      string `json:"user_phone"`
+	User_address    string `json:"user_address"`
+	Price           int    `json:"price"`
+	Due_date        string `json:"due_date"`
+	Tracking_number string `json:"tracking_number"`
+	Tailor_id       string `json:"tailor_id"`
+	Created_by      string `json:"created_by"`
+	Timestamp       string `json:"timestamp"`
+}
+
+type OrderID struct {
+	Order_id string `json:"order_id"`
 }
 
 // PRODUCT
@@ -56,7 +65,7 @@ type Product struct {
 	Detail           string `json:"detail"`
 	Size             string `json:"size"`
 	Process_quantity int    `json:"process_quantity"`
-	Max_quantity     int    `json:"max_quantity"`
+	Total_quantity   int    `json:"total_quantity"`
 	Created_by       string `json:"created_by"`
 	Timestamp        string `json:"timestamp"`
 }

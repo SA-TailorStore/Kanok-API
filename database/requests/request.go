@@ -41,12 +41,19 @@ type OrderID struct {
 	Order_id string `json:"order_id" validate:"required"`
 }
 
+type UpdateOrder struct {
+	Order_id      string `json:"order_id" validate:"required"`
+	Store_phone   string `json:"store_phone" validate:"required"`
+	Store_address string `json:"store_address" validate:"required"`
+	User_phone    string `json:"user_phone" validate:"required"`
+	User_address  string `json:"user_address" validate:"required"`
+}
 type CreateOrder struct {
 	Store_phone   string `json:"store_phone" validate:"required"`
 	Store_address string `json:"store_address" validate:"required"`
 	User_phone    string `json:"user_phone" validate:"required"`
 	User_address  string `json:"user_address" validate:"required"`
-	Create_by     string `json:"create_by" validate:"required"`
+	Created_by    string `json:"created_by" validate:"required"`
 }
 
 // PRODUCT REQUEST
@@ -54,13 +61,25 @@ type ProductID struct {
 	Product_id string `json:"product_id" validate:"required"`
 }
 
+type ProductOrderID struct {
+	Created_by string `json:"create_by" validate:"required"`
+}
+
 type CreateProduct struct {
 	Design_id      string `json:"design_id" validate:"required"`
 	Fabric_id      string `json:"fabric_id" validate:"required"`
 	Detail         string `json:"detail" validate:"required"`
 	Size           string `json:"size" validate:"required"`
+	Total_quantity int    `json:"total_quantity" validate:"required"`
+	Created_by     string `json:"created_by" validate:"required"`
+}
+type UpdateProduct struct {
+	Product_id     string `json:"product_id" validate:"required"`
+	Design_id      string `json:"design_id" validate:"required"`
+	Fabric_id      string `json:"fabric_id" validate:"required"`
+	Detail         string `json:"detail" validate:"required"`
+	Size           string `json:"size" validate:"required"`
 	Total_quantity int    `json:"total_quantity " validate:"required"`
-	Create_by      string `json:"create_by" validate:"required"`
 }
 
 // DESIGN REQUEST

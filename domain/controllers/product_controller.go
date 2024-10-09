@@ -37,10 +37,10 @@ func (p *productController) CreateProduct(c *fiber.Ctx) error {
 	err := p.service.CreateProduct(c.Context(), req)
 	if err != nil {
 		switch err {
-		case exceptions.ErrDupicatedProductID:
-			return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
-				"error":  exceptions.ErrDupicatedProductID,
-				"status": "201",
+		case err:
+			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+				"error":  err.Error(),
+				"status": "400",
 			})
 		default:
 			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
@@ -50,7 +50,10 @@ func (p *productController) CreateProduct(c *fiber.Ctx) error {
 		}
 	}
 
-	return err
+	return c.Status(fiber.StatusCreated).JSON(fiber.Map{
+		"status":  "201",
+		"message": "Product Create Success",
+	})
 }
 
 // GetProductByOrderID implements rest.ProductHandler.
@@ -72,9 +75,9 @@ func (p *productController) GetProductByOrderID(c *fiber.Ctx) error {
 	if err != nil {
 		switch err {
 		case exceptions.ErrProductNotFound:
-			return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
+			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 				"error":  "Not found product",
-				"status": "201",
+				"status": "400",
 			})
 		default:
 			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
@@ -88,5 +91,42 @@ func (p *productController) GetProductByOrderID(c *fiber.Ctx) error {
 		"status":  "200",
 		"message": "Produst List By " + req.Order_id,
 		"data":    produsts,
+	})
+}
+
+func (p *productController) GetProductByID(c *fiber.Ctx) error {
+	var req *requests.ProductID
+
+	if err := c.BodyParser(&req); err != nil {
+		c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"error": err.Error(),
+		})
+	}
+
+	// Validate request
+	if err := utils.ValidateStruct(req); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(err)
+	}
+
+	res, err := p.service.GetProductByID(c.Context(), req)
+	if err != nil {
+		switch err {
+		case exceptions.ErrProductNotFound:
+			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+				"error":  err.Error(),
+				"status": "400",
+			})
+		default:
+			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+				"error":  err.Error(),
+				"status": "500",
+			})
+		}
+	}
+
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{
+		"status":  "200",
+		"message": "Get Produst",
+		"data":    res,
 	})
 }

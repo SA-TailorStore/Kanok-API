@@ -5,13 +5,13 @@ import (
 
 	"github.com/SA-TailorStore/Kanok-API/configs"
 	"github.com/SA-TailorStore/Kanok-API/database/requests"
-	"github.com/SA-TailorStore/Kanok-API/domain/exceptions"
+	"github.com/SA-TailorStore/Kanok-API/database/responses"
 	"github.com/SA-TailorStore/Kanok-API/domain/reposititories"
 )
 
 type OrderUseCase interface {
 	CreateOrder(ctx context.Context, req *requests.CreateOrder) error
-	GetOrderByID(ctx context.Context, req *requests.OrderID) error
+	GetOrderByID(ctx context.Context, req *requests.OrderID) (*responses.Order, error)
 }
 
 type orderService struct {
@@ -27,21 +27,15 @@ func NewOrderService(reposititory reposititories.OrderRepository, config *config
 }
 
 // GetOrder implements OrderUseCase.
-func (o *orderService) GetOrderByID(ctx context.Context, req *requests.OrderID) error {
+func (o *orderService) GetOrderByID(ctx context.Context, req *requests.OrderID) (*responses.Order, error) {
 
-	err := o.reposititory.GetOrderByID(ctx, req)
+	res, err := o.reposititory.GetOrderByID(ctx, req)
 
 	if err != nil {
-		switch err {
-		case exceptions.ErrOrderNotFound:
-			return exceptions.ErrOrderNotFound
-		default:
-			return err
-		}
-
+		return res, err
 	}
 
-	return err
+	return res, nil
 }
 
 // CreateOrder implements OrderUseCase.
@@ -50,14 +44,8 @@ func (o *orderService) CreateOrder(ctx context.Context, req *requests.CreateOrde
 	err := o.reposititory.CreateOrder(ctx, req)
 
 	if err != nil {
-		switch err {
-		case exceptions.ErrInfomation:
-			return err
-		default:
-			return err
-		}
-
+		return err
 	}
 
-	return err
+	return nil
 }
