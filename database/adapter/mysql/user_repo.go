@@ -23,20 +23,38 @@ func NewUserMySQL(db *sqlx.DB) reposititories.UserRepository {
 }
 
 func (u *UserMySQL) Create(ctx context.Context, req *requests.UserRegister) error {
+	query := `
+	INSERT INTO USERS
+	(user_id, username, password, phone_number) 
+	VALUES ( ?, ?, ?, ?)
+	`
+
 	user_id, err := uuid.NewV7()
 	if err != nil {
 		return err
 	}
 
-	_, err = u.db.QueryContext(ctx,
-		"INSERT INTO USERS (user_id, username, password, phone_number, display_name, user_profile_url, role, address) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?)",
-		user_id, req.Username, req.Password, req.Phone_number, "-", "-", "user", "-")
+	_, err = u.db.QueryContext(ctx, query,
+		user_id, req.Username, req.Password, req.Phone_number)
 
 	return err
 }
 
 func (u *UserMySQL) GetAllUser(ctx context.Context) ([]*responses.User, error) {
-	rows, err := u.db.QueryContext(ctx, "SELECT user_id, username, display_name, user_profile_url, role, phone_number, address, timestamp FROM USERS")
+
+	query := `
+	SELECT 
+		user_id, 
+		username, 
+		display_name, 
+		user_profile_url, 
+		role, 
+		phone_number, 
+		address, 
+		timestamp 
+	FROM USERS
+	`
+	rows, err := u.db.QueryContext(ctx, query)
 	if err != nil {
 		return nil, err
 	}
@@ -66,9 +84,10 @@ func (u *UserMySQL) GetAllUser(ctx context.Context) ([]*responses.User, error) {
 
 func (u *UserMySQL) FindByUsername(ctx context.Context, req *requests.Username) error {
 
+	query := `SELECT username FROM USERS WHERE username = ?`
 	var user responses.Username
 
-	err := u.db.GetContext(ctx, &user, "SELECT username FROM USERS WHERE username = ?", req.Username)
+	err := u.db.GetContext(ctx, &user, query, req.Username)
 	switch err {
 	case sql.ErrNoRows: // user found
 		return nil
@@ -95,17 +114,18 @@ func (u *UserMySQL) GetPasswordByUsername(ctx context.Context, req *requests.Use
 
 func (u *UserMySQL) GetUserByUserID(ctx context.Context, req *requests.UserID) (*responses.User, error) {
 
-	query :=
-		`SELECT 
-	user_id,
-	username,
-	display_name,
-	user_profile_url,
-	role,
-	phone_number,
-	address,
-	timestamp 
-	FROM USERS WHERE user_id = ?`
+	query := `
+	SELECT 
+		user_id,
+		username,
+		display_name,
+		user_profile_url,
+		role,
+		phone_number,
+		address,
+		timestamp 
+	FROM USERS WHERE user_id = ?
+	`
 
 	var user responses.User
 
@@ -127,8 +147,12 @@ func (u *UserMySQL) UpdateAddress(ctx context.Context, req *requests.UserUpdate)
 
 	query := `
 	UPDATE USERS 
-	SET display_name = ?, phone_number = ?, address = ? 
-	WHERE user_id = ?`
+	SET 
+		display_name = ?, 
+		phone_number = ?, 
+		address = ? 
+	WHERE user_id = ?
+	`
 
 	_, err := u.db.ExecContext(ctx, query, req.Display_name, req.Phone_number, req.Address, req.Token)
 
@@ -143,8 +167,10 @@ func (u *UserMySQL) UploadImage(ctx context.Context, req *requests.UserUploadIma
 
 	query := `
 	UPDATE USERS 
-	SET user_profile_url = ? 
-	WHERE user_id = ?`
+	SET 
+		user_profile_url = ? 
+	WHERE user_id = ?
+	`
 
 	_, err := u.db.ExecContext(ctx, query, req.Image, req.Token)
 	if err != nil {

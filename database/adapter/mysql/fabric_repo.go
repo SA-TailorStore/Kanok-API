@@ -20,7 +20,10 @@ func NewFabricMySQL(db *sqlx.DB) reposititories.FabricRepository {
 }
 
 func (f *FabricMySQL) AddFabric(ctx context.Context, req *requests.AddFabric) error {
-	query := "INSERT INTO FABRICS (fabric_url,quantity) VALUES (?,?)"
+	query := `
+	INSERT INTO FABRICS 
+	(fabric_url,quantity) 
+	VALUES (?,?)`
 
 	_, err := f.db.QueryContext(ctx, query, req.Image, req.Quantity)
 	if err != nil {
@@ -31,7 +34,12 @@ func (f *FabricMySQL) AddFabric(ctx context.Context, req *requests.AddFabric) er
 }
 
 func (f *FabricMySQL) UpdateFabric(ctx context.Context, req *requests.UpdateFabric) error {
-	query := "UPDATE FABRICS SET fabric_url = ?, quantity = ? WHERE fabric_id = ?"
+	query := `
+	UPDATE FABRICS 
+	SET 
+		fabric_url = ?, 
+		quantity = ? 
+	WHERE fabric_id = ?`
 
 	_, err := f.db.ExecContext(ctx, query, req.Image, req.Quantity, req.Fabric_id)
 	if err != nil {
@@ -41,7 +49,11 @@ func (f *FabricMySQL) UpdateFabric(ctx context.Context, req *requests.UpdateFabr
 }
 
 func (f *FabricMySQL) UpdateFabrics(ctx context.Context, req []*requests.UpdateFabrics) error {
-	query := "UPDATE FABRICS SET quantity = ? WHERE fabric_id = ?"
+	query := `
+	UPDATE FABRICS 
+	SET 
+		quantity = ? 
+	WHERE fabric_id = ?`
 
 	for _, value := range req {
 
@@ -55,7 +67,7 @@ func (f *FabricMySQL) UpdateFabrics(ctx context.Context, req []*requests.UpdateF
 }
 
 func (f *FabricMySQL) DeleteFabric(ctx context.Context, req *requests.FabricID) error {
-	query := "DELETE FROM FABRICS WHERE fabric_id = ?"
+	query := `DELETE FROM FABRICS WHERE fabric_id = ?`
 
 	_, err := f.db.QueryContext(ctx, query, req.Fabric_id)
 	if err != nil {
@@ -66,7 +78,13 @@ func (f *FabricMySQL) DeleteFabric(ctx context.Context, req *requests.FabricID) 
 }
 
 func (f *FabricMySQL) GetAllFabrics(ctx context.Context) ([]*responses.Fabric, error) {
-	query := "SELECT fabric_id, fabric_url, quantity FROM FABRICS"
+	query := `
+	SELECT 
+		fabric_id, 
+		fabric_url, 
+		quantity 
+	FROM FABRICS
+	`
 
 	rows, err := f.db.QueryContext(ctx, query)
 	if err != nil {
@@ -77,7 +95,10 @@ func (f *FabricMySQL) GetAllFabrics(ctx context.Context) ([]*responses.Fabric, e
 	var fabrics []*responses.Fabric
 	for rows.Next() {
 		var fabric responses.Fabric
-		err := rows.Scan(&fabric.Fabric_id, &fabric.Fabric_url, &fabric.Quantity)
+		err := rows.Scan(
+			&fabric.Fabric_id,
+			&fabric.Fabric_url,
+			&fabric.Quantity)
 		if err != nil {
 			return nil, err
 		}
@@ -89,7 +110,13 @@ func (f *FabricMySQL) GetAllFabrics(ctx context.Context) ([]*responses.Fabric, e
 
 // GetFabricByID implements reposititories.FabricRepository.
 func (f *FabricMySQL) GetFabricByID(ctx context.Context, req *requests.FabricID) (*responses.Fabric, error) {
-	query := "SELECT fabric_id, fabric_url, quantity FROM FABRICS WHERE fabric_id = ?"
+	query := `
+	SELECT 
+		fabric_id, 
+		fabric_url, 
+		quantity 
+	FROM FABRICS WHERE fabric_id = ?
+	`
 
 	var fabric responses.Fabric
 	err := f.db.GetContext(ctx, &fabric, query, req.Fabric_id)
