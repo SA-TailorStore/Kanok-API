@@ -22,7 +22,6 @@ func NewProductMySQL(db *sqlx.DB) reposititories.ProductRepository {
 	}
 }
 
-// CreateProduct implements reposititories.ProductRepository.
 func (p *ProductMySQL) CreateProduct(ctx context.Context, req *requests.CreateProduct) error {
 	// Validate
 	query := `SELECT design_id FROM DESIGNS WHERE design_id = ?`
@@ -67,7 +66,6 @@ func (p *ProductMySQL) CreateProduct(ctx context.Context, req *requests.CreatePr
 	return err
 }
 
-// GetProductByOrderID implements reposititories.ProductRepository.
 func (p *ProductMySQL) GetProductByOrderID(ctx context.Context, req *requests.OrderID) ([]*responses.ProductID, error) {
 	query := `
 	SELECT 

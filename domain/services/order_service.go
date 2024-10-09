@@ -26,7 +26,6 @@ func NewOrderService(reposititory reposititories.OrderRepository, config *config
 	}
 }
 
-// GetOrder implements OrderUseCase.
 func (o *orderService) GetOrderByID(ctx context.Context, req *requests.OrderID) (*responses.Order, error) {
 
 	res, err := o.reposititory.GetOrderByID(ctx, req)
@@ -38,7 +37,6 @@ func (o *orderService) GetOrderByID(ctx context.Context, req *requests.OrderID) 
 	return res, nil
 }
 
-// CreateOrder implements OrderUseCase.
 func (o *orderService) CreateOrder(ctx context.Context, req *requests.CreateOrder) error {
 
 	err := o.reposititory.CreateOrder(ctx, req)

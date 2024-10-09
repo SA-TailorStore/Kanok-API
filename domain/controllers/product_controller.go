@@ -19,7 +19,6 @@ func NewProductController(service services.ProductUsecase) rest.ProductHandler {
 	}
 }
 
-// CreateProduct implements rest.ProductHandler.
 func (p *productController) CreateProduct(c *fiber.Ctx) error {
 	var req *requests.CreateProduct
 
@@ -56,7 +55,6 @@ func (p *productController) CreateProduct(c *fiber.Ctx) error {
 	})
 }
 
-// GetProductByOrderID implements rest.ProductHandler.
 func (p *productController) GetProductByOrderID(c *fiber.Ctx) error {
 	var req *requests.OrderID
 

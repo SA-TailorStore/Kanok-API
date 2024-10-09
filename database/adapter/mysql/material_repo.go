@@ -19,7 +19,6 @@ func NewMaterialMySQL(db *sqlx.DB) reposititories.MaterialRepository {
 	}
 }
 
-// AddMaterial implements reposititories.MaterialRepository.
 func (m *MaterialMySQL) AddMaterial(ctx context.Context, req *requests.AddMaterial) error {
 	query := `
 	INSERT INTO MATERIALS 
@@ -34,7 +33,6 @@ func (m *MaterialMySQL) AddMaterial(ctx context.Context, req *requests.AddMateri
 	return nil
 }
 
-// UpdateMaterial implements reposititories.MaterialRepository.
 func (m *MaterialMySQL) UpdateMaterial(ctx context.Context, req *requests.UpdateMaterial) error {
 	query := `
 	UPDATE MATERIALS 
@@ -50,7 +48,6 @@ func (m *MaterialMySQL) UpdateMaterial(ctx context.Context, req *requests.Update
 	return nil
 }
 
-// DeleteMaterial implements reposititories.MaterialRepository.
 func (m *MaterialMySQL) DeleteMaterial(ctx context.Context, req *requests.MaterialID) error {
 	query := `DELETE FROM MATERIALS WHERE material_id = ?`
 
@@ -62,7 +59,6 @@ func (m *MaterialMySQL) DeleteMaterial(ctx context.Context, req *requests.Materi
 	return nil
 }
 
-// GetAllMaterials implements reposititories.MaterialRepository.
 func (m *MaterialMySQL) GetAllMaterials(ctx context.Context) ([]*responses.Material, error) {
 	query := `
 	SELECT 

@@ -21,7 +21,6 @@ func NewDesignMySQL(db *sqlx.DB) reposititories.DesignRepository {
 	}
 }
 
-// AddDesign implements reposititories.DesignRepository.
 func (d *DesignMySQL) AddDesign(ctx context.Context, req *requests.AddDesign) error {
 	query := `
 	INSERT INTO DESIGNS (design_url,type) 
@@ -35,7 +34,6 @@ func (d *DesignMySQL) AddDesign(ctx context.Context, req *requests.AddDesign) er
 	return nil
 }
 
-// UpdateDesign implements reposititories.DesignRepository.
 func (d *DesignMySQL) UpdateDesign(ctx context.Context, req *requests.UpdateDesign) error {
 	query := `
 	UPDATE DESIGNS 
@@ -52,7 +50,6 @@ func (d *DesignMySQL) UpdateDesign(ctx context.Context, req *requests.UpdateDesi
 	return nil
 }
 
-// DeleteDesign implements reposititories.DesignRepository.
 func (d *DesignMySQL) DeleteDesign(ctx context.Context, req *requests.DesignID) error {
 	query := "DELETE FROM DESIGNS WHERE design_id = ?"
 
@@ -64,7 +61,6 @@ func (d *DesignMySQL) DeleteDesign(ctx context.Context, req *requests.DesignID) 
 	return nil
 }
 
-// GetAllDesigns implements reposititories.DesignRepository.
 func (d *DesignMySQL) GetAllDesigns(ctx context.Context) ([]*responses.Design, error) {
 	query := `
 	SELECT
@@ -92,7 +88,6 @@ func (d *DesignMySQL) GetAllDesigns(ctx context.Context) ([]*responses.Design, e
 	return designs, nil
 }
 
-// GetDesignByID implements reposititories.DesignRepository.
 func (d *DesignMySQL) GetDesignByID(ctx context.Context, req *requests.DesignID) (*responses.Design, error) {
 	query := `
 	SELECT 

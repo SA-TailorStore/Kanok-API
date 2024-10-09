@@ -108,7 +108,6 @@ func (f *FabricMySQL) GetAllFabrics(ctx context.Context) ([]*responses.Fabric, e
 	return fabrics, nil
 }
 
-// GetFabricByID implements reposititories.FabricRepository.
 func (f *FabricMySQL) GetFabricByID(ctx context.Context, req *requests.FabricID) (*responses.Fabric, error) {
 	query := `
 	SELECT 
@@ -125,5 +124,4 @@ func (f *FabricMySQL) GetFabricByID(ctx context.Context, req *requests.FabricID)
 	}
 
 	return &fabric, nil
-
 }

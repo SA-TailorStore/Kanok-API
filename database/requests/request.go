@@ -127,19 +127,13 @@ type MaterialID struct {
 	Material_id int `json:"material_id" validate:"required"`
 }
 
-type Material struct {
-	Material_id   int    `json:"material_id" validate:"required"`
-	Material_name string `json:"material_name" validate:"required"`
-	Amount        int    `json:"amount" validate:"required"`
-}
-
 type AddMaterial struct {
 	Material_name string `json:"material_name" validate:"required"`
-	Amount        int    `json:"amount" validate:"required"`
+	Amount        int    `json:"amount"`
 }
 
 type UpdateMaterial struct {
 	Material_id   int    `json:"material_id" validate:"required"`
-	Material_name string `json:"material_name" validate:"required"`
-	Amount        int    `json:"amount" validate:"required"`
+	Material_name string `json:"material_name"`
+	Amount        int    `json:"amount"`
 }

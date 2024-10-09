@@ -53,7 +53,6 @@ func (d *designService) AddDesign(ctx context.Context, file interface{}, req *re
 	return nil
 }
 
-// UpdateDesign implements DesignUseCase.
 func (d *designService) UpdateDesign(ctx context.Context, file interface{}, req *requests.UpdateDesign) error {
 
 	temp, err := d.reposititory.GetDesignByID(ctx, &requests.DesignID{Design_id: req.Design_ID})
