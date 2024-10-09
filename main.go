@@ -18,6 +18,7 @@ import (
 func main() {
 	app := fiber.New()
 
+	// Cloudinary
 	cfg := configs.NewConfig()
 	cld, err := cloudinary.NewFromURL(cfg.Cloudinary_url)
 	if err != nil {
@@ -27,7 +28,6 @@ func main() {
 	ctx := context.Background()
 
 	fmt.Printf("%s:%s@tcp(%s:%s)/%s", cfg.DBUsername, cfg.DBPassword, cfg.DBHost, cfg.DBPort, cfg.DBName)
-	fmt.Println()
 	db, err := sqlx.ConnectContext(ctx, "mysql", fmt.Sprintf("%s:%s@tcp(%s:%s)/%s", cfg.DBUsername, cfg.DBPassword, cfg.DBHost, cfg.DBPort, cfg.DBName))
 
 	if err != nil {
@@ -62,6 +62,7 @@ func main() {
 
 	prefix := "/api"
 	// api routes post
+
 	// User
 	app.Post(prefix+"/register", userController.Register)
 	app.Post(prefix+"/login", userController.Login)

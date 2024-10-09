@@ -19,12 +19,10 @@ func NewUserController(service services.UserUseCase) rest.UserHandler {
 	}
 }
 
-// FindAllUser implements UserHandler.
 func (u *userController) FindAllUser(c *fiber.Ctx) error {
-	users, err := u.service.GetAllUser(c.Context())
+	res, err := u.service.GetAllUser(c.Context())
 
 	if err != nil {
-		// If there's an error, return a 500 status with the error message
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"status":  "500",
 			"message": "Failed to retrieve users",
@@ -35,51 +33,10 @@ func (u *userController) FindAllUser(c *fiber.Ctx) error {
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{
 		"status":  "200",
 		"message": "User found",
-		"data":    users,
+		"data":    res,
 	})
 }
 
-// Login implements UserHandler.
-func (u *userController) Login(c *fiber.Ctx) error {
-	// Parse request
-	var req *requests.UserLogin
-
-	if err := c.BodyParser(&req); err != nil {
-		c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"error": err.Error(),
-		})
-	}
-
-	// Validate request
-	if err := utils.ValidateStruct(req); err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(err)
-	}
-
-	// Login user
-	user, err := u.service.Login(c.Context(), req)
-	if err != nil {
-		switch err {
-		case exceptions.ErrLoginFailed:
-			return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
-				"error":  "Login failed",
-				"status": "201",
-			})
-		default:
-			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-				"error":  err.Error(),
-				"status": "500",
-			})
-		}
-	}
-
-	return c.Status(fiber.StatusOK).JSON(fiber.Map{
-		"message": "User login successfully",
-		"status":  "200",
-		"token":   user.Token,
-	})
-}
-
-// Register implements UserHandler.
 func (u *userController) Register(c *fiber.Ctx) error {
 
 	// Parse request
@@ -101,15 +58,24 @@ func (u *userController) Register(c *fiber.Ctx) error {
 		switch err {
 		case exceptions.ErrUsernameDuplicated:
 			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-				"error":  "Username already registered",
+				"error":  err.Error(),
 				"status": "400",
 			})
 		case exceptions.ErrCharLeastPassword:
 			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-				"error":  "Password must be at least 8 characters long",
+				"error":  err.Error(),
 				"status": "400",
 			})
-
+		case exceptions.ErrOneSpecialPassword:
+			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+				"error":  err.Error(),
+				"status": "400",
+			})
+		case exceptions.ErrPhoneNumber:
+			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+				"error":  err.Error(),
+				"status": "400",
+			})
 		default:
 			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 				"error":  err.Error(),
@@ -121,7 +87,45 @@ func (u *userController) Register(c *fiber.Ctx) error {
 	return c.Status(fiber.StatusCreated).JSON(fiber.Map{
 		"message": "User registered successfully",
 		"status":  "201",
-		"data":    req.Username,
+	})
+}
+
+func (u *userController) Login(c *fiber.Ctx) error {
+	// Parse request
+	var req *requests.UserLogin
+
+	if err := c.BodyParser(&req); err != nil {
+		c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"error": err.Error(),
+		})
+	}
+
+	// Validate request
+	if err := utils.ValidateStruct(req); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(err)
+	}
+
+	// Login res
+	res, err := u.service.Login(c.Context(), req)
+	if err != nil {
+		switch err {
+		case exceptions.ErrLoginFailed:
+			return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
+				"error":  "Login failed",
+				"status": "401",
+			})
+		default:
+			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+				"error":  err.Error(),
+				"status": "500",
+			})
+		}
+	}
+
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{
+		"message": "Login success",
+		"status":  "200",
+		"token":   res.Token,
 	})
 }
 
@@ -140,7 +144,7 @@ func (u *userController) GetUserByJWT(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusBadRequest).JSON(err)
 	}
 
-	user, err := u.service.FindByJWT(c.Context(), req)
+	res, err := u.service.FindByJWT(c.Context(), req)
 
 	if err != nil {
 		switch err {
@@ -165,7 +169,7 @@ func (u *userController) GetUserByJWT(c *fiber.Ctx) error {
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{
 		"message": "OK!",
 		"status":  "200",
-		"data":    user,
+		"data":    res,
 	})
 }
 
@@ -184,7 +188,7 @@ func (u *userController) LoginToken(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusBadRequest).JSON(err)
 	}
 
-	user, err := u.service.GenToken(c.Context(), req)
+	res, err := u.service.GenToken(c.Context(), req)
 
 	if err != nil {
 		switch err {
@@ -209,11 +213,10 @@ func (u *userController) LoginToken(c *fiber.Ctx) error {
 	return c.Status(fiber.StatusCreated).JSON(fiber.Map{
 		"message": "The session is still alive.",
 		"status":  "201",
-		"token":   user.Token,
+		"token":   res.Token,
 	})
 }
 
-// UpdateAddress implements rest.UserHandler.
 func (u *userController) UpdateAddress(c *fiber.Ctx) error {
 	// Parse request
 	var req *requests.UserUpdate
@@ -251,13 +254,12 @@ func (u *userController) UpdateAddress(c *fiber.Ctx) error {
 
 	}
 
-	return c.Status(fiber.StatusOK).JSON(fiber.Map{
+	return c.Status(fiber.StatusNoContent).JSON(fiber.Map{
 		"message": "Update Address success.",
 		"status":  "204",
 	})
 }
 
-// UploadImage implements rest.UserHandler.
 func (u *userController) UploadImage(c *fiber.Ctx) error {
 	// Parse request
 	var req requests.UserUploadImage
@@ -312,7 +314,7 @@ func (u *userController) UploadImage(c *fiber.Ctx) error {
 		}
 	}
 
-	return c.Status(fiber.StatusOK).JSON(fiber.Map{
+	return c.Status(fiber.StatusNoContent).JSON(fiber.Map{
 		"url":     res.User_profile_url,
 		"message": "Upload Image success",
 		"status":  "204",
