@@ -51,9 +51,18 @@ func (d *DesignMySQL) UpdateDesign(ctx context.Context, req *requests.UpdateDesi
 }
 
 func (d *DesignMySQL) DeleteDesign(ctx context.Context, req *requests.DesignID) error {
-	query := "DELETE FROM DESIGNS WHERE design_id = ?"
 
+	query := `	
+	SELECT 
+		design_id, 
+	FROM DESIGNS WHERE design_id = ?`
 	_, err := d.db.QueryContext(ctx, query, req.Design_id)
+	if err != nil {
+		return exceptions.ErrDesignNotFound
+	}
+
+	query = "DELETE FROM DESIGNS WHERE design_id = ?"
+	_, err = d.db.QueryContext(ctx, query, req.Design_id)
 	if err != nil {
 		return err
 	}

@@ -25,8 +25,8 @@ func NewUserMySQL(db *sqlx.DB) reposititories.UserRepository {
 func (u *UserMySQL) Create(ctx context.Context, req *requests.UserRegister) error {
 	query := `
 	INSERT INTO USERS
-	(user_id, username, password, phone_number) 
-	VALUES ( ?, ?, ?, ?)
+	(user_id, username, password, phone_number, address) 
+	VALUES ( ?, ?, ?, ?, ?)
 	`
 
 	user_id, err := uuid.NewV7()
@@ -35,7 +35,7 @@ func (u *UserMySQL) Create(ctx context.Context, req *requests.UserRegister) erro
 	}
 
 	_, err = u.db.QueryContext(ctx, query,
-		user_id, req.Username, req.Password, req.Phone_number)
+		user_id, req.Username, req.Password, req.Phone_number, "-")
 
 	return err
 }

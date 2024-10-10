@@ -51,7 +51,7 @@ func VerificationJWT(jwtToken string) (string, error) {
 
 func GenerateJWT(user_id string) string {
 	// Generate JWT token
-	expireAt := time.Now().Add(time.Hour * 1)
+	expireAt := time.Now().AddDate(0, 1, 0)
 
 	claims := jwt.MapClaims{
 		"user_id": user_id,

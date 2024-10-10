@@ -130,6 +130,11 @@ func (d *designController) DeleteDesign(c *fiber.Ctx) error {
 	err := d.service.DeleteDesign(c.Context(), &req)
 	if err != nil {
 		switch err {
+		case exceptions.ErrDesignNotFound:
+			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+				"error":  err.Error(),
+				"status": "400",
+			})
 		case err:
 			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 				"error":  err.Error(),
@@ -143,9 +148,9 @@ func (d *designController) DeleteDesign(c *fiber.Ctx) error {
 		}
 	}
 
-	return c.Status(fiber.StatusCreated).JSON(fiber.Map{
+	return c.Status(fiber.StatusNoContent).JSON(fiber.Map{
 		"message": "Delete Design Success.",
-		"status":  "201",
+		"status":  "204",
 	})
 }
 

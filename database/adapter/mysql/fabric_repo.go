@@ -5,6 +5,7 @@ import (
 
 	"github.com/SA-TailorStore/Kanok-API/database/requests"
 	"github.com/SA-TailorStore/Kanok-API/database/responses"
+	"github.com/SA-TailorStore/Kanok-API/domain/exceptions"
 	"github.com/SA-TailorStore/Kanok-API/domain/reposititories"
 	"github.com/jmoiron/sqlx"
 )
@@ -67,9 +68,19 @@ func (f *FabricMySQL) UpdateFabrics(ctx context.Context, req []*requests.UpdateF
 }
 
 func (f *FabricMySQL) DeleteFabric(ctx context.Context, req *requests.FabricID) error {
-	query := `DELETE FROM FABRICS WHERE fabric_id = ?`
 
+	query := `
+	SELECT 
+		fabric_id,
+	FROM FABRICS WHERE fabric_id = ?
+	`
 	_, err := f.db.QueryContext(ctx, query, req.Fabric_id)
+	if err != nil {
+		return exceptions.ErrFabricNotFound
+	}
+
+	query = `DELETE FROM FABRICS WHERE fabric_id = ?`
+	_, err = f.db.QueryContext(ctx, query, req.Fabric_id)
 	if err != nil {
 		return err
 	}

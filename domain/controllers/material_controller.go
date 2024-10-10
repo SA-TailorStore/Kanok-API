@@ -3,6 +3,7 @@ package controllers
 import (
 	"github.com/SA-TailorStore/Kanok-API/database/adapter/rest"
 	"github.com/SA-TailorStore/Kanok-API/database/requests"
+	"github.com/SA-TailorStore/Kanok-API/domain/exceptions"
 	"github.com/SA-TailorStore/Kanok-API/domain/services"
 	"github.com/SA-TailorStore/Kanok-API/utils"
 	"github.com/gofiber/fiber/v2"
@@ -19,10 +20,11 @@ func NewMaterialController(service services.MaterialUseCase) rest.MaterialHandle
 }
 
 func (m *materialController) AddMaterial(c *fiber.Ctx) error {
+
 	var req requests.AddMaterial
 	if err := c.BodyParser(&req); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"error":  err.Error(),
+			"error":  exceptions.ErrBadRequestMaterial,
 			"status": "400",
 		})
 	}
@@ -82,13 +84,14 @@ func (m *materialController) UpdateMaterial(c *fiber.Ctx) error {
 			})
 		}
 	}
-	return c.Status(fiber.StatusOK).JSON(fiber.Map{
+	return c.Status(fiber.StatusNoContent).JSON(fiber.Map{
 		"message": "Update Material Success.",
 		"status":  "204",
 	})
 }
 
 func (m *materialController) DeleteMaterial(c *fiber.Ctx) error {
+
 	var req requests.MaterialID
 	if err := c.BodyParser(&req); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
@@ -105,6 +108,11 @@ func (m *materialController) DeleteMaterial(c *fiber.Ctx) error {
 	err := m.service.DeleteMaterial(c.Context(), &req)
 	if err != nil {
 		switch err {
+		case exceptions.ErrMaterialNotFound:
+			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+				"error":  err.Error(),
+				"status": "400",
+			})
 		case fiber.ErrUnauthorized:
 			return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
 				"error":  err.Error(),
@@ -117,7 +125,8 @@ func (m *materialController) DeleteMaterial(c *fiber.Ctx) error {
 			})
 		}
 	}
-	return c.Status(fiber.StatusOK).JSON(fiber.Map{
+
+	return c.Status(fiber.StatusNoContent).JSON(fiber.Map{
 		"message": "Delete Material Success.",
 		"status":  "204",
 	})

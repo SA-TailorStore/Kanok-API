@@ -3,7 +3,6 @@ package services
 import (
 	"context"
 	"errors"
-	"time"
 
 	"golang.org/x/crypto/bcrypt"
 
@@ -89,11 +88,7 @@ func (u *userService) Register(ctx context.Context, req *requests.UserRegister) 
 
 func (u *userService) Login(ctx context.Context, req *requests.UserLogin) (*responses.UserJWT, error) {
 
-	username := &requests.Username{
-		Username: req.Username,
-	}
-
-	res, err := u.reposititory.GetPasswordByUsername(ctx, username)
+	res, err := u.reposititory.GetPasswordByUsername(ctx, &requests.Username{Username: req.Username})
 	// Check if user exist
 	if err != nil {
 		return nil, err
@@ -104,21 +99,7 @@ func (u *userService) Login(ctx context.Context, req *requests.UserLogin) (*resp
 		return nil, exceptions.ErrWrongPassword
 	}
 
-	// Generate JWT token
-	expireAt := time.Now().Add(time.Hour * 1)
-
-	claims := jwt.MapClaims{
-		"user_id": res.User_id,
-		"exp":     expireAt.Unix(),
-	}
-
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-
-	// Sign the token with the secret
-	tokenString, err := token.SignedString([]byte(u.config.JWTSecret))
-	if err != nil {
-		return nil, err
-	}
+	tokenString := utils.GenerateJWT(res.User_id)
 
 	return &responses.UserJWT{
 		Token: tokenString,

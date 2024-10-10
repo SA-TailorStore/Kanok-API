@@ -5,6 +5,7 @@ import (
 
 	"github.com/SA-TailorStore/Kanok-API/database/requests"
 	"github.com/SA-TailorStore/Kanok-API/database/responses"
+	"github.com/SA-TailorStore/Kanok-API/domain/exceptions"
 	"github.com/SA-TailorStore/Kanok-API/domain/reposititories"
 	"github.com/jmoiron/sqlx"
 )
@@ -49,9 +50,17 @@ func (m *MaterialMySQL) UpdateMaterial(ctx context.Context, req *requests.Update
 }
 
 func (m *MaterialMySQL) DeleteMaterial(ctx context.Context, req *requests.MaterialID) error {
-	query := `DELETE FROM MATERIALS WHERE material_id = ?`
-
+	query := `
+	SELECT 
+		material_id, 
+	FROM MATERIALS WHERE material_id = ?`
 	_, err := m.db.QueryContext(ctx, query, req.Material_id)
+	if err != nil {
+		return exceptions.ErrMaterialNotFound
+	}
+
+	query = `DELETE FROM MATERIALS WHERE material_id = ?`
+	_, err = m.db.QueryContext(ctx, query, req.Material_id)
 	if err != nil {
 		return err
 	}

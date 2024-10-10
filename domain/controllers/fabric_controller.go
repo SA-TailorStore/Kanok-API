@@ -3,6 +3,7 @@ package controllers
 import (
 	"github.com/SA-TailorStore/Kanok-API/database/adapter/rest"
 	"github.com/SA-TailorStore/Kanok-API/database/requests"
+	"github.com/SA-TailorStore/Kanok-API/domain/exceptions"
 	"github.com/SA-TailorStore/Kanok-API/domain/services"
 	"github.com/SA-TailorStore/Kanok-API/utils"
 	"github.com/gofiber/fiber/v2"
@@ -95,7 +96,7 @@ func (f *fabricController) UpdateFabric(c *fiber.Ctx) error {
 			})
 		}
 	}
-	return c.Status(fiber.StatusOK).JSON(fiber.Map{
+	return c.Status(fiber.StatusNoContent).JSON(fiber.Map{
 		"message": "Update Fabric Success.",
 		"status":  "204",
 	})
@@ -155,6 +156,11 @@ func (f *fabricController) DeleteFabric(c *fiber.Ctx) error {
 
 	if err := f.service.DeleteFabric(c.Context(), &req); err != nil {
 		switch err {
+		case exceptions.ErrFabricNotFound:
+			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+				"error":  err.Error(),
+				"status": "400",
+			})
 		case err:
 			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 				"error":  err.Error(),
@@ -167,9 +173,9 @@ func (f *fabricController) DeleteFabric(c *fiber.Ctx) error {
 			})
 		}
 	}
-	return c.Status(fiber.StatusCreated).JSON(fiber.Map{
+	return c.Status(fiber.StatusNoContent).JSON(fiber.Map{
 		"message": "Delete Fabric Success.",
-		"status":  "201",
+		"status":  "204",
 	})
 }
 
