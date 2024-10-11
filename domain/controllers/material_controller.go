@@ -72,6 +72,11 @@ func (m *materialController) UpdateMaterial(c *fiber.Ctx) error {
 	err := m.service.UpdateMaterial(c.Context(), &req)
 	if err != nil {
 		switch err {
+		case exceptions.ErrMaterialNotFound:
+			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+				"error":  err.Error(),
+				"status": "400",
+			})
 		case fiber.ErrUnauthorized:
 			return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
 				"error":  err.Error(),
@@ -173,6 +178,11 @@ func (m *materialController) GetMaterialByID(c *fiber.Ctx) error {
 	res, err := m.service.GetMaterialByID(c.Context(), &req)
 	if err != nil {
 		switch err {
+		case exceptions.ErrMaterialNotFound:
+			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+				"error":  err.Error(),
+				"status": "400",
+			})
 		case fiber.ErrUnauthorized:
 			return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
 				"error":  err.Error(),

@@ -72,9 +72,14 @@ func (p *productController) GetProductByOrderID(c *fiber.Ctx) error {
 	produsts, err := p.service.GetProductByOrderID(c.Context(), req)
 	if err != nil {
 		switch err {
+		case exceptions.ErrOrderNotFound:
+			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+				"error":  err.Error(),
+				"status": "400",
+			})
 		case exceptions.ErrProductNotFound:
 			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-				"error":  "Not found product",
+				"error":  err.Error(),
 				"status": "400",
 			})
 		default:

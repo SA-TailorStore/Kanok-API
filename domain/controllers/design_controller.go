@@ -95,6 +95,11 @@ func (d *designController) UpdateDesign(c *fiber.Ctx) error {
 
 	if err := d.service.UpdateDesign(c.Context(), file, &req); err != nil {
 		switch err {
+		case exceptions.ErrDesignNotFound:
+			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+				"error":  err.Error(),
+				"status": "400",
+			})
 		case err:
 			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 				"error":  err.Error(),
