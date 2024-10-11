@@ -53,8 +53,8 @@ func (o *OrderMySQL) CreateOrder(ctx context.Context, req *requests.CreateOrder)
 
 	query = `
 	INSERT INTO ORDERS
-	(order_id, status,store_phone, store_address, user_phone, user_address, created_by) 
-	VALUES ( ?, ?, ?, ?, ?, ?, ?)
+	(order_id, status,store_phone, store_address, user_phone, user_address, tailor_id, created_by) 
+	VALUES ( ?, ?, ?, ?, ?, ?, ?, ?)
 	`
 
 	order_id := "O" + time.Now().Format("20060102") + time.Now().Format("150405")
@@ -65,6 +65,7 @@ func (o *OrderMySQL) CreateOrder(ctx context.Context, req *requests.CreateOrder)
 		store.Address,
 		user.Phone_number,
 		user.Address,
+		req.Token,
 		req.Token)
 	if err != nil {
 		return nil, exceptions.ErrInfomation

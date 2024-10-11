@@ -101,7 +101,7 @@ func (o *orderController) GetOrderByID(c *fiber.Ctx) error {
 		}
 	}
 
-	return c.Status(fiber.StatusNoContent).JSON(fiber.Map{
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{
 		"message": "Get Order",
 		"status":  "200",
 		"data":    res,
