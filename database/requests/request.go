@@ -76,7 +76,6 @@ type Product struct {
 	Detail         string `json:"detail" validate:"required"`
 	Size           string `json:"size" validate:"required"`
 	Total_quantity int    `json:"total_quantity" validate:"required"`
-	Created_by     string `json:"created_by" validate:"required"`
 }
 type CreateProduct struct {
 	Order_id string    `json:"order_id" validate:"required"`
