@@ -10,4 +10,5 @@ type OrderHandler interface {
 	UpdateStatus(c *fiber.Ctx) error
 	GetOrderByJWT(c *fiber.Ctx) error
 	UpdatePayment(c *fiber.Ctx) error
+	GetAllOrders(c *fiber.Ctx) error
 }

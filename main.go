@@ -110,7 +110,7 @@ func main() {
 	app.Get(prefix+"/users", userController.FindAllUser)
 
 	// Order
-	// app.Get(prefix+"/orders", orderController.GetAllOrders)
+	app.Get(prefix+"/orders", orderController.GetAllOrders)
 
 	// Product
 

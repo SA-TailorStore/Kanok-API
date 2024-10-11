@@ -236,3 +236,32 @@ func (o *orderController) GetOrderByJWT(c *fiber.Ctx) error {
 		"data":    res,
 	})
 }
+
+func (o *orderController) GetAllOrders(c *fiber.Ctx) error {
+	res, err := o.service.GetAllOrders(c.Context())
+	if err != nil {
+		switch err {
+		case exceptions.ErrOrderNotFound:
+			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+				"error":  err.Error(),
+				"status": "400",
+			})
+		case err:
+			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+				"error":  err.Error(),
+				"status": "400",
+			})
+		default:
+			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+				"error":  err.Error(),
+				"status": "500",
+			})
+		}
+	}
+
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{
+		"message": "Get Orders",
+		"status":  "200",
+		"data":    res,
+	})
+}

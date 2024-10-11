@@ -161,15 +161,59 @@ func (o *OrderMySQL) GetOrderByUserId(ctx context.Context, req *requests.UserID)
 		timestamp
 	FROM ORDERS WHERE created_by = ?
 	`
-	// var order responses.Order
-
-	// err := o.db.GetContext(ctx, &order, query, req.User_id)
-	// if err != nil {
-	// 	return &order, err
-	// }
-	// return &order, nil
 
 	rows, err := o.db.QueryContext(ctx, query, req.User_id)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	orders := make([]*responses.Order, 0)
+	for rows.Next() {
+		var order responses.Order
+		if err := rows.Scan(
+			&order.Order_id,
+			&order.Is_payment,
+			&order.Status,
+			&order.Store_phone,
+			&order.Store_address,
+			&order.User_phone,
+			&order.User_address,
+			&order.Price,
+			&order.Due_date,
+			&order.Tracking_number,
+			&order.Tailor_id,
+			&order.Created_by,
+			&order.Timestamp,
+		); err != nil {
+			return nil, err
+		}
+		orders = append(orders, &order)
+	}
+
+	return orders, nil
+}
+
+func (o *OrderMySQL) GetAllOrders(ctx context.Context) ([]*responses.Order, error) {
+	query := `
+	SELECT 
+		order_id,
+		is_payment,
+		status,
+		store_phone,
+		store_address,
+		user_phone,
+		user_address,
+		price,
+		due_date,
+		tracking_number,
+		tailor_id,
+		created_by,
+		timestamp
+	FROM ORDERS
+	`
+
+	rows, err := o.db.QueryContext(ctx, query)
 	if err != nil {
 		return nil, err
 	}

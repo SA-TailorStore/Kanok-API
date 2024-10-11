@@ -17,6 +17,7 @@ type OrderUseCase interface {
 	UpdateStatus(ctx context.Context, req *requests.UpdateStatus) error
 	UpdatePayment(ctx context.Context, req *requests.UpdatePayment) error
 	GetOrderByJWT(ctx context.Context, req *requests.UserJWT) ([]*responses.Order, error)
+	GetAllOrders(ctx context.Context) ([]*responses.Order, error)
 }
 
 type orderService struct {
@@ -99,6 +100,17 @@ func (o *orderService) GetOrderByJWT(ctx context.Context, req *requests.UserJWT)
 	}
 
 	res, err := o.reposititory.GetOrderByUserId(ctx, user_id)
+
+	if err != nil {
+		return res, err
+	}
+
+	return res, nil
+}
+
+func (o *orderService) GetAllOrders(ctx context.Context) ([]*responses.Order, error) {
+
+	res, err := o.reposititory.GetAllOrders(ctx)
 
 	if err != nil {
 		return res, err
