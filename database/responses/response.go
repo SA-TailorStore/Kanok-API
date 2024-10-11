@@ -39,6 +39,7 @@ type UserJWT struct {
 
 // ORDER
 type Order struct {
+	Order_id        string `json:"order_id"`
 	Is_payment      int    `json:"is_payment"`
 	Status          string `json:"status"`
 	Store_phone     string `json:"store_phone"`

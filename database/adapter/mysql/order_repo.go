@@ -47,6 +47,7 @@ func (o *OrderMySQL) CreateOrder(ctx context.Context, req *requests.CreateOrder)
 func (o *OrderMySQL) GetOrderByID(ctx context.Context, req *requests.OrderID) (*responses.Order, error) {
 	query := `
 	SELECT 
+		order_id
 		is_payment,
 		status,
 		store_phone,
