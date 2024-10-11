@@ -36,7 +36,7 @@ func (f *FabricMySQL) AddFabric(ctx context.Context, req *requests.AddFabric) er
 
 func (f *FabricMySQL) UpdateFabric(ctx context.Context, req *requests.UpdateFabric) error {
 
-	if err := utils.CheckFabric(f.db, ctx, req.Fabric_id); err != err {
+	if err := utils.CheckFabric(f.db, ctx, req.Fabric_id); err != nil {
 		return err
 	}
 
@@ -74,7 +74,7 @@ func (f *FabricMySQL) UpdateFabrics(ctx context.Context, req []*requests.UpdateF
 
 func (f *FabricMySQL) DeleteFabric(ctx context.Context, req *requests.FabricID) error {
 
-	if err := utils.CheckFabric(f.db, ctx, req.Fabric_id); err != err {
+	if err := utils.CheckFabric(f.db, ctx, req.Fabric_id); err != nil {
 		return err
 	}
 
@@ -120,7 +120,7 @@ func (f *FabricMySQL) GetAllFabrics(ctx context.Context) ([]*responses.Fabric, e
 
 func (f *FabricMySQL) GetFabricByID(ctx context.Context, req *requests.FabricID) (*responses.Fabric, error) {
 
-	if err := utils.CheckFabric(f.db, ctx, req.Fabric_id); err != err {
+	if err := utils.CheckFabric(f.db, ctx, req.Fabric_id); err != nil {
 		return nil, err
 	}
 

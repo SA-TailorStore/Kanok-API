@@ -36,7 +36,7 @@ func (m *MaterialMySQL) AddMaterial(ctx context.Context, req *requests.AddMateri
 
 func (m *MaterialMySQL) UpdateMaterial(ctx context.Context, req *requests.UpdateMaterial) error {
 
-	if err := utils.CheckMaterial(m.db, ctx, req.Material_id); err != err {
+	if err := utils.CheckMaterial(m.db, ctx, req.Material_id); err != nil {
 		return err
 	}
 
@@ -56,7 +56,7 @@ func (m *MaterialMySQL) UpdateMaterial(ctx context.Context, req *requests.Update
 
 func (m *MaterialMySQL) DeleteMaterial(ctx context.Context, req *requests.MaterialID) error {
 
-	if err := utils.CheckMaterial(m.db, ctx, req.Material_id); err != err {
+	if err := utils.CheckMaterial(m.db, ctx, req.Material_id); err != nil {
 		return err
 	}
 
@@ -97,7 +97,7 @@ func (m *MaterialMySQL) GetAllMaterials(ctx context.Context) ([]*responses.Mater
 
 func (m *MaterialMySQL) GetMaterialByID(ctx context.Context, req *requests.MaterialID) (*responses.Material, error) {
 
-	if err := utils.CheckMaterial(m.db, ctx, req.Material_id); err != err {
+	if err := utils.CheckMaterial(m.db, ctx, req.Material_id); err != nil {
 		return nil, err
 	}
 
