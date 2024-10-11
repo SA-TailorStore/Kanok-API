@@ -44,6 +44,11 @@ func (o *orderController) CreateOrder(c *fiber.Ctx) error {
 				"error":  err.Error(),
 				"status": "400",
 			})
+		case exceptions.ErrExpiredToken:
+			return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
+				"error":  err.Error(),
+				"status": "401",
+			})
 		default:
 			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 				"error":  err.Error(),
@@ -75,7 +80,6 @@ func (o *orderController) GetOrderByID(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusBadRequest).JSON(err)
 	}
 
-	// Create Order
 	res, err := o.service.GetOrderByID(c.Context(), req)
 	if err != nil {
 		switch err {
@@ -92,9 +96,84 @@ func (o *orderController) GetOrderByID(c *fiber.Ctx) error {
 		}
 	}
 
-	return c.Status(fiber.StatusOK).JSON(fiber.Map{
+	return c.Status(fiber.StatusNoContent).JSON(fiber.Map{
 		"message": "Get Order",
 		"status":  "200",
 		"data":    res,
+	})
+}
+
+func (o *orderController) UpdateStatus(c *fiber.Ctx) error {
+	// Parse request
+	var req *requests.UpdateStatus
+
+	if err := c.BodyParser(&req); err != nil {
+		c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"error":  err.Error(),
+			"status": "500",
+		})
+	}
+
+	// Validate request
+	if err := utils.ValidateStruct(req); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(err)
+	}
+
+	err := o.service.UpdateStatus(c.Context(), req)
+	if err != nil {
+		switch err {
+		case err:
+			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+				"error":  err.Error(),
+				"status": "400",
+			})
+		default:
+			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+				"error":  err.Error(),
+				"status": "500",
+			})
+		}
+	}
+	return c.Status(fiber.StatusNoContent).JSON(fiber.Map{
+		"message": "Order has update",
+		"status":  "204",
+	})
+}
+
+func (o *orderController) UpdatePayment(c *fiber.Ctx) error {
+	// Parse request
+	var req *requests.UpdatePayment
+
+	if err := c.BodyParser(&req); err != nil {
+		c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"error":  err.Error(),
+			"status": "500",
+		})
+	}
+
+	// Validate request
+	if err := utils.ValidateStruct(req); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(err)
+	}
+
+	err := o.service.UpdatePayment(c.Context(), req)
+	if err != nil {
+		switch err {
+		case err:
+			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+				"error":  err.Error(),
+				"status": "400",
+			})
+		default:
+			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+				"error":  err.Error(),
+				"status": "500",
+			})
+		}
+	}
+
+	return c.Status(fiber.StatusNoContent).JSON(fiber.Map{
+		"message": "Order has update",
+		"status":  "204",
 	})
 }

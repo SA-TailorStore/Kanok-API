@@ -49,11 +49,17 @@ type UpdateOrder struct {
 	User_address  string `json:"user_address" validate:"required"`
 }
 type CreateOrder struct {
-	Store_phone   string `json:"store_phone" validate:"required"`
-	Store_address string `json:"store_address" validate:"required"`
-	User_phone    string `json:"user_phone" validate:"required"`
-	User_address  string `json:"user_address" validate:"required"`
-	Created_by    string `json:"created_by" validate:"required"`
+	Token string `json:"token" validate:"required"`
+}
+
+type UpdateStatus struct {
+	Order_id string `json:"order_id" validate:"required"`
+	Status   string `json:"status" validate:"required"`
+}
+
+type UpdatePayment struct {
+	Order_id   string `json:"order_id" validate:"required"`
+	Is_payment int    `json:"is_payment" validate:"required"`
 }
 
 // PRODUCT REQUEST

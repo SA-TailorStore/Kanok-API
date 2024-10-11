@@ -30,6 +30,14 @@ func (o *OrderMySQL) CreateOrder(ctx context.Context, req *requests.CreateOrder)
 		return nil, exceptions.ErrInfomation
 	}
 
+	query = `SELECT address,phone_number FROM USERS WHERE user_id = ?`
+
+	var user responses.UserAddressPhone
+	err = o.db.GetContext(ctx, &user, query, req.Token)
+	if err != nil {
+		return nil, exceptions.ErrInfomation
+	}
+
 	query = `
 	INSERT INTO ORDERS
 	(order_id, status,store_phone, store_address, user_phone, user_address, created_by) 
@@ -42,9 +50,9 @@ func (o *OrderMySQL) CreateOrder(ctx context.Context, req *requests.CreateOrder)
 		"pending",
 		store.Phone_number,
 		store.Address,
-		req.User_phone,
-		req.User_address,
-		req.Created_by)
+		user.Phone_number,
+		user.Address,
+		req.Token)
 	if err != nil {
 		return nil, exceptions.ErrInfomation
 	}
@@ -75,4 +83,36 @@ func (o *OrderMySQL) GetOrderByID(ctx context.Context, req *requests.OrderID) (*
 		return &order, err
 	}
 	return &order, nil
+}
+
+func (o *OrderMySQL) UpdateStatus(ctx context.Context, req *requests.UpdateStatus) error {
+
+	query := `
+	UPDATE ORDERS 
+	SET 
+		status = ?, 
+	WHERE order_id = ?`
+
+	_, err := o.db.ExecContext(ctx, query, req.Status, req.Order_id)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (o *OrderMySQL) UpdatePayment(ctx context.Context, req *requests.UpdatePayment) error {
+
+	query := `
+	UPDATE ORDERS 
+	SET 
+		is_payment = ?, 
+	WHERE order_id = ?`
+
+	_, err := o.db.ExecContext(ctx, query, req.Is_payment, req.Order_id)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

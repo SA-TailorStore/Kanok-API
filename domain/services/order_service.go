@@ -7,11 +7,14 @@ import (
 	"github.com/SA-TailorStore/Kanok-API/database/requests"
 	"github.com/SA-TailorStore/Kanok-API/database/responses"
 	"github.com/SA-TailorStore/Kanok-API/domain/reposititories"
+	"github.com/SA-TailorStore/Kanok-API/utils"
 )
 
 type OrderUseCase interface {
 	CreateOrder(ctx context.Context, req *requests.CreateOrder) (*responses.OrderID, error)
 	GetOrderByID(ctx context.Context, req *requests.OrderID) (*responses.Order, error)
+	UpdateStatus(ctx context.Context, req *requests.UpdateStatus) error
+	UpdatePayment(ctx context.Context, req *requests.UpdatePayment) error
 }
 
 type orderService struct {
@@ -39,11 +42,38 @@ func (o *orderService) GetOrderByID(ctx context.Context, req *requests.OrderID) 
 
 func (o *orderService) CreateOrder(ctx context.Context, req *requests.CreateOrder) (*responses.OrderID, error) {
 
-	res, err := o.reposititory.CreateOrder(ctx, req)
+	user_id, err := utils.VerificationJWT(req.Token)
+	if err != nil {
+		return nil, err
+	}
+
+	res, err := o.reposititory.CreateOrder(ctx, &requests.CreateOrder{Token: user_id})
 
 	if err != nil {
 		return res, err
 	}
 
 	return res, nil
+}
+
+func (o *orderService) UpdateStatus(ctx context.Context, req *requests.UpdateStatus) error {
+
+	err := o.reposititory.UpdateStatus(ctx, req)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (o *orderService) UpdatePayment(ctx context.Context, req *requests.UpdatePayment) error {
+
+	err := o.reposititory.UpdatePayment(ctx, req)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
