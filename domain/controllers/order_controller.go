@@ -83,6 +83,11 @@ func (o *orderController) GetOrderByID(c *fiber.Ctx) error {
 	res, err := o.service.GetOrderByID(c.Context(), req)
 	if err != nil {
 		switch err {
+		case exceptions.ErrOrderNotFound:
+			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+				"error":  err.Error(),
+				"status": "400",
+			})
 		case err:
 			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 				"error":  err.Error(),
@@ -122,6 +127,11 @@ func (o *orderController) UpdateStatus(c *fiber.Ctx) error {
 	err := o.service.UpdateStatus(c.Context(), req)
 	if err != nil {
 		switch err {
+		case exceptions.ErrOrderNotFound:
+			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+				"error":  err.Error(),
+				"status": "400",
+			})
 		case err:
 			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 				"error":  err.Error(),
@@ -159,6 +169,11 @@ func (o *orderController) UpdatePayment(c *fiber.Ctx) error {
 	err := o.service.UpdatePayment(c.Context(), req)
 	if err != nil {
 		switch err {
+		case exceptions.ErrOrderNotFound:
+			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+				"error":  err.Error(),
+				"status": "400",
+			})
 		case err:
 			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 				"error":  err.Error(),

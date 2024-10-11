@@ -35,6 +35,7 @@ func (m *MaterialMySQL) AddMaterial(ctx context.Context, req *requests.AddMateri
 }
 
 func (m *MaterialMySQL) UpdateMaterial(ctx context.Context, req *requests.UpdateMaterial) error {
+
 	query := `
 	UPDATE MATERIALS 
 	SET 

@@ -74,6 +74,8 @@ func main() {
 	// Order
 	app.Post(prefix+"/order/create", orderController.CreateOrder)
 	app.Post(prefix+"/order/get", orderController.GetOrderByID)
+	app.Post(prefix+"/order/update/status", orderController.UpdateStatus)
+	app.Post(prefix+"/order/update/payment", orderController.UpdatePayment)
 
 	// Product
 	app.Post(prefix+"/product/create", productController.CreateProduct)

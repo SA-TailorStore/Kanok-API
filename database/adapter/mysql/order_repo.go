@@ -21,6 +21,19 @@ func NewOrderMySQL(db *sqlx.DB) reposititories.OrderRepository {
 	}
 }
 
+func (o *OrderMySQL) CheckOrder(ctx context.Context, id string) error {
+	query := `
+	SELECT 
+		order_id
+	FROM ORDERS WHERE order_id = ?`
+	var order_id responses.OrderID
+	err := o.db.GetContext(ctx, &order_id, query, id)
+	if err != nil {
+		return exceptions.ErrOrderNotFound
+	}
+	return nil
+}
+
 func (o *OrderMySQL) CreateOrder(ctx context.Context, req *requests.CreateOrder) (*responses.OrderID, error) {
 	query := `SELECT address,phone_number FROM USERS WHERE role = "store"`
 
@@ -60,9 +73,14 @@ func (o *OrderMySQL) CreateOrder(ctx context.Context, req *requests.CreateOrder)
 }
 
 func (o *OrderMySQL) GetOrderByID(ctx context.Context, req *requests.OrderID) (*responses.Order, error) {
+
+	if err := o.CheckOrder(ctx, req.Order_id); err != nil {
+		return nil, err
+	}
+
 	query := `
 	SELECT 
-		order_id
+		order_id,
 		is_payment,
 		status,
 		store_phone,
@@ -87,10 +105,14 @@ func (o *OrderMySQL) GetOrderByID(ctx context.Context, req *requests.OrderID) (*
 
 func (o *OrderMySQL) UpdateStatus(ctx context.Context, req *requests.UpdateStatus) error {
 
+	if err := o.CheckOrder(ctx, req.Order_id); err != nil {
+		return err
+	}
+
 	query := `
 	UPDATE ORDERS 
 	SET 
-		status = ?, 
+		status = ? 
 	WHERE order_id = ?`
 
 	_, err := o.db.ExecContext(ctx, query, req.Status, req.Order_id)
@@ -103,10 +125,14 @@ func (o *OrderMySQL) UpdateStatus(ctx context.Context, req *requests.UpdateStatu
 
 func (o *OrderMySQL) UpdatePayment(ctx context.Context, req *requests.UpdatePayment) error {
 
+	if err := o.CheckOrder(ctx, req.Order_id); err != nil {
+		return err
+	}
+
 	query := `
 	UPDATE ORDERS 
 	SET 
-		is_payment = ?, 
+		is_payment = ? 
 	WHERE order_id = ?`
 
 	_, err := o.db.ExecContext(ctx, query, req.Is_payment, req.Order_id)
