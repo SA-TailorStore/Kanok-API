@@ -74,6 +74,7 @@ func main() {
 	// Order
 	app.Post(prefix+"/order/create", orderController.CreateOrder)
 	app.Post(prefix+"/order/get", orderController.GetOrderByID)
+	app.Post(prefix+"/order/user", orderController.GetOrderByJWT)
 	app.Post(prefix+"/order/update/status", orderController.UpdateStatus)
 	app.Post(prefix+"/order/update/payment", orderController.UpdatePayment)
 
@@ -109,6 +110,7 @@ func main() {
 	app.Get(prefix+"/users", userController.FindAllUser)
 
 	// Order
+	// app.Get(prefix+"/orders", orderController.GetAllOrders)
 
 	// Product
 
