@@ -66,10 +66,18 @@ func (p *ProductMySQL) CreateProduct(ctx context.Context, req *requests.CreatePr
 	return err
 }
 
-func (p *ProductMySQL) GetProductByOrderID(ctx context.Context, req *requests.OrderID) ([]*responses.ProductID, error) {
+func (p *ProductMySQL) GetProductByOrderID(ctx context.Context, req *requests.OrderID) ([]*responses.Product, error) {
 	query := `
 	SELECT 
-		product_id 
+		product_id,
+		design_id,
+		fabric_id,
+		detail,
+		size,
+		process_quantity,
+		total_quantity,
+		created_by,
+		timestamp
 	FROM PRODUCTS WHERE created_by = ?
 	`
 
@@ -79,14 +87,23 @@ func (p *ProductMySQL) GetProductByOrderID(ctx context.Context, req *requests.Or
 	}
 	defer rows.Close()
 
-	var products []*responses.ProductID
+	var products []*responses.Product
 	for rows.Next() {
-		var product_id responses.ProductID
-		if err := rows.Scan(&product_id.Product_id); err != nil {
+		var product responses.Product
+		if err := rows.Scan(
+			&product.Product_id,
+			&product.Design_id,
+			&product.Fabric_id,
+			&product.Detail,
+			&product.Size,
+			&product.Process_quantity,
+			&product.Total_quantity,
+			&product.Created_by,
+			&product.Timestamp); err != nil {
 			return nil, err
 		}
 
-		products = append(products, &product_id)
+		products = append(products, &product)
 	}
 
 	return products, err

@@ -12,7 +12,7 @@ import (
 type ProductUsecase interface {
 	CreateProduct(ctx context.Context, req *requests.CreateProduct) error
 	GetProductByID(ctx context.Context, req *requests.ProductID) (*responses.Product, error)
-	GetProductByOrderID(ctx context.Context, req *requests.OrderID) ([]*responses.ProductID, error)
+	GetProductByOrderID(ctx context.Context, req *requests.OrderID) ([]*responses.Product, error)
 }
 
 type productService struct {
@@ -37,7 +37,7 @@ func (p *productService) CreateProduct(ctx context.Context, req *requests.Create
 	return nil
 }
 
-func (p *productService) GetProductByOrderID(ctx context.Context, req *requests.OrderID) ([]*responses.ProductID, error) {
+func (p *productService) GetProductByOrderID(ctx context.Context, req *requests.OrderID) ([]*responses.Product, error) {
 	products, err := p.reposititory.GetProductByOrderID(ctx, req)
 
 	if err != nil {
