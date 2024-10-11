@@ -2,6 +2,7 @@ package services
 
 import (
 	"context"
+	"strconv"
 
 	"github.com/SA-TailorStore/Kanok-API/configs"
 	"github.com/SA-TailorStore/Kanok-API/database/requests"
@@ -29,8 +30,8 @@ func NewProductService(reposititory reposititories.ProductRepository, config *co
 
 func (p *productService) CreateProduct(ctx context.Context, req *requests.CreateProduct) error {
 
-	for _, value := range req.Products {
-		err := p.reposititory.CreateProduct(ctx, &value, req.Order_id)
+	for index, value := range req.Products {
+		err := p.reposititory.CreateProduct(ctx, &value, req.Order_id, strconv.Itoa(index+1))
 
 		if err != nil {
 			return err
