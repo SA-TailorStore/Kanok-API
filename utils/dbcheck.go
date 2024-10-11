@@ -24,4 +24,6 @@ func NewMySQL() *sqlx.DB {
 	}
 
 	defer db.Close()
+
+	return db
 }

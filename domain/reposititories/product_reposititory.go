@@ -8,7 +8,7 @@ import (
 )
 
 type ProductRepository interface {
-	CreateProduct(ctx context.Context, req *requests.CreateProduct) error
+	CreateProduct(ctx context.Context, req *requests.Product) error
 	GetProductByOrderID(ctx context.Context, req *requests.OrderID) ([]*responses.Product, error)
 	GetProductByID(ctx context.Context, req *requests.ProductID) (*responses.Product, error)
 }

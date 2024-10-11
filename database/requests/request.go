@@ -70,14 +70,17 @@ type ProductID struct {
 type ProductOrderID struct {
 	Created_by string `json:"create_by" validate:"required"`
 }
-
-type CreateProduct struct {
+type Product struct {
 	Design_id      int    `json:"design_id" validate:"required"`
 	Fabric_id      int    `json:"fabric_id" validate:"required"`
 	Detail         string `json:"detail" validate:"required"`
 	Size           string `json:"size" validate:"required"`
 	Total_quantity int    `json:"total_quantity" validate:"required"`
 	Created_by     string `json:"created_by" validate:"required"`
+}
+type CreateProduct struct {
+	Order_id string    `json:"order_id" validate:"required"`
+	Products []Product `json:"products" validate:"required"`
 }
 type UpdateProduct struct {
 	Product_id     string `json:"product_id" validate:"required"`

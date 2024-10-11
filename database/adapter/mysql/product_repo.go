@@ -22,7 +22,7 @@ func NewProductMySQL(db *sqlx.DB) reposititories.ProductRepository {
 	}
 }
 
-func (p *ProductMySQL) CreateProduct(ctx context.Context, req *requests.CreateProduct) error {
+func (p *ProductMySQL) CreateProduct(ctx context.Context, req *requests.Product) error {
 	// Validate
 	query := `SELECT design_id FROM DESIGNS WHERE design_id = ?`
 	err := p.db.GetContext(ctx, &responses.DesignID{}, query, req.Design_id)
