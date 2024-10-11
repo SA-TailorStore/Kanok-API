@@ -5,8 +5,8 @@ import (
 
 	"github.com/SA-TailorStore/Kanok-API/database/requests"
 	"github.com/SA-TailorStore/Kanok-API/database/responses"
-	"github.com/SA-TailorStore/Kanok-API/domain/exceptions"
 	"github.com/SA-TailorStore/Kanok-API/domain/reposititories"
+	"github.com/SA-TailorStore/Kanok-API/utils"
 	"github.com/jmoiron/sqlx"
 )
 
@@ -35,6 +35,11 @@ func (f *FabricMySQL) AddFabric(ctx context.Context, req *requests.AddFabric) er
 }
 
 func (f *FabricMySQL) UpdateFabric(ctx context.Context, req *requests.UpdateFabric) error {
+
+	if err := utils.CheckFabric(f.db, ctx, req.Fabric_id); err != err {
+		return err
+	}
+
 	query := `
 	UPDATE FABRICS 
 	SET 
@@ -69,18 +74,12 @@ func (f *FabricMySQL) UpdateFabrics(ctx context.Context, req []*requests.UpdateF
 
 func (f *FabricMySQL) DeleteFabric(ctx context.Context, req *requests.FabricID) error {
 
-	query := `
-	SELECT 
-		fabric_id,
-	FROM FABRICS WHERE fabric_id = ?
-	`
-	_, err := f.db.QueryContext(ctx, query, req.Fabric_id)
-	if err != nil {
-		return exceptions.ErrFabricNotFound
+	if err := utils.CheckFabric(f.db, ctx, req.Fabric_id); err != err {
+		return err
 	}
 
-	query = `DELETE FROM FABRICS WHERE fabric_id = ?`
-	_, err = f.db.QueryContext(ctx, query, req.Fabric_id)
+	query := `DELETE FROM FABRICS WHERE fabric_id = ?`
+	_, err := f.db.QueryContext(ctx, query, req.Fabric_id)
 	if err != nil {
 		return err
 	}
@@ -120,6 +119,11 @@ func (f *FabricMySQL) GetAllFabrics(ctx context.Context) ([]*responses.Fabric, e
 }
 
 func (f *FabricMySQL) GetFabricByID(ctx context.Context, req *requests.FabricID) (*responses.Fabric, error) {
+
+	if err := utils.CheckFabric(f.db, ctx, req.Fabric_id); err != err {
+		return nil, err
+	}
+
 	query := `
 	SELECT 
 		fabric_id, 

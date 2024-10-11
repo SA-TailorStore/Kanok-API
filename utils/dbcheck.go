@@ -2,41 +2,90 @@ package utils
 
 import (
 	"context"
-	"fmt"
-	"log"
 
-	"github.com/SA-TailorStore/Kanok-API/configs"
 	"github.com/SA-TailorStore/Kanok-API/database/responses"
 	"github.com/SA-TailorStore/Kanok-API/domain/exceptions"
 	"github.com/jmoiron/sqlx"
 )
 
-type MySQL struct {
-	db *sqlx.DB
-}
+func CheckUser(db *sqlx.DB, ctx context.Context, id string) error {
 
-func NewMySQL() *sqlx.DB {
-	cfg := configs.NewConfig()
-	ctx := context.Background()
+	query := `
+	SELECT 
+		user_id
+	FROM USERS WHERE user_id = ?`
 
-	db, err := sqlx.ConnectContext(ctx, "mysql", fmt.Sprintf("%s:%s@tcp(%s:%s)/%s", cfg.DBUsername, cfg.DBPassword, cfg.DBHost, cfg.DBPort, cfg.DBName))
-
-	if err != nil {
-		log.Fatal(err)
+	if err := db.GetContext(ctx, &responses.UserID{}, query, id); err != nil {
+		return exceptions.ErrUserNotFound
 	}
 
-	defer db.Close()
-
-	return db
+	return nil
 }
 
-func (db *MySQL) CheckOrder(ctx context.Context, id string) error {
+func CheckOrder(db *sqlx.DB, ctx context.Context, id string) error {
+
 	query := `
 	SELECT 
 		order_id
 	FROM ORDERS WHERE order_id = ?`
-	err := db.db.GetContext(ctx, &responses.OrderID{}, query, id)
-	if err != nil {
+
+	if err := db.GetContext(ctx, &responses.OrderID{}, query, id); err != nil {
+		return exceptions.ErrOrderNotFound
+	}
+
+	return nil
+}
+
+func CheckProduct(db *sqlx.DB, ctx context.Context, id string) error {
+
+	query := `
+	SELECT 
+		product_id
+	FROM PRODUCTS WHERE product_id = ?`
+
+	if err := db.GetContext(ctx, &responses.ProductID{}, query, id); err != nil {
+		return exceptions.ErrOrderNotFound
+	}
+
+	return nil
+}
+
+func CheckDesign(db *sqlx.DB, ctx context.Context, id int) error {
+
+	query := `
+	SELECT 
+		design_id
+	FROM DESIGNS WHERE design_id = ?`
+
+	if err := db.GetContext(ctx, &responses.DesignID{}, query, id); err != nil {
+		return exceptions.ErrOrderNotFound
+	}
+
+	return nil
+}
+
+func CheckFabric(db *sqlx.DB, ctx context.Context, id int) error {
+
+	query := `
+	SELECT 
+		fabric_id
+	FROM FABRICS WHERE fabric_id = ?`
+
+	if err := db.GetContext(ctx, &responses.FabricID{}, query, id); err != nil {
+		return exceptions.ErrOrderNotFound
+	}
+
+	return nil
+}
+
+func CheckMaterial(db *sqlx.DB, ctx context.Context, id int) error {
+
+	query := `
+	SELECT 
+		material_id
+	FROM MATERIALS WHERE material_id = ?`
+
+	if err := db.GetContext(ctx, &responses.MaterialID{}, query, id); err != nil {
 		return exceptions.ErrOrderNotFound
 	}
 

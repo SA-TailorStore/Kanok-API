@@ -2,12 +2,11 @@ package mysql
 
 import (
 	"context"
-	"database/sql"
 
 	"github.com/SA-TailorStore/Kanok-API/database/requests"
 	"github.com/SA-TailorStore/Kanok-API/database/responses"
-	"github.com/SA-TailorStore/Kanok-API/domain/exceptions"
 	"github.com/SA-TailorStore/Kanok-API/domain/reposititories"
+	"github.com/SA-TailorStore/Kanok-API/utils"
 	"github.com/jmoiron/sqlx"
 )
 
@@ -22,6 +21,7 @@ func NewDesignMySQL(db *sqlx.DB) reposititories.DesignRepository {
 }
 
 func (d *DesignMySQL) AddDesign(ctx context.Context, req *requests.AddDesign) error {
+
 	query := `
 	INSERT INTO DESIGNS (design_url,type) 
 	VALUES (?,?)`
@@ -35,6 +35,11 @@ func (d *DesignMySQL) AddDesign(ctx context.Context, req *requests.AddDesign) er
 }
 
 func (d *DesignMySQL) UpdateDesign(ctx context.Context, req *requests.UpdateDesign) error {
+
+	if err := utils.CheckDesign(d.db, ctx, req.Design_id); err != err {
+		return err
+	}
+
 	query := `
 	UPDATE DESIGNS 
 	SET 
@@ -42,7 +47,7 @@ func (d *DesignMySQL) UpdateDesign(ctx context.Context, req *requests.UpdateDesi
 		type = ? 
 	WHERE design_id = ?`
 
-	_, err := d.db.ExecContext(ctx, query, req.Image, req.Type, req.Design_ID)
+	_, err := d.db.ExecContext(ctx, query, req.Image, req.Type, req.Design_id)
 	if err != nil {
 		return err
 	}
@@ -52,17 +57,12 @@ func (d *DesignMySQL) UpdateDesign(ctx context.Context, req *requests.UpdateDesi
 
 func (d *DesignMySQL) DeleteDesign(ctx context.Context, req *requests.DesignID) error {
 
-	query := `	
-	SELECT 
-		design_id, 
-	FROM DESIGNS WHERE design_id = ?`
-	_, err := d.db.QueryContext(ctx, query, req.Design_id)
-	if err != nil {
-		return exceptions.ErrDesignNotFound
+	if err := utils.CheckDesign(d.db, ctx, req.Design_id); err != err {
+		return err
 	}
 
-	query = "DELETE FROM DESIGNS WHERE design_id = ?"
-	_, err = d.db.QueryContext(ctx, query, req.Design_id)
+	query := "DELETE FROM DESIGNS WHERE design_id = ?"
+	_, err := d.db.QueryContext(ctx, query, req.Design_id)
 	if err != nil {
 		return err
 	}
@@ -98,6 +98,11 @@ func (d *DesignMySQL) GetAllDesigns(ctx context.Context) ([]*responses.Design, e
 }
 
 func (d *DesignMySQL) GetDesignByID(ctx context.Context, req *requests.DesignID) (*responses.Design, error) {
+
+	if err := utils.CheckDesign(d.db, ctx, req.Design_id); err != err {
+		return nil, err
+	}
+
 	query := `
 	SELECT 
 		design_id, 
@@ -108,13 +113,9 @@ func (d *DesignMySQL) GetDesignByID(ctx context.Context, req *requests.DesignID)
 	var design responses.Design
 
 	err := d.db.GetContext(ctx, &design, query, req.Design_id)
+
 	if err != nil {
-		switch err {
-		case sql.ErrNoRows:
-			return nil, exceptions.ErrDesignNotFound
-		default:
-			return nil, err
-		}
+		return &design, err
 
 	}
 

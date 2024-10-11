@@ -101,7 +101,7 @@ type AddDesign struct {
 }
 
 type UpdateDesign struct {
-	Design_ID int    `json:"design_id" validate:"required"`
+	Design_id int    `json:"design_id" validate:"required"`
 	Image     string `json:"image"`
 	Type      string `json:"type"`
 }

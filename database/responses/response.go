@@ -21,6 +21,10 @@ type Username struct {
 	Username string `json:"username"`
 }
 
+type UserID struct {
+	User_id string `json:"user_id"`
+}
+
 type UserDisplayName struct {
 	Display_name string `json:"display_name"`
 }
@@ -120,13 +124,19 @@ type FabricType struct {
 
 // MATERIAL
 type Material struct {
-	Material_id   int    `json:"material_id" db:"material_id"`
-	Material_name string `json:"material_name" db:"material_name"`
-	Amount        int    `json:"amount" db:"amount"`
+	Material_id   int    `json:"material_id"`
+	Material_name string `json:"material_name"`
+	Amount        int    `json:"amount"`
 }
+
 type MaterialName struct {
 	Material_name string `json:"material_name" db:"material_name"`
 }
+
 type MaterialAmount struct {
 	Amount int `json:"amount" db:"amount"`
+}
+
+type MaterialID struct {
+	Material_id int `json:"material_id"`
 }

@@ -8,6 +8,7 @@ import (
 	"github.com/SA-TailorStore/Kanok-API/database/responses"
 	"github.com/SA-TailorStore/Kanok-API/domain/exceptions"
 	"github.com/SA-TailorStore/Kanok-API/domain/reposititories"
+	"github.com/SA-TailorStore/Kanok-API/utils"
 	"github.com/jmoiron/sqlx"
 )
 
@@ -19,19 +20,6 @@ func NewOrderMySQL(db *sqlx.DB) reposititories.OrderRepository {
 	return &OrderMySQL{
 		db: db,
 	}
-}
-
-func (o *OrderMySQL) CheckOrder(ctx context.Context, id string) error {
-	query := `
-	SELECT 
-		order_id
-	FROM ORDERS WHERE order_id = ?`
-	var order_id responses.OrderID
-	err := o.db.GetContext(ctx, &order_id, query, id)
-	if err != nil {
-		return exceptions.ErrOrderNotFound
-	}
-	return nil
 }
 
 func (o *OrderMySQL) CreateOrder(ctx context.Context, req *requests.CreateOrder) (*responses.OrderID, error) {
@@ -75,7 +63,7 @@ func (o *OrderMySQL) CreateOrder(ctx context.Context, req *requests.CreateOrder)
 
 func (o *OrderMySQL) GetOrderByID(ctx context.Context, req *requests.OrderID) (*responses.Order, error) {
 
-	if err := o.CheckOrder(ctx, req.Order_id); err != nil {
+	if err := utils.CheckOrder(o.db, ctx, req.Order_id); err != nil {
 		return nil, err
 	}
 
@@ -106,7 +94,7 @@ func (o *OrderMySQL) GetOrderByID(ctx context.Context, req *requests.OrderID) (*
 
 func (o *OrderMySQL) UpdateStatus(ctx context.Context, req *requests.UpdateStatus) error {
 
-	if err := o.CheckOrder(ctx, req.Order_id); err != nil {
+	if err := utils.CheckOrder(o.db, ctx, req.Order_id); err != nil {
 		return err
 	}
 
@@ -126,7 +114,7 @@ func (o *OrderMySQL) UpdateStatus(ctx context.Context, req *requests.UpdateStatu
 
 func (o *OrderMySQL) UpdatePayment(ctx context.Context, req *requests.UpdatePayment) error {
 
-	if err := o.CheckOrder(ctx, req.Order_id); err != nil {
+	if err := utils.CheckOrder(o.db, ctx, req.Order_id); err != nil {
 		return err
 	}
 
@@ -145,6 +133,11 @@ func (o *OrderMySQL) UpdatePayment(ctx context.Context, req *requests.UpdatePaym
 }
 
 func (o *OrderMySQL) GetOrderByUserId(ctx context.Context, req *requests.UserID) ([]*responses.Order, error) {
+
+	if err := utils.CheckUser(o.db, ctx, req.User_id); err != nil {
+		return nil, err
+	}
+
 	query := `
 	SELECT 
 		order_id,

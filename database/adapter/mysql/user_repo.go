@@ -8,6 +8,7 @@ import (
 	"github.com/SA-TailorStore/Kanok-API/database/responses"
 	"github.com/SA-TailorStore/Kanok-API/domain/exceptions"
 	"github.com/SA-TailorStore/Kanok-API/domain/reposititories"
+	"github.com/SA-TailorStore/Kanok-API/utils"
 	"github.com/google/uuid"
 	"github.com/jmoiron/sqlx"
 )
@@ -23,6 +24,7 @@ func NewUserMySQL(db *sqlx.DB) reposititories.UserRepository {
 }
 
 func (u *UserMySQL) Create(ctx context.Context, req *requests.UserRegister) error {
+
 	query := `
 	INSERT INTO USERS
 	(user_id, username, password, phone_number, address) 
@@ -114,6 +116,10 @@ func (u *UserMySQL) GetPasswordByUsername(ctx context.Context, req *requests.Use
 
 func (u *UserMySQL) GetUserByUserID(ctx context.Context, req *requests.UserID) (*responses.User, error) {
 
+	if err := utils.CheckUser(u.db, ctx, req.User_id); err != nil {
+		return nil, err
+	}
+
 	query := `
 	SELECT 
 		user_id,
@@ -132,18 +138,17 @@ func (u *UserMySQL) GetUserByUserID(ctx context.Context, req *requests.UserID) (
 	err := u.db.GetContext(ctx, &user, query, req.User_id)
 
 	if err != nil {
-		switch err {
-		case sql.ErrNoRows:
-			return nil, exceptions.ErrUserNotFound
-		default:
-			return nil, err
-		}
+		return &user, nil
 	}
 
 	return &user, nil
 }
 
 func (u *UserMySQL) UpdateAddress(ctx context.Context, req *requests.UserUpdate) error {
+
+	if err := utils.CheckUser(u.db, ctx, req.Token); err != nil {
+		return err
+	}
 
 	query := `
 	UPDATE USERS 
@@ -164,6 +169,10 @@ func (u *UserMySQL) UpdateAddress(ctx context.Context, req *requests.UserUpdate)
 }
 
 func (u *UserMySQL) UploadImage(ctx context.Context, req *requests.UserUploadImage) error {
+
+	if err := utils.CheckUser(u.db, ctx, req.Token); err != nil {
+		return err
+	}
 
 	query := `
 	UPDATE USERS 

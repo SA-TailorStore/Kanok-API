@@ -5,8 +5,8 @@ import (
 
 	"github.com/SA-TailorStore/Kanok-API/database/requests"
 	"github.com/SA-TailorStore/Kanok-API/database/responses"
-	"github.com/SA-TailorStore/Kanok-API/domain/exceptions"
 	"github.com/SA-TailorStore/Kanok-API/domain/reposititories"
+	"github.com/SA-TailorStore/Kanok-API/utils"
 	"github.com/jmoiron/sqlx"
 )
 
@@ -36,6 +36,10 @@ func (m *MaterialMySQL) AddMaterial(ctx context.Context, req *requests.AddMateri
 
 func (m *MaterialMySQL) UpdateMaterial(ctx context.Context, req *requests.UpdateMaterial) error {
 
+	if err := utils.CheckMaterial(m.db, ctx, req.Material_id); err != err {
+		return err
+	}
+
 	query := `
 	UPDATE MATERIALS 
 	SET 
@@ -51,17 +55,13 @@ func (m *MaterialMySQL) UpdateMaterial(ctx context.Context, req *requests.Update
 }
 
 func (m *MaterialMySQL) DeleteMaterial(ctx context.Context, req *requests.MaterialID) error {
-	query := `
-	SELECT 
-		material_id, 
-	FROM MATERIALS WHERE material_id = ?`
-	_, err := m.db.QueryContext(ctx, query, req.Material_id)
-	if err != nil {
-		return exceptions.ErrMaterialNotFound
+
+	if err := utils.CheckMaterial(m.db, ctx, req.Material_id); err != err {
+		return err
 	}
 
-	query = `DELETE FROM MATERIALS WHERE material_id = ?`
-	_, err = m.db.QueryContext(ctx, query, req.Material_id)
+	query := `DELETE FROM MATERIALS WHERE material_id = ?`
+	_, err := m.db.QueryContext(ctx, query, req.Material_id)
 	if err != nil {
 		return err
 	}
@@ -96,6 +96,11 @@ func (m *MaterialMySQL) GetAllMaterials(ctx context.Context) ([]*responses.Mater
 }
 
 func (m *MaterialMySQL) GetMaterialByID(ctx context.Context, req *requests.MaterialID) (*responses.Material, error) {
+
+	if err := utils.CheckMaterial(m.db, ctx, req.Material_id); err != err {
+		return nil, err
+	}
+
 	query := `
 	SELECT 
 		material_id, 

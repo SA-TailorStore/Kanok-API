@@ -56,14 +56,14 @@ func (d *designService) AddDesign(ctx context.Context, file interface{}, req *re
 
 func (d *designService) UpdateDesign(ctx context.Context, file interface{}, req *requests.UpdateDesign) error {
 
-	temp, err := d.reposititory.GetDesignByID(ctx, &requests.DesignID{Design_id: req.Design_ID})
+	temp, err := d.reposititory.GetDesignByID(ctx, &requests.DesignID{Design_id: req.Design_id})
 	if err != nil {
 		return err
 	}
 
 	if req.Type == "" {
 		req = &requests.UpdateDesign{
-			Design_ID: req.Design_ID,
+			Design_id: req.Design_id,
 			Image:     temp.Design_url,
 			Type:      temp.Type,
 		}
@@ -81,7 +81,7 @@ func (d *designService) UpdateDesign(ctx context.Context, file interface{}, req 
 				return err
 			}
 			update := &requests.UpdateDesign{
-				Design_ID: temp.Design_id,
+				Design_id: temp.Design_id,
 				Image:     "-",
 				Type:      temp.Type,
 			}
@@ -98,13 +98,13 @@ func (d *designService) UpdateDesign(ctx context.Context, file interface{}, req 
 		}
 
 		req = &requests.UpdateDesign{
-			Design_ID: req.Design_ID,
+			Design_id: req.Design_id,
 			Image:     res.SecureURL,
 			Type:      req.Type,
 		}
 	} else {
 		req = &requests.UpdateDesign{
-			Design_ID: req.Design_ID,
+			Design_id: req.Design_id,
 			Image:     temp.Design_url,
 			Type:      req.Type,
 		}

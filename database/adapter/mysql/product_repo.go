@@ -9,6 +9,7 @@ import (
 	"github.com/SA-TailorStore/Kanok-API/database/responses"
 	"github.com/SA-TailorStore/Kanok-API/domain/exceptions"
 	"github.com/SA-TailorStore/Kanok-API/domain/reposititories"
+	"github.com/SA-TailorStore/Kanok-API/utils"
 	"github.com/jmoiron/sqlx"
 )
 
@@ -24,33 +25,26 @@ func NewProductMySQL(db *sqlx.DB) reposititories.ProductRepository {
 
 func (p *ProductMySQL) CreateProduct(ctx context.Context, req *requests.Product, order_id string, index string) error {
 	// Validate
-	query := `SELECT design_id FROM DESIGNS WHERE design_id = ?`
-	err := p.db.GetContext(ctx, &responses.DesignID{}, query, req.Design_id)
-
-	if err != nil {
-		return exceptions.ErrDesignNotFound
+	if err := utils.CheckDesign(p.db, ctx, req.Design_id); err != err {
+		return err
 	}
 
-	query = `SELECT fabric_id FROM FABRICS WHERE fabric_id = ?`
-	err = p.db.GetContext(ctx, &responses.FabricID{}, query, req.Fabric_id)
-	if err != nil {
-		return exceptions.ErrFabricNotFound
+	if err := utils.CheckFabric(p.db, ctx, req.Fabric_id); err != err {
+		return err
 	}
 
-	query = `SELECT order_id FROM ORDERS WHERE order_id = ?`
-	err = p.db.GetContext(ctx, &responses.OrderID{}, query, order_id)
-	if err != nil {
-		return exceptions.ErrOrderNotFound
+	if err := utils.CheckOrder(p.db, ctx, order_id); err != nil {
+		return err
 	}
 
 	// Query
-	query = `INSERT INTO PRODUCTS
+	query := `INSERT INTO PRODUCTS
 	(product_id, design_id, fabric_id, detail, size, total_quantity, created_by) 
 	VALUES ( ?, ?, ?, ?, ?, ?, ?)`
 
 	product_id := "P" + time.Now().Format("20060102") + time.Now().Format("150405") + index
 
-	_, err = p.db.QueryContext(ctx, query,
+	_, err := p.db.QueryContext(ctx, query,
 		product_id,
 		req.Design_id,
 		req.Fabric_id,
@@ -67,6 +61,11 @@ func (p *ProductMySQL) CreateProduct(ctx context.Context, req *requests.Product,
 }
 
 func (p *ProductMySQL) GetProductByOrderID(ctx context.Context, req *requests.OrderID) ([]*responses.Product, error) {
+
+	if err := utils.CheckOrder(p.db, ctx, req.Order_id); err != nil {
+		return nil, err
+	}
+
 	query := `
 	SELECT 
 		product_id,
@@ -110,6 +109,11 @@ func (p *ProductMySQL) GetProductByOrderID(ctx context.Context, req *requests.Or
 }
 
 func (p *ProductMySQL) GetProductByID(ctx context.Context, req *requests.ProductID) (*responses.Product, error) {
+
+	if err := utils.CheckProduct(p.db, ctx, req.Product_id); err != nil {
+		return nil, err
+	}
+
 	query := `
 	SELECT 
 		product_id,
