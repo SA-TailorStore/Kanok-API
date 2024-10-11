@@ -1,12 +1,14 @@
 package utils
 
 import (
+	"errors"
 	"fmt"
 	"regexp"
 	"strings"
 
 	"github.com/SA-TailorStore/Kanok-API/domain/exceptions"
 	valid "github.com/go-playground/validator/v10"
+	"github.com/golang-jwt/jwt/v5"
 )
 
 var validate = valid.New()
@@ -77,5 +79,21 @@ func ValidatePhoneNumber(phone string) error {
 	if !re.MatchString(phone) {
 		return exceptions.ErrPhoneNumber
 	}
+	return nil
+}
+
+func ValidateJWTFormat(tokenString string) error {
+	// ตรวจสอบว่า JWT นั้นแบ่งออกเป็น 3 ส่วนโดยใช้จุด (.)
+	parts := strings.Split(tokenString, ".")
+	if len(parts) != 3 {
+		return errors.New("invalid JWT format: should contain 3 parts")
+	}
+
+	// พยายามแปลง JWT เพื่อดูว่ามีรูปแบบที่ถูกต้องหรือไม่
+	_, _, err := jwt.NewParser().ParseUnverified(tokenString, jwt.MapClaims{})
+	if err != nil {
+		return fmt.Errorf("invalid JWT: %v", err)
+	}
+
 	return nil
 }

@@ -21,6 +21,11 @@ func GetUserIDFromJWT(c *fiber.Ctx) string {
 }
 
 func VerificationJWT(jwtToken string) (string, error) {
+
+	if err := ValidateJWTFormat(jwtToken); err != nil {
+		return "", err
+	}
+
 	// Verification
 	secret_key := []byte(configs.NewConfig().JWTSecret)
 	token, err := jwt.Parse(jwtToken, func(token *jwt.Token) (interface{}, error) {
