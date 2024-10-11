@@ -30,7 +30,7 @@ func NewProductService(reposititory reposititories.ProductRepository, config *co
 func (p *productService) CreateProduct(ctx context.Context, req *requests.CreateProduct) error {
 
 	for _, value := range req.Products {
-		err := p.reposititory.CreateProduct(ctx, &value)
+		err := p.reposititory.CreateProduct(ctx, &value, req.Order_id)
 
 		if err != nil {
 			return err

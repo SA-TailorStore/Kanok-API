@@ -22,7 +22,7 @@ func NewProductMySQL(db *sqlx.DB) reposititories.ProductRepository {
 	}
 }
 
-func (p *ProductMySQL) CreateProduct(ctx context.Context, req *requests.Product) error {
+func (p *ProductMySQL) CreateProduct(ctx context.Context, req *requests.Product, order_id string) error {
 	// Validate
 	query := `SELECT design_id FROM DESIGNS WHERE design_id = ?`
 	err := p.db.GetContext(ctx, &responses.DesignID{}, query, req.Design_id)
@@ -38,7 +38,7 @@ func (p *ProductMySQL) CreateProduct(ctx context.Context, req *requests.Product)
 	}
 
 	query = `SELECT order_id FROM ORDERS WHERE order_id = ?`
-	err = p.db.GetContext(ctx, &responses.OrderID{}, query, req.Created_by)
+	err = p.db.GetContext(ctx, &responses.OrderID{}, query, order_id)
 	if err != nil {
 		return exceptions.ErrOrderNotFound
 	}
@@ -57,7 +57,7 @@ func (p *ProductMySQL) CreateProduct(ctx context.Context, req *requests.Product)
 		req.Detail,
 		req.Size,
 		req.Total_quantity,
-		req.Created_by)
+		order_id)
 
 	if err != nil {
 		return err
