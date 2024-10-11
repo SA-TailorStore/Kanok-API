@@ -21,14 +21,13 @@ func NewOrderMySQL(db *sqlx.DB) reposititories.OrderRepository {
 	}
 }
 
-// CreateOrder implements reposititories.OrderRepository.
 func (o *OrderMySQL) CreateOrder(ctx context.Context, req *requests.CreateOrder) (*responses.OrderID, error) {
 	query := `SELECT address,phone_number FROM USERS WHERE role = "store"`
 
 	var store responses.UserAddressPhone
 	err := o.db.GetContext(ctx, &store, query)
 	if err != nil {
-		return nil, err
+		return nil, exceptions.ErrInfomation
 	}
 
 	query = `
@@ -52,7 +51,6 @@ func (o *OrderMySQL) CreateOrder(ctx context.Context, req *requests.CreateOrder)
 	return &responses.OrderID{Order_id: order_id}, nil
 }
 
-// GetOrderByID implements reposititories.OrderRepository.
 func (o *OrderMySQL) GetOrderByID(ctx context.Context, req *requests.OrderID) (*responses.Order, error) {
 	query := `
 	SELECT 
