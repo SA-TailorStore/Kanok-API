@@ -217,7 +217,7 @@ func (o *orderController) GetOrderByJWT(c *fiber.Ctx) error {
 				"error":  err.Error(),
 				"status": "400",
 			})
-		case err:
+		case exceptions.ErrExpiredToken:
 			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 				"error":  err.Error(),
 				"status": "400",

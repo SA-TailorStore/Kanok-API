@@ -164,7 +164,7 @@ func (o *OrderMySQL) GetOrderByUserId(ctx context.Context, req *requests.UserID)
 
 	rows, err := o.db.QueryContext(ctx, query, req.User_id)
 	if err != nil {
-		return nil, err
+		return nil, exceptions.ErrUserNotFound
 	}
 	defer rows.Close()
 

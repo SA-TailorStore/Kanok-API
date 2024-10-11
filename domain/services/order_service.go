@@ -95,11 +95,7 @@ func (o *orderService) GetOrderByJWT(ctx context.Context, req *requests.UserJWT)
 		}
 	}
 
-	user_id := &requests.UserID{
-		User_id: id,
-	}
-
-	res, err := o.reposititory.GetOrderByUserId(ctx, user_id)
+	res, err := o.reposititory.GetOrderByUserId(ctx, &requests.UserID{User_id: id})
 
 	if err != nil {
 		return res, err

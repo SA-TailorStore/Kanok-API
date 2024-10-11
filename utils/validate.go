@@ -1,7 +1,6 @@
 package utils
 
 import (
-	"errors"
 	"fmt"
 	"regexp"
 	"strings"
@@ -83,13 +82,11 @@ func ValidatePhoneNumber(phone string) error {
 }
 
 func ValidateJWTFormat(tokenString string) error {
-	// ตรวจสอบว่า JWT นั้นแบ่งออกเป็น 3 ส่วนโดยใช้จุด (.)
 	parts := strings.Split(tokenString, ".")
 	if len(parts) != 3 {
-		return errors.New("invalid JWT format: should contain 3 parts")
+		return exceptions.ErrInvalidToken
 	}
 
-	// พยายามแปลง JWT เพื่อดูว่ามีรูปแบบที่ถูกต้องหรือไม่
 	_, _, err := jwt.NewParser().ParseUnverified(tokenString, jwt.MapClaims{})
 	if err != nil {
 		return fmt.Errorf("invalid JWT: %v", err)
