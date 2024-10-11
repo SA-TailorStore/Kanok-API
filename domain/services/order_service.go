@@ -10,7 +10,7 @@ import (
 )
 
 type OrderUseCase interface {
-	CreateOrder(ctx context.Context, req *requests.CreateOrder) error
+	CreateOrder(ctx context.Context, req *requests.CreateOrder) (*responses.OrderID, error)
 	GetOrderByID(ctx context.Context, req *requests.OrderID) (*responses.Order, error)
 }
 
@@ -37,13 +37,13 @@ func (o *orderService) GetOrderByID(ctx context.Context, req *requests.OrderID) 
 	return res, nil
 }
 
-func (o *orderService) CreateOrder(ctx context.Context, req *requests.CreateOrder) error {
+func (o *orderService) CreateOrder(ctx context.Context, req *requests.CreateOrder) (*responses.OrderID, error) {
 
-	err := o.reposititory.CreateOrder(ctx, req)
+	res, err := o.reposititory.CreateOrder(ctx, req)
 
 	if err != nil {
-		return err
+		return res, err
 	}
 
-	return nil
+	return res, nil
 }

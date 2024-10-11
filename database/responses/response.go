@@ -37,6 +37,11 @@ type UserJWT struct {
 	Token string `json:"token"`
 }
 
+type UserAddressPhone struct {
+	Phone_number string `json:"phone_number"`
+	Address      string `json:"address"`
+}
+
 // ORDER
 type Order struct {
 	Order_id        string `json:"order_id"`

@@ -36,12 +36,12 @@ func (o *orderController) CreateOrder(c *fiber.Ctx) error {
 	}
 
 	// Create Order
-	err := o.service.CreateOrder(c.Context(), req)
+	res, err := o.service.CreateOrder(c.Context(), req)
 	if err != nil {
 		switch err {
 		case exceptions.ErrInfomation:
 			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-				"error":  "Not Have Infomation",
+				"error":  err.Error(),
 				"status": "400",
 			})
 		default:
@@ -53,9 +53,9 @@ func (o *orderController) CreateOrder(c *fiber.Ctx) error {
 	}
 
 	return c.Status(fiber.StatusCreated).JSON(fiber.Map{
-		"message": "Order success",
-		"status":  "201",
-		"user_id": req.Created_by,
+		"message":  "Order success",
+		"status":   "201",
+		"order_id": res.Order_id,
 	})
 }
 

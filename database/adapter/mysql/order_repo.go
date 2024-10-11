@@ -6,6 +6,7 @@ import (
 
 	"github.com/SA-TailorStore/Kanok-API/database/requests"
 	"github.com/SA-TailorStore/Kanok-API/database/responses"
+	"github.com/SA-TailorStore/Kanok-API/domain/exceptions"
 	"github.com/SA-TailorStore/Kanok-API/domain/reposititories"
 	"github.com/jmoiron/sqlx"
 )
@@ -21,26 +22,34 @@ func NewOrderMySQL(db *sqlx.DB) reposititories.OrderRepository {
 }
 
 // CreateOrder implements reposititories.OrderRepository.
-func (o *OrderMySQL) CreateOrder(ctx context.Context, req *requests.CreateOrder) error {
+func (o *OrderMySQL) CreateOrder(ctx context.Context, req *requests.CreateOrder) (*responses.OrderID, error) {
+	query := `SELECT address,phone_number FROM USERS WHERE role = "store"`
 
-	query := `
+	var store responses.UserAddressPhone
+	err := o.db.GetContext(ctx, &store, query)
+	if err != nil {
+		return nil, err
+	}
+
+	query = `
 	INSERT INTO ORDERS
-	(order_id, store_phone, store_address, user_phone, user_address, created_by) 
-	VALUES ( ?, ?, ?, ?, ?, ?)
+	(order_id, status,store_phone, store_address, user_phone, user_address, created_by) 
+	VALUES ( ?, ?, ?, ?, ?, ?, ?)
 	`
 
 	order_id := "O" + time.Now().Format("20060102") + time.Now().Format("150405")
-	_, err := o.db.QueryContext(ctx, query,
+	_, err = o.db.QueryContext(ctx, query,
 		order_id,
-		req.Store_phone,
-		req.Store_address,
+		"pending",
+		store.Phone_number,
+		store.Address,
 		req.User_phone,
 		req.User_address,
 		req.Created_by)
 	if err != nil {
-		return err
+		return nil, exceptions.ErrInfomation
 	}
-	return nil
+	return &responses.OrderID{Order_id: order_id}, nil
 }
 
 // GetOrderByID implements reposititories.OrderRepository.
