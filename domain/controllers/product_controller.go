@@ -69,7 +69,7 @@ func (p *productController) GetProductByOrderID(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusBadRequest).JSON(err)
 	}
 
-	produsts, err := p.service.GetProductByOrderID(c.Context(), req)
+	products, err := p.service.GetProductByOrderID(c.Context(), req)
 	if err != nil {
 		switch err {
 		case exceptions.ErrOrderNotFound:
@@ -93,7 +93,7 @@ func (p *productController) GetProductByOrderID(c *fiber.Ctx) error {
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{
 		"status":  "200",
 		"message": "Produst List By " + req.Order_id,
-		"data":    produsts,
+		"data":    products,
 	})
 }
 
