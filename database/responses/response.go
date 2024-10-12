@@ -70,8 +70,8 @@ type OrderID struct {
 // PRODUCT
 type Product struct {
 	Product_id       string `json:"product_id"`
-	Design_id        string `json:"design_id"`
-	Fabric_id        string `json:"fabric_id"`
+	Design_id        int    `json:"design_id"`
+	Fabric_id        int    `json:"fabric_id"`
 	Detail           string `json:"detail"`
 	Size             string `json:"size"`
 	Process_quantity int    `json:"process_quantity"`
