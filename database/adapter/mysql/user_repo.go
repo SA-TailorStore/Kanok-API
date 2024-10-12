@@ -168,7 +168,7 @@ func (u *UserMySQL) UpdateAddress(ctx context.Context, req *requests.UserUpdate)
 	return err
 }
 
-func (u *UserMySQL) UploadImage(ctx context.Context, req *requests.UserUploadImage) error {
+func (u *UserMySQL) UpdateImage(ctx context.Context, req *requests.UserUploadImage) error {
 
 	if err := utils.CheckUser(u.db, ctx, req.Token); err != nil {
 		return err

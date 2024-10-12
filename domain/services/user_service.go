@@ -277,7 +277,7 @@ func (u *userService) UploadImage(ctx context.Context, file interface{}, req *re
 			Image: "-",
 		}
 
-		err = u.reposititory.UploadImage(ctx, update)
+		err = u.reposititory.UpdateImage(ctx, update)
 		if err != nil {
 			return nil, err
 		}
@@ -295,7 +295,7 @@ func (u *userService) UploadImage(ctx context.Context, file interface{}, req *re
 		Image: resCloud.SecureURL,
 	}
 
-	err = u.reposititory.UploadImage(ctx, update)
+	err = u.reposititory.UpdateImage(ctx, update)
 	if err != nil {
 		return nil, err
 	}

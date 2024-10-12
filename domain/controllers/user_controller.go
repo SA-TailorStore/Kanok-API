@@ -260,7 +260,7 @@ func (u *userController) UpdateAddress(c *fiber.Ctx) error {
 	})
 }
 
-func (u *userController) UploadImage(c *fiber.Ctx) error {
+func (u *userController) UpdateImage(c *fiber.Ctx) error {
 	// Parse request
 	var req requests.UserUploadImage
 

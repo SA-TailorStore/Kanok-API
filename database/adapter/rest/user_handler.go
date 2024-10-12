@@ -11,5 +11,5 @@ type UserHandler interface {
 	GetUserByJWT(c *fiber.Ctx) error
 	LoginToken(c *fiber.Ctx) error
 	UpdateAddress(c *fiber.Ctx) error
-	UploadImage(c *fiber.Ctx) error
+	UpdateImage(c *fiber.Ctx) error
 }

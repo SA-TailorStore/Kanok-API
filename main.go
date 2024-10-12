@@ -69,7 +69,7 @@ func main() {
 	app.Post(prefix+"/login/token", userController.LoginToken)
 	app.Post(prefix+"/user/token", userController.GetUserByJWT)
 	app.Post(prefix+"/user/update/address", userController.UpdateAddress)
-	app.Post(prefix+"/upload-image", userController.UploadImage)
+	app.Post(prefix+"/user/profile/upload", userController.UpdateImage)
 
 	// Order
 	app.Post(prefix+"/order/create", orderController.CreateOrder)

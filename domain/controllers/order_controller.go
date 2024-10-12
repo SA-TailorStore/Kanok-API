@@ -188,7 +188,7 @@ func (o *orderController) UpdatePayment(c *fiber.Ctx) error {
 	}
 
 	return c.Status(fiber.StatusNoContent).JSON(fiber.Map{
-		"message": "Order has update",
+		"message": "Order has payment",
 		"status":  "204",
 	})
 }
