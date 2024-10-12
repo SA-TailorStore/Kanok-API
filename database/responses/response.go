@@ -30,6 +30,7 @@ type UserDisplayName struct {
 }
 
 type UserProUrl struct {
+	User_id          string `json:"user_id"`
 	User_profile_url string `json:"user_profile_url"`
 }
 

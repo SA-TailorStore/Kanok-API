@@ -39,7 +39,7 @@ func (d *designService) AddDesign(ctx context.Context, file interface{}, req *re
 
 	res, err := d.cloudinary.Upload.Upload(ctx, file, uploader.UploadParams{})
 	if err != nil {
-		return err
+		return exceptions.ErrUploadImage
 	}
 
 	req = &requests.AddDesign{
@@ -80,13 +80,12 @@ func (d *designService) UpdateDesign(ctx context.Context, file interface{}, req 
 			if err != nil {
 				return err
 			}
-			update := &requests.UpdateDesign{
+
+			err = d.reposititory.UpdateDesign(ctx, &requests.UpdateDesign{
 				Design_id: temp.Design_id,
 				Image:     "-",
 				Type:      temp.Type,
-			}
-
-			err = d.reposititory.UpdateDesign(ctx, update)
+			})
 			if err != nil {
 				return err
 			}
@@ -94,7 +93,7 @@ func (d *designService) UpdateDesign(ctx context.Context, file interface{}, req 
 
 		res, err := d.cloudinary.Upload.Upload(ctx, file, uploader.UploadParams{})
 		if err != nil {
-			return err
+			return exceptions.ErrUploadImage
 		}
 
 		req = &requests.UpdateDesign{

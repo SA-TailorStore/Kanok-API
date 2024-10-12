@@ -42,6 +42,11 @@ func (f *fabricController) AddFabric(c *fiber.Ctx) error {
 	err = f.service.AddFabric(c.Context(), file, &req)
 	if err != nil {
 		switch err {
+		case exceptions.ErrUploadImage:
+			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+				"error":  err.Error(),
+				"status": "400",
+			})
 		case err:
 			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 				"error":  err.Error(),
@@ -84,6 +89,11 @@ func (f *fabricController) UpdateFabric(c *fiber.Ctx) error {
 	err = f.service.UpdateFabric(c.Context(), file, &req)
 	if err != nil {
 		switch err {
+		case exceptions.ErrUploadImage:
+			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+				"error":  err.Error(),
+				"status": "400",
+			})
 		case exceptions.ErrFabricNotFound:
 			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 				"error":  err.Error(),

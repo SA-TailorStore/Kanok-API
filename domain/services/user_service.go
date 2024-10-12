@@ -272,12 +272,11 @@ func (u *userService) UploadImage(ctx context.Context, file interface{}, req *re
 		if err != nil {
 			return nil, err
 		}
-		update := &requests.UserUploadImage{
+
+		err = u.reposititory.UpdateImage(ctx, &requests.UserUploadImage{
 			Token: user_id,
 			Image: "-",
-		}
-
-		err = u.reposititory.UpdateImage(ctx, update)
+		})
 		if err != nil {
 			return nil, err
 		}
@@ -287,18 +286,19 @@ func (u *userService) UploadImage(ctx context.Context, file interface{}, req *re
 	resCloud, err := u.cloudinary.Upload.Upload(ctx, file, uploader.UploadParams{})
 
 	if err != nil {
-		return nil, err
+		return nil, exceptions.ErrUploadImage
 	}
 
-	update := &requests.UserUploadImage{
+	err = u.reposititory.UpdateImage(ctx, &requests.UserUploadImage{
 		Token: user_id,
 		Image: resCloud.SecureURL,
-	}
-
-	err = u.reposititory.UpdateImage(ctx, update)
+	})
 	if err != nil {
 		return nil, err
 	}
 
-	return &responses.UserProUrl{User_profile_url: resCloud.SecureURL}, err
+	return &responses.UserProUrl{
+		User_profile_url: resCloud.SecureURL,
+		User_id:          user_id,
+	}, err
 }

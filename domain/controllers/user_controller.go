@@ -283,6 +283,11 @@ func (u *userController) UpdateImage(c *fiber.Ctx) error {
 	res, err := u.service.UploadImage(c.Context(), file, &req)
 	if err != nil {
 		switch err {
+		case exceptions.ErrUploadImage:
+			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+				"error":  err.Error(),
+				"status": "400",
+			})
 		case exceptions.ErrInvalidToken:
 			return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
 				"error":  err.Error(),
@@ -302,7 +307,7 @@ func (u *userController) UpdateImage(c *fiber.Ctx) error {
 	}
 
 	return c.Status(fiber.StatusNoContent).JSON(fiber.Map{
-		"url":     res.User_profile_url,
+		"data":    res.User_profile_url,
 		"message": "Upload Image success",
 		"status":  "204",
 	})

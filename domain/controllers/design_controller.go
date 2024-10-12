@@ -23,23 +23,10 @@ func (d *designController) AddDesign(c *fiber.Ctx) error {
 	// Parse Request
 	var req requests.AddDesign
 	// Pull form file
-	fileHeader, err := c.FormFile("image")
+	file, err := utils.OpenFile(c)
 	if err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"error":   "Failed to get file",
-			"message": err.Error(),
-		})
+		return err
 	}
-
-	// Open File
-	file, err := fileHeader.Open()
-	if err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"error":   "Failed to open file",
-			"message": err.Error(),
-		})
-	}
-	defer file.Close()
 
 	if err := c.BodyParser(&req); err != nil {
 		c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
@@ -52,9 +39,13 @@ func (d *designController) AddDesign(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusBadRequest).JSON(err)
 	}
 
-	err = d.service.AddDesign(c.Context(), file, &req)
-	if err != nil {
+	if err = d.service.AddDesign(c.Context(), file, &req); err != nil {
 		switch err {
+		case exceptions.ErrUploadImage:
+			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+				"error":  err.Error(),
+				"status": "400",
+			})
 		case err:
 			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 				"error":  err.Error(),
@@ -95,6 +86,11 @@ func (d *designController) UpdateDesign(c *fiber.Ctx) error {
 
 	if err := d.service.UpdateDesign(c.Context(), file, &req); err != nil {
 		switch err {
+		case exceptions.ErrUploadImage:
+			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+				"error":  err.Error(),
+				"status": "400",
+			})
 		case exceptions.ErrDesignNotFound:
 			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 				"error":  err.Error(),

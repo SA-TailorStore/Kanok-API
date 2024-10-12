@@ -40,15 +40,13 @@ func (f *fabricService) AddFabric(ctx context.Context, file interface{}, req *re
 
 	res, err := f.cloudinary.Upload.Upload(ctx, file, uploader.UploadParams{})
 	if err != nil {
-		return err
+		return exceptions.ErrUploadImage
 	}
 
-	req = &requests.AddFabric{
+	err = f.reposititory.AddFabric(ctx, &requests.AddFabric{
 		Image:    res.SecureURL,
 		Quantity: req.Quantity,
-	}
-
-	err = f.reposititory.AddFabric(ctx, req)
+	})
 	if err != nil {
 		return err
 	}
@@ -82,13 +80,12 @@ func (f *fabricService) UpdateFabric(ctx context.Context, file interface{}, req 
 			if err != nil {
 				return err
 			}
-			update := &requests.UpdateFabric{
+
+			err = f.reposititory.UpdateFabric(ctx, &requests.UpdateFabric{
 				Fabric_id: temp.Fabric_id,
 				Image:     "-",
 				Quantity:  temp.Quantity,
-			}
-
-			err = f.reposititory.UpdateFabric(ctx, update)
+			})
 			if err != nil {
 				return err
 			}
@@ -96,7 +93,7 @@ func (f *fabricService) UpdateFabric(ctx context.Context, file interface{}, req 
 
 		res, err := f.cloudinary.Upload.Upload(ctx, file, uploader.UploadParams{})
 		if err != nil {
-			return err
+			return exceptions.ErrUploadImage
 		}
 
 		req = &requests.UpdateFabric{
