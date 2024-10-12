@@ -99,12 +99,13 @@ func (o *OrderMySQL) UpdateStatus(ctx context.Context, req *requests.UpdateStatu
 	}
 
 	query := `
-	UPDATE ORDERS 
-	SET 
-		status = ? 
+	UPDATE ORDERS
+	SET
+		status = ?,
+		price = ?
 	WHERE order_id = ?`
 
-	_, err := o.db.ExecContext(ctx, query, req.Status, req.Order_id)
+	_, err := o.db.ExecContext(ctx, query, req.Status, req.Price, req.Order_id)
 	if err != nil {
 		return err
 	}

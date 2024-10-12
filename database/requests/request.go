@@ -55,6 +55,7 @@ type CreateOrder struct {
 type UpdateStatus struct {
 	Order_id string `json:"order_id" validate:"required"`
 	Status   string `json:"status" validate:"required"`
+	Price    int    `json:"price"`
 }
 
 type UpdatePayment struct {
