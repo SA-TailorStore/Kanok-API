@@ -59,7 +59,8 @@ type UpdateStatus struct {
 
 type UpdatePayment struct {
 	Order_id   string `json:"order_id" validate:"required"`
-	Is_payment int    `json:"is_payment" validate:"required"`
+	Image      string `json:"image"`
+	Is_payment int    `json:"is_payment"`
 }
 
 // PRODUCT REQUEST

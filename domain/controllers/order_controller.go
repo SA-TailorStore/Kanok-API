@@ -1,12 +1,18 @@
 package controllers
 
 import (
+	"fmt"
+	"image"
+	_ "image/jpeg"
+	_ "image/png"
+
 	"github.com/SA-TailorStore/Kanok-API/database/adapter/rest"
 	"github.com/SA-TailorStore/Kanok-API/database/requests"
 	"github.com/SA-TailorStore/Kanok-API/domain/exceptions"
 	"github.com/SA-TailorStore/Kanok-API/domain/services"
 	"github.com/SA-TailorStore/Kanok-API/utils"
 	"github.com/gofiber/fiber/v2"
+	"github.com/liyue201/goqr"
 )
 
 type orderController struct {
@@ -152,7 +158,7 @@ func (o *orderController) UpdateStatus(c *fiber.Ctx) error {
 
 func (o *orderController) UpdatePayment(c *fiber.Ctx) error {
 	// Parse request
-	var req *requests.UpdatePayment
+	var req requests.UpdatePayment
 
 	if err := c.BodyParser(&req); err != nil {
 		c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
@@ -166,8 +172,27 @@ func (o *orderController) UpdatePayment(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusBadRequest).JSON(err)
 	}
 
-	err := o.service.UpdatePayment(c.Context(), req)
+	file, err := utils.OpenFile(c)
 	if err != nil {
+		return err
+	}
+	// Decode รูปภาพ
+	img, _, err := image.Decode(file)
+	if err != nil {
+		return err
+	}
+
+	// อ่าน QR code
+	codes, err := goqr.Recognize(img)
+	if err != nil {
+		return err
+	}
+
+	for _, code := range codes {
+		fmt.Println("QR Code Data:", string(code.Payload))
+	}
+
+	if err := o.service.UpdatePayment(c.Context(), &req); err != nil {
 		switch err {
 		case exceptions.ErrOrderNotFound:
 			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
