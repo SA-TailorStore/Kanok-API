@@ -42,7 +42,8 @@ type UserJWT struct {
 	Token string `json:"token"`
 }
 
-type UserAddressPhone struct {
+type UserCreateOrder struct {
+	Display_name string `json:"display_name"`
 	Phone_number string `json:"phone_number"`
 	Address      string `json:"address"`
 }

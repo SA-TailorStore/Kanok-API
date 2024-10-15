@@ -23,17 +23,25 @@ func NewOrderMySQL(db *sqlx.DB) reposititories.OrderRepository {
 }
 
 func (o *OrderMySQL) CreateOrder(ctx context.Context, req *requests.CreateOrder) (*responses.OrderID, error) {
-	query := `SELECT address,phone_number FROM USERS WHERE role = "store"`
+	query := `
+	SELECT 
+		address,
+		phone_number
+	FROM USERS WHERE role = "store"`
 
-	var store responses.UserAddressPhone
+	var store responses.UserCreateOrder
 	err := o.db.GetContext(ctx, &store, query)
 	if err != nil {
 		return nil, exceptions.ErrInfomation
 	}
 
-	query = `SELECT address,phone_number FROM USERS WHERE user_id = ?`
+	query = `
+	SELECT 
+		address,
+		phone_number 
+	FROM USERS WHERE user_id = ?`
 
-	var user responses.UserAddressPhone
+	var user responses.UserCreateOrder
 	err = o.db.GetContext(ctx, &user, query, req.Token)
 	if err != nil {
 		return nil, exceptions.ErrInfomation
@@ -52,7 +60,7 @@ func (o *OrderMySQL) CreateOrder(ctx context.Context, req *requests.CreateOrder)
 		store.Phone_number,
 		store.Address,
 		user.Phone_number,
-		user.Address,
+		user.Display_name+"|"+user.Address,
 		req.Token,
 		req.Token)
 	if err != nil {
