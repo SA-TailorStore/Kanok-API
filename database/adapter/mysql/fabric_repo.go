@@ -78,8 +78,12 @@ func (f *FabricMySQL) DeleteFabric(ctx context.Context, req *requests.FabricID) 
 		return err
 	}
 
-	query := `DELETE FROM FABRICS WHERE fabric_id = ?`
-	_, err := f.db.QueryContext(ctx, query, req.Fabric_id)
+	query := `
+	UPDATE FABRICS 
+	SET 
+		is_delete = ?, 
+	WHERE fabric_id = ?`
+	_, err := f.db.QueryContext(ctx, query, 1, req.Fabric_id)
 	if err != nil {
 		return err
 	}
