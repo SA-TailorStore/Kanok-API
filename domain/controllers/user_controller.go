@@ -20,21 +20,52 @@ func NewUserController(service services.UserUseCase) rest.UserHandler {
 }
 
 func (u *userController) GetAllUser(c *fiber.Ctx) error {
-	res, err := u.service.GetAllUser(c.Context())
+	// Parse request
+	var req requests.UserRole
 
-	if err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"status":  "500",
-			"message": "Failed to retrieve users",
-			"error":   err.Error(),
+	if err := c.BodyParser(&req); err != nil {
+		c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"error": err.Error(),
 		})
 	}
 
-	return c.Status(fiber.StatusOK).JSON(fiber.Map{
-		"status":  "200",
-		"message": "User found",
-		"data":    res,
-	})
+	// Validate request
+	if err := utils.ValidateStruct(req); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(err)
+	}
+
+	res, err := u.service.GetAllUser(c.Context(), &req)
+
+	if err != nil {
+		switch err {
+		case exceptions.ErrRoleNotHave:
+			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+				"error":  err.Error(),
+				"status": "400",
+			})
+		default:
+			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+				"status":  "500",
+				"message": "Failed to retrieve users",
+				"error":   err.Error(),
+			})
+		}
+	}
+
+	if res != nil {
+		return c.Status(fiber.StatusOK).JSON(fiber.Map{
+			"status":  "200",
+			"message": "Found:" + req.Role,
+			"data":    res,
+		})
+
+	} else {
+		return c.Status(fiber.StatusOK).JSON(fiber.Map{
+			"status":  "200",
+			"message": "Not Found: " + req.Role,
+		})
+	}
+
 }
 
 func (u *userController) UserRegister(c *fiber.Ctx) error {
@@ -89,6 +120,7 @@ func (u *userController) UserRegister(c *fiber.Ctx) error {
 		"status":  "201",
 	})
 }
+
 func (u *userController) StoreRegister(c *fiber.Ctx) error {
 
 	// Parse request

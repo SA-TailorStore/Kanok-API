@@ -18,7 +18,7 @@ import (
 )
 
 type UserUseCase interface {
-	GetAllUser(ctx context.Context) ([]*responses.Username, error)
+	GetAllUser(ctx context.Context, req *requests.UserRole) ([]*responses.User, error)
 	Login(ctx context.Context, req *requests.UserLogin) (*responses.UserJWT, error)
 	Register(ctx context.Context, req *requests.UserRegister) error
 	StoreRegister(ctx context.Context, req *requests.UserRegister) error
@@ -44,21 +44,24 @@ func NewUserService(reposititory reposititories.UserRepository, config *configs.
 	}
 }
 
-func (u *userService) GetAllUser(ctx context.Context) ([]*responses.Username, error) {
-	users, err := u.reposititory.GetAllUser(ctx)
+func (u *userService) GetAllUser(ctx context.Context, req *requests.UserRole) ([]*responses.User, error) {
+	users, err := u.reposititory.GetAllUser(ctx, req)
 
 	if err != nil {
 		return nil, err
 	}
-
-	usernamesRes := make([]*responses.Username, 0)
-	for _, user := range users {
-		usernamesRes = append(usernamesRes, &responses.Username{
-			Username: user.Username,
-		})
+	// response
+	// usernamesRes := make([]*responses.Username, 0)
+	// for _, user := range users {
+	// 	usernamesRes = append(usernamesRes, &responses.Username{
+	// 		Username: user.Username,
+	// 	})
+	// }
+	if users == nil {
+		return nil, err
 	}
 
-	return usernamesRes, err
+	return users, err
 }
 
 func (u *userService) Register(ctx context.Context, req *requests.UserRegister) error {

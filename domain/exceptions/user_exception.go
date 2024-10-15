@@ -17,4 +17,5 @@ var (
 	ErrExpiredToken           = errors.New("token is expired")
 	ErrPhoneNumber            = errors.New("invalid phone number")
 	ErrLeastPhoneNumber       = errors.New("phone number must be at least 10")
+	ErrRoleNotHave            = errors.New("not have this role")
 )

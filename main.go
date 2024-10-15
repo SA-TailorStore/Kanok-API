@@ -71,6 +71,7 @@ func main() {
 	app.Post(prefix+"/user/token", userController.GetUserByJWT)
 	app.Post(prefix+"/user/update/address", userController.UpdateAddress)
 	app.Post(prefix+"/user/profile/upload", userController.UpdateImage)
+	app.Post(prefix+"/users", userController.GetAllUser)
 
 	// Order
 	app.Post(prefix+"/order/create", orderController.CreateOrder)

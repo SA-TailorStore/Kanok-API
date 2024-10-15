@@ -78,7 +78,7 @@ func (u *UserMySQL) CreateTailor(ctx context.Context, req *requests.UserRegister
 	return err
 }
 
-func (u *UserMySQL) GetAllUser(ctx context.Context) ([]*responses.User, error) {
+func (u *UserMySQL) GetAllUser(ctx context.Context, req *requests.UserRole) ([]*responses.User, error) {
 
 	query := `
 	SELECT 
@@ -90,12 +90,25 @@ func (u *UserMySQL) GetAllUser(ctx context.Context) ([]*responses.User, error) {
 		phone_number, 
 		address, 
 		timestamp 
-	FROM USERS
+	FROM USERS 
 	`
+
 	rows, err := u.db.QueryContext(ctx, query)
+
+	switch req.Role {
+	case "user", "tailor", "store":
+		query = query + "WHERE role = ?"
+		rows, err = u.db.QueryContext(ctx, query, req.Role)
+	case "":
+	default:
+		return nil, exceptions.ErrRoleNotHave
+
+	}
+
 	if err != nil {
 		return nil, err
 	}
+
 	defer rows.Close()
 
 	var users []*responses.User
