@@ -19,7 +19,7 @@ func NewUserController(service services.UserUseCase) rest.UserHandler {
 	}
 }
 
-func (u *userController) FindAllUser(c *fiber.Ctx) error {
+func (u *userController) GetAllUser(c *fiber.Ctx) error {
 	res, err := u.service.GetAllUser(c.Context())
 
 	if err != nil {
@@ -37,7 +37,7 @@ func (u *userController) FindAllUser(c *fiber.Ctx) error {
 	})
 }
 
-func (u *userController) Register(c *fiber.Ctx) error {
+func (u *userController) UserRegister(c *fiber.Ctx) error {
 
 	// Parse request
 	var req *requests.UserRegister
@@ -55,6 +55,58 @@ func (u *userController) Register(c *fiber.Ctx) error {
 
 	// Register user
 	if err := u.service.Register(c.Context(), req); err != nil {
+		switch err {
+		case exceptions.ErrUsernameDuplicated:
+			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+				"error":  err.Error(),
+				"status": "400",
+			})
+		case exceptions.ErrCharLeastPassword:
+			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+				"error":  err.Error(),
+				"status": "400",
+			})
+		case exceptions.ErrOneSpecialPassword:
+			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+				"error":  err.Error(),
+				"status": "400",
+			})
+		case exceptions.ErrPhoneNumber:
+			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+				"error":  err.Error(),
+				"status": "400",
+			})
+		default:
+			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+				"error":  err.Error(),
+				"status": "500",
+			})
+		}
+	}
+
+	return c.Status(fiber.StatusCreated).JSON(fiber.Map{
+		"message": "User registered successfully",
+		"status":  "201",
+	})
+}
+func (u *userController) StoreRegister(c *fiber.Ctx) error {
+
+	// Parse request
+	var req *requests.UserRegister
+
+	if err := c.BodyParser(&req); err != nil {
+		c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"error": err.Error(),
+		})
+	}
+
+	// Validate request
+	if err := utils.ValidateStruct(req); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(err)
+	}
+
+	// Register user
+	if err := u.service.StoreRegister(c.Context(), req); err != nil {
 		switch err {
 		case exceptions.ErrUsernameDuplicated:
 			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
@@ -144,7 +196,7 @@ func (u *userController) GetUserByJWT(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusBadRequest).JSON(err)
 	}
 
-	res, err := u.service.FindByJWT(c.Context(), req)
+	res, err := u.service.GetByJWT(c.Context(), req)
 
 	if err != nil {
 		switch err {
@@ -173,7 +225,7 @@ func (u *userController) GetUserByJWT(c *fiber.Ctx) error {
 	})
 }
 
-func (u *userController) LoginToken(c *fiber.Ctx) error {
+func (u *userController) LoginByToken(c *fiber.Ctx) error {
 	// Parse request
 	var req *requests.UserJWT
 
@@ -188,7 +240,7 @@ func (u *userController) LoginToken(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusBadRequest).JSON(err)
 	}
 
-	res, err := u.service.GenToken(c.Context(), req)
+	res, err := u.service.GenerateToken(c.Context(), req)
 
 	if err != nil {
 		switch err {

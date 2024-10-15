@@ -64,9 +64,10 @@ func main() {
 	// api routes post
 
 	// User
-	app.Post(prefix+"/register", userController.Register)
+	app.Post(prefix+"/register", userController.UserRegister)
+	app.Post(prefix+"/store/register", userController.UserRegister)
 	app.Post(prefix+"/login", userController.Login)
-	app.Post(prefix+"/login/token", userController.LoginToken)
+	app.Post(prefix+"/login/token", userController.LoginByToken)
 	app.Post(prefix+"/user/token", userController.GetUserByJWT)
 	app.Post(prefix+"/user/update/address", userController.UpdateAddress)
 	app.Post(prefix+"/user/profile/upload", userController.UpdateImage)
@@ -107,7 +108,7 @@ func main() {
 		return c.SendString("Hello, World!")
 	})
 	// User
-	app.Get(prefix+"/users", userController.FindAllUser)
+	app.Get(prefix+"/users", userController.GetAllUser)
 
 	// Order
 	app.Get(prefix+"/orders", orderController.GetAllOrders)
