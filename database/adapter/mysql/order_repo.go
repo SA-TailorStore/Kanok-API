@@ -71,7 +71,7 @@ func (o *OrderMySQL) CreateOrder(ctx context.Context, req *requests.CreateOrder)
 
 func (o *OrderMySQL) GetOrderByID(ctx context.Context, req *requests.OrderID) (*responses.Order, error) {
 
-	if err := utils.CheckOrder(o.db, ctx, req.Order_id); err != nil {
+	if err := utils.CheckOrderByID(o.db, ctx, req.Order_id); err != nil {
 		return nil, err
 	}
 
@@ -102,7 +102,7 @@ func (o *OrderMySQL) GetOrderByID(ctx context.Context, req *requests.OrderID) (*
 
 func (o *OrderMySQL) UpdateStatus(ctx context.Context, req *requests.UpdateStatus) error {
 
-	if err := utils.CheckOrder(o.db, ctx, req.Order_id); err != nil {
+	if err := utils.CheckOrderByID(o.db, ctx, req.Order_id); err != nil {
 		return err
 	}
 
@@ -123,7 +123,7 @@ func (o *OrderMySQL) UpdateStatus(ctx context.Context, req *requests.UpdateStatu
 
 func (o *OrderMySQL) UpdatePayment(ctx context.Context, req *requests.UpdatePayment) error {
 
-	if err := utils.CheckOrder(o.db, ctx, req.Order_id); err != nil {
+	if err := utils.CheckOrderByID(o.db, ctx, req.Order_id); err != nil {
 		return err
 	}
 
@@ -143,7 +143,7 @@ func (o *OrderMySQL) UpdatePayment(ctx context.Context, req *requests.UpdatePaym
 
 func (o *OrderMySQL) GetOrderByUserId(ctx context.Context, req *requests.UserID) ([]*responses.Order, error) {
 
-	if err := utils.CheckUser(o.db, ctx, req.User_id); err != nil {
+	if err := utils.CheckUserByID(o.db, ctx, req.User_id); err != nil {
 		return nil, err
 	}
 

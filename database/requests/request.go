@@ -24,6 +24,10 @@ type UserID struct {
 	User_id string `json:"user_id" validate:"required"`
 }
 
+type UserRole struct {
+	Role string `json:"role"`
+}
+
 type UserUpdate struct {
 	Token        string `json:"token" validate:"required"`
 	Display_name string `json:"display_name" validate:"required"`
