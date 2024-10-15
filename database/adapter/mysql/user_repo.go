@@ -3,6 +3,7 @@ package mysql
 import (
 	"context"
 	"database/sql"
+	"time"
 
 	"github.com/SA-TailorStore/Kanok-API/database/requests"
 	"github.com/SA-TailorStore/Kanok-API/database/responses"
@@ -236,4 +237,26 @@ func (u *UserMySQL) UpdateImage(ctx context.Context, req *requests.UserUploadIma
 	}
 
 	return err
+}
+
+func (u *UserMySQL) StoreAssign(ctx context.Context, req *requests.StoreAssign) error {
+
+	query := `
+	UPDATE ORDERS 
+	SET 
+		tailor_id = ?
+		due_date = ?
+	WHERE order_id = ?
+	`
+	layout := "2006-01-02"
+	parsedDate, err := time.Parse(layout, req.Due_date)
+	if err != nil {
+		return exceptions.ErrDateInvalid
+	}
+
+	if _, err := u.db.ExecContext(ctx, query, req.User_id, parsedDate, req.Order_id); err != nil {
+		return err
+	}
+
+	return nil
 }

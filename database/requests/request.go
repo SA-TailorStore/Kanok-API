@@ -40,6 +40,12 @@ type UserUploadImage struct {
 	Image string `json:"image" form:"image" `
 }
 
+type StoreAssign struct {
+	User_id  string `json:"user_id" validate:"required"`
+	Order_id string `json:"order_id" validate:"required"`
+	Due_date string `json:"due_date" validate:"required"`
+}
+
 // ORDER REQUEST
 type OrderID struct {
 	Order_id string `json:"order_id" validate:"required"`

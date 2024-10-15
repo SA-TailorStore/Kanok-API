@@ -16,4 +16,5 @@ type UserRepository interface {
 	GetUserByUserID(ctx context.Context, req *requests.UserID) (*responses.User, error)
 	UpdateAddress(ctx context.Context, req *requests.UserUpdate) error
 	UpdateImage(ctx context.Context, req *requests.UserUploadImage) error
+	StoreAssign(ctx context.Context, req *requests.StoreAssign) error
 }
