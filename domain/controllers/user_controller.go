@@ -65,6 +65,43 @@ func (u *userController) GetAllUser(c *fiber.Ctx) error {
 			"message": "Not Found: " + req.Role,
 		})
 	}
+}
+
+func (u *userController) GetAllTailor(c *fiber.Ctx) error {
+
+	req := requests.UserRole{Role: "tailor"}
+
+	res, err := u.service.GetAllUser(c.Context(), &req)
+
+	if err != nil {
+		switch err {
+		case exceptions.ErrRoleNotHave:
+			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+				"error":  err.Error(),
+				"status": "400",
+			})
+		default:
+			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+				"status":  "500",
+				"message": "Failed to retrieve users",
+				"error":   err.Error(),
+			})
+		}
+	}
+
+	if res != nil {
+		return c.Status(fiber.StatusOK).JSON(fiber.Map{
+			"status":  "200",
+			"message": "Found:" + req.Role,
+			"data":    res,
+		})
+
+	} else {
+		return c.Status(fiber.StatusOK).JSON(fiber.Map{
+			"status":  "200",
+			"message": "Not Found: " + req.Role,
+		})
+	}
 
 }
 

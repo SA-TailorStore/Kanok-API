@@ -110,6 +110,7 @@ func main() {
 	})
 	// User
 	app.Get(prefix+"/users", userController.GetAllUser)
+	app.Get(prefix+"/tailors", userController.GetAllTailor)
 
 	// Order
 	app.Get(prefix+"/orders", orderController.GetAllOrders)
