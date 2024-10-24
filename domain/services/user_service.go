@@ -28,6 +28,7 @@ type UserUseCase interface {
 	GetByID(ctx context.Context, req *requests.UserID) (*responses.User, error)
 	UpdateAddress(ctx context.Context, req *requests.UserUpdate) error
 	UploadImage(ctx context.Context, file interface{}, req *requests.UserUploadImage) (*responses.UserProUrl, error)
+	StoreAssign(ctx context.Context, req *requests.StoreAssign) error
 }
 
 type userService struct {
@@ -258,15 +259,10 @@ func (u *userService) UpdateAddress(ctx context.Context, req *requests.UserUpdat
 	err = u.reposititory.UpdateAddress(ctx, req)
 
 	if err != nil {
-		switch err {
-		case exceptions.ErrUserNotFound:
-			return err
-		default:
-			return err
-		}
+		return err
 	}
 
-	return err
+	return nil
 }
 
 func (u *userService) UploadImage(ctx context.Context, file interface{}, req *requests.UserUploadImage) (*responses.UserProUrl, error) {
@@ -317,4 +313,14 @@ func (u *userService) UploadImage(ctx context.Context, file interface{}, req *re
 		User_profile_url: resCloud.SecureURL,
 		User_id:          user_id,
 	}, err
+}
+
+func (u *userService) StoreAssign(ctx context.Context, req *requests.StoreAssign) error {
+
+	err := u.reposititory.StoreAssign(ctx, req)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

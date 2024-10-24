@@ -72,6 +72,8 @@ func main() {
 	app.Post(prefix+"/user/update/address", userController.UpdateAddress)
 	app.Post(prefix+"/user/profile/upload", userController.UpdateImage)
 	app.Post(prefix+"/users", userController.GetAllUser)
+	app.Post(prefix+"/store/register", userController.StoreRegister)
+	app.Post(prefix+"/user/tailor", userController.StoreAssign)
 
 	// Order
 	app.Post(prefix+"/order/create", orderController.CreateOrder)
@@ -106,6 +108,7 @@ func main() {
 
 	// api routes get
 	app.Get("/", func(c *fiber.Ctx) error {
+		fmt.Println("Hello, World!")
 		return c.SendString("Hello, World!")
 	})
 	// User
@@ -126,7 +129,7 @@ func main() {
 	// Material
 	app.Get(prefix+"/materials", materialController.GetAllMaterials)
 
-	if err := app.Listen(":9000"); err != nil {
+	if err := app.Listen("0.0.0.0:9000"); err != nil {
 		log.Fatal(err)
 	}
 }

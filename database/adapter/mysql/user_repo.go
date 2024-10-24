@@ -241,6 +241,14 @@ func (u *UserMySQL) UpdateImage(ctx context.Context, req *requests.UserUploadIma
 
 func (u *UserMySQL) StoreAssign(ctx context.Context, req *requests.StoreAssign) error {
 
+	if err := utils.CheckUserByID(u.db, ctx, req.User_id); err != nil {
+		return err
+	}
+
+	if err := utils.CheckOrderByID(u.db, ctx, req.User_id); err != nil {
+		return err
+	}
+
 	query := `
 	UPDATE ORDERS 
 	SET 
