@@ -189,7 +189,18 @@ func (o *orderController) UpdatePayment(c *fiber.Ctx) error {
 	}
 
 	for _, code := range codes {
+		parsedCode := utils.ParseCode(string(code.Payload))
+
+		fmt.Println(len(string(code.Payload)))
 		fmt.Println("QR Code Data:", string(code.Payload))
+		fmt.Println("SendingBankCode:", parsedCode.SendingBankCode)
+		fmt.Println("ReceivingBankCode:", parsedCode.ReceivingBankCode)
+		fmt.Println("Transaction ID:", parsedCode.TransactionREF)
+		fmt.Println("IDK Code:", parsedCode.IDK)
+		fmt.Println("IDK Number:", parsedCode.AccountNumber)
+		fmt.Println("Language:", parsedCode.Language)
+		fmt.Println("Additional Info:", parsedCode.AdditionalInfo)
+		fmt.Println()
 	}
 
 	if err := o.service.UpdatePayment(c.Context(), &req); err != nil {
