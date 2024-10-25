@@ -23,8 +23,10 @@ func NewOrderMySQL(db *sqlx.DB) reposititories.OrderRepository {
 }
 
 func (o *OrderMySQL) CreateOrder(ctx context.Context, req *requests.CreateOrder) (*responses.OrderID, error) {
+
 	query := `
-	SELECT 
+	SELECT
+		display_name,
 		address,
 		phone_number
 	FROM USERS WHERE role = "store"`
@@ -36,9 +38,10 @@ func (o *OrderMySQL) CreateOrder(ctx context.Context, req *requests.CreateOrder)
 	}
 
 	query = `
-	SELECT 
+	SELECT
+		display_name,
 		address,
-		phone_number 
+		phone_number
 	FROM USERS WHERE user_id = ?`
 
 	var user responses.UserCreateOrder
