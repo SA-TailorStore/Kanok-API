@@ -30,9 +30,9 @@ type UserRole struct {
 
 type UserUpdate struct {
 	Token        string `json:"token" validate:"required"`
-	Display_name string `json:"display_name" validate:"required"`
-	Phone_number string `json:"phone_number" validate:"required"`
-	Address      string `json:"address" validate:"required"`
+	Display_name string `json:"display_name"`
+	Phone_number string `json:"phone_number"`
+	Address      string `json:"address"`
 }
 
 type UserUploadImage struct {

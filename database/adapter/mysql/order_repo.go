@@ -58,7 +58,7 @@ func (o *OrderMySQL) CreateOrder(ctx context.Context, req *requests.CreateOrder)
 		order_id,
 		"pending",
 		store.Phone_number,
-		store.Address,
+		store.Display_name+"|"+store.Address,
 		user.Phone_number,
 		user.Display_name+"|"+user.Address,
 		req.Token,
