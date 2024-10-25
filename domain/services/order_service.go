@@ -16,6 +16,7 @@ type OrderUseCase interface {
 	GetOrderByID(ctx context.Context, req *requests.OrderID) (*responses.Order, error)
 	UpdateStatus(ctx context.Context, req *requests.UpdateStatus) error
 	UpdatePayment(ctx context.Context, req *requests.UpdatePayment) error
+	UpdateTracking(ctx context.Context, req *requests.UpdateTracking) error
 	GetOrderByJWT(ctx context.Context, req *requests.UserJWT) ([]*responses.Order, error)
 	GetAllOrders(ctx context.Context) ([]*responses.Order, error)
 	StoreAssign(ctx context.Context, req *requests.StoreAssign) error
@@ -74,6 +75,17 @@ func (o *orderService) UpdateStatus(ctx context.Context, req *requests.UpdateSta
 func (o *orderService) UpdatePayment(ctx context.Context, req *requests.UpdatePayment) error {
 
 	err := o.reposititory.UpdatePayment(ctx, req)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (o *orderService) UpdateTracking(ctx context.Context, req *requests.UpdateTracking) error {
+
+	err := o.reposititory.UpdateTracking(ctx, req)
 
 	if err != nil {
 		return err

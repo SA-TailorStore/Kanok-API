@@ -11,5 +11,6 @@ type OrderHandler interface {
 	StoreAssign(c *fiber.Ctx) error
 	GetOrderByJWT(c *fiber.Ctx) error
 	UpdatePayment(c *fiber.Ctx) error
+	UpdateTracking(c *fiber.Ctx) error
 	GetAllOrders(c *fiber.Ctx) error
 }
