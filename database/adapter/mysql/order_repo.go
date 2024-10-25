@@ -186,15 +186,33 @@ func (o *OrderMySQL) UpdateTailor(ctx context.Context, req *requests.UpdateTailo
 		return exceptions.ErrDateInvalid
 	}
 
+	var tailor requests.UserUpdate
+
+	if err := o.db.GetContext(ctx,
+		&tailor,
+		"SELECT phone_number,display_name,address FROM USERS WHERE user_id = ?",
+		req.Tailor_id,
+	); err != nil {
+		return exceptions.ErrUserNotFound
+	}
+
 	query := `
 	UPDATE ORDERS 
 	SET 
 		tailor_id = ?,
+		tailor_phone = ?,
+		tailor_address = ?,
 		due_date = ?
 	WHERE order_id = ?
 	`
 
-	if _, err := o.db.ExecContext(ctx, query, req.Tailor_id, parsedDate, req.Order_id); err != nil {
+	if _, err := o.db.ExecContext(ctx, query,
+		req.Tailor_id,
+		tailor.Phone_number,
+		tailor.Display_name+"|"+tailor.Address,
+		parsedDate,
+		req.Order_id,
+	); err != nil {
 		return err
 	}
 
