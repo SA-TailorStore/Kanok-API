@@ -36,7 +36,7 @@ func (d *DesignMySQL) AddDesign(ctx context.Context, req *requests.AddDesign) er
 
 func (d *DesignMySQL) UpdateDesign(ctx context.Context, req *requests.UpdateDesign) error {
 
-	if err := utils.CheckDesign(d.db, ctx, req.Design_id); err != nil {
+	if err := utils.CheckDesignByID(d.db, ctx, req.Design_id); err != nil {
 		return err
 	}
 
@@ -57,12 +57,16 @@ func (d *DesignMySQL) UpdateDesign(ctx context.Context, req *requests.UpdateDesi
 
 func (d *DesignMySQL) DeleteDesign(ctx context.Context, req *requests.DesignID) error {
 
-	if err := utils.CheckDesign(d.db, ctx, req.Design_id); err != nil {
+	if err := utils.CheckDesignByID(d.db, ctx, req.Design_id); err != nil {
 		return err
 	}
 
-	query := "DELETE FROM DESIGNS WHERE design_id = ?"
-	_, err := d.db.QueryContext(ctx, query, req.Design_id)
+	query := `
+	UPDATE DESIGNS 
+	SET 
+		is_delete = ?, 
+	WHERE design_id = ?`
+	_, err := d.db.QueryContext(ctx, query, 1, req.Design_id)
 	if err != nil {
 		return err
 	}
@@ -99,7 +103,7 @@ func (d *DesignMySQL) GetAllDesigns(ctx context.Context) ([]*responses.Design, e
 
 func (d *DesignMySQL) GetDesignByID(ctx context.Context, req *requests.DesignID) (*responses.Design, error) {
 
-	if err := utils.CheckDesign(d.db, ctx, req.Design_id); err != nil {
+	if err := utils.CheckDesignByID(d.db, ctx, req.Design_id); err != nil {
 		return nil, err
 	}
 

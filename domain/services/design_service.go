@@ -119,20 +119,20 @@ func (d *designService) UpdateDesign(ctx context.Context, file interface{}, req 
 
 func (d *designService) DeleteDesign(ctx context.Context, req *requests.DesignID) error {
 
-	res, err := d.reposititory.GetDesignByID(ctx, &requests.DesignID{Design_id: req.Design_id})
-	if err != nil {
-		return exceptions.ErrDesignNotFound
-	}
+	// res, err := d.reposititory.GetDesignByID(ctx, &requests.DesignID{Design_id: req.Design_id})
+	// if err != nil {
+	// 	return exceptions.ErrDesignNotFound
+	// }
 
-	public_id, err := utils.ExtractPublicID(res.Design_url)
-	if err != nil {
-		return err
-	}
+	// public_id, err := utils.ExtractPublicID(res.Design_url)
+	// if err != nil {
+	// 	return err
+	// }
 
-	_, err = d.cloudinary.Upload.Destroy(ctx, uploader.DestroyParams{PublicID: public_id})
-	if err != nil {
-		return err
-	}
+	// _, err = d.cloudinary.Upload.Destroy(ctx, uploader.DestroyParams{PublicID: public_id})
+	// if err != nil {
+	// 	return err
+	// }
 
 	if err := d.reposititory.DeleteDesign(ctx, req); err != nil {
 		return err

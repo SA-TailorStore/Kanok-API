@@ -23,7 +23,11 @@ func NewUserMySQL(db *sqlx.DB) reposititories.UserRepository {
 	}
 }
 
-func (u *UserMySQL) Create(ctx context.Context, req *requests.UserRegister) error {
+func (u *UserMySQL) CreateUser(ctx context.Context, req *requests.UserRegister) error {
+
+	if err := utils.CheckUsernameDup(u.db, ctx, req.Username); err != nil {
+		return err
+	}
 
 	query := `
 	INSERT INTO USERS
@@ -37,12 +41,44 @@ func (u *UserMySQL) Create(ctx context.Context, req *requests.UserRegister) erro
 	}
 
 	_, err = u.db.QueryContext(ctx, query,
-		user_id, req.Username, req.Password, req.Phone_number, "-")
+		user_id,
+		req.Username,
+		req.Password,
+		req.Phone_number,
+		"-")
 
 	return err
 }
 
-func (u *UserMySQL) GetAllUser(ctx context.Context) ([]*responses.User, error) {
+func (u *UserMySQL) CreateTailor(ctx context.Context, req *requests.UserRegister) error {
+
+	if err := utils.CheckUsernameDup(u.db, ctx, req.Username); err != nil {
+		return err
+	}
+
+	query := `
+	INSERT INTO USERS
+	(user_id, username, password, phone_number,role, address) 
+	VALUES ( ?, ?, ?, ?, ?)
+	`
+
+	user_id, err := uuid.NewV7()
+	if err != nil {
+		return err
+	}
+
+	_, err = u.db.QueryContext(ctx, query,
+		user_id,
+		req.Username,
+		req.Password,
+		req.Phone_number,
+		"tailor",
+		"-")
+
+	return err
+}
+
+func (u *UserMySQL) GetAllUser(ctx context.Context, req *requests.UserRole) ([]*responses.User, error) {
 
 	query := `
 	SELECT 
@@ -54,12 +90,25 @@ func (u *UserMySQL) GetAllUser(ctx context.Context) ([]*responses.User, error) {
 		phone_number, 
 		address, 
 		timestamp 
-	FROM USERS
+	FROM USERS 
 	`
+
 	rows, err := u.db.QueryContext(ctx, query)
+
+	switch req.Role {
+	case "user", "tailor", "store":
+		query = query + "WHERE role = ?"
+		rows, err = u.db.QueryContext(ctx, query, req.Role)
+	case "":
+	default:
+		return nil, exceptions.ErrRoleNotHave
+
+	}
+
 	if err != nil {
 		return nil, err
 	}
+
 	defer rows.Close()
 
 	var users []*responses.User
@@ -84,7 +133,7 @@ func (u *UserMySQL) GetAllUser(ctx context.Context) ([]*responses.User, error) {
 	return users, nil
 }
 
-func (u *UserMySQL) FindByUsername(ctx context.Context, req *requests.Username) error {
+func (u *UserMySQL) GetByUsername(ctx context.Context, req *requests.Username) error {
 
 	query := `SELECT username FROM USERS WHERE username = ?`
 	var user responses.Username
@@ -116,7 +165,7 @@ func (u *UserMySQL) GetPasswordByUsername(ctx context.Context, req *requests.Use
 
 func (u *UserMySQL) GetUserByUserID(ctx context.Context, req *requests.UserID) (*responses.User, error) {
 
-	if err := utils.CheckUser(u.db, ctx, req.User_id); err != nil {
+	if err := utils.CheckUserByID(u.db, ctx, req.User_id); err != nil {
 		return nil, err
 	}
 
@@ -146,7 +195,7 @@ func (u *UserMySQL) GetUserByUserID(ctx context.Context, req *requests.UserID) (
 
 func (u *UserMySQL) UpdateAddress(ctx context.Context, req *requests.UserUpdate) error {
 
-	if err := utils.CheckUser(u.db, ctx, req.Token); err != nil {
+	if err := utils.CheckUserByID(u.db, ctx, req.Token); err != nil {
 		return err
 	}
 
@@ -170,7 +219,7 @@ func (u *UserMySQL) UpdateAddress(ctx context.Context, req *requests.UserUpdate)
 
 func (u *UserMySQL) UpdateImage(ctx context.Context, req *requests.UserUploadImage) error {
 
-	if err := utils.CheckUser(u.db, ctx, req.Token); err != nil {
+	if err := utils.CheckUserByID(u.db, ctx, req.Token); err != nil {
 		return err
 	}
 

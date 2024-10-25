@@ -25,15 +25,15 @@ func NewProductMySQL(db *sqlx.DB) reposititories.ProductRepository {
 
 func (p *ProductMySQL) CreateProduct(ctx context.Context, req *requests.Product, order_id string, index string) error {
 	// Validate
-	if err := utils.CheckDesign(p.db, ctx, req.Design_id); err != err {
+	if err := utils.CheckDesignByID(p.db, ctx, req.Design_id); err != err {
 		return err
 	}
 
-	if err := utils.CheckFabric(p.db, ctx, req.Fabric_id); err != err {
+	if err := utils.CheckFabricByID(p.db, ctx, req.Fabric_id); err != err {
 		return err
 	}
 
-	if err := utils.CheckOrder(p.db, ctx, order_id); err != nil {
+	if err := utils.CheckOrderByID(p.db, ctx, order_id); err != nil {
 		return err
 	}
 
@@ -62,7 +62,7 @@ func (p *ProductMySQL) CreateProduct(ctx context.Context, req *requests.Product,
 
 func (p *ProductMySQL) GetProductByOrderID(ctx context.Context, req *requests.OrderID) ([]*responses.Product, error) {
 
-	if err := utils.CheckOrder(p.db, ctx, req.Order_id); err != nil {
+	if err := utils.CheckOrderByID(p.db, ctx, req.Order_id); err != nil {
 		return nil, err
 	}
 
@@ -110,7 +110,7 @@ func (p *ProductMySQL) GetProductByOrderID(ctx context.Context, req *requests.Or
 
 func (p *ProductMySQL) GetProductByID(ctx context.Context, req *requests.ProductID) (*responses.Product, error) {
 
-	if err := utils.CheckProduct(p.db, ctx, req.Product_id); err != nil {
+	if err := utils.CheckProductByID(p.db, ctx, req.Product_id); err != nil {
 		return nil, err
 	}
 
@@ -141,4 +141,48 @@ func (p *ProductMySQL) GetProductByID(ctx context.Context, req *requests.Product
 	}
 
 	return &product, err
+}
+
+func (p *ProductMySQL) GetAllProducts(ctx context.Context) ([]*responses.Product, error) {
+
+	query := `
+	SELECT 
+		product_id,
+		design_id,
+		fabric_id,
+		detail,
+		size,
+		process_quantity,
+		total_quantity,
+		created_by,
+		timestamp
+	FROM PRODUCTS
+	`
+
+	rows, err := p.db.QueryContext(ctx, query)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var products []*responses.Product
+	for rows.Next() {
+		var product responses.Product
+		if err := rows.Scan(
+			&product.Product_id,
+			&product.Design_id,
+			&product.Fabric_id,
+			&product.Detail,
+			&product.Size,
+			&product.Process_quantity,
+			&product.Total_quantity,
+			&product.Created_by,
+			&product.Timestamp); err != nil {
+			return nil, err
+		}
+
+		products = append(products, &product)
+	}
+
+	return products, err
 }

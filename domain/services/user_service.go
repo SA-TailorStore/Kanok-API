@@ -18,13 +18,14 @@ import (
 )
 
 type UserUseCase interface {
-	GetAllUser(ctx context.Context) ([]*responses.Username, error)
+	GetAllUser(ctx context.Context, req *requests.UserRole) ([]*responses.User, error)
 	Login(ctx context.Context, req *requests.UserLogin) (*responses.UserJWT, error)
 	Register(ctx context.Context, req *requests.UserRegister) error
-	FindByUsername(ctx context.Context, req *requests.Username) (*responses.Username, error)
-	FindByJWT(ctx context.Context, req *requests.UserJWT) (*responses.User, error)
-	GenToken(ctx context.Context, req *requests.UserJWT) (*responses.UserJWT, error)
-	FindByID(ctx context.Context, req *requests.UserID) (*responses.User, error)
+	StoreRegister(ctx context.Context, req *requests.UserRegister) error
+	GetByUsername(ctx context.Context, req *requests.Username) (*responses.Username, error)
+	GetByJWT(ctx context.Context, req *requests.UserJWT) (*responses.User, error)
+	GenerateToken(ctx context.Context, req *requests.UserJWT) (*responses.UserJWT, error)
+	GetByID(ctx context.Context, req *requests.UserID) (*responses.User, error)
 	UpdateAddress(ctx context.Context, req *requests.UserUpdate) error
 	UploadImage(ctx context.Context, file interface{}, req *requests.UserUploadImage) (*responses.UserProUrl, error)
 }
@@ -43,37 +44,33 @@ func NewUserService(reposititory reposititories.UserRepository, config *configs.
 	}
 }
 
-func (u *userService) GetAllUser(ctx context.Context) ([]*responses.Username, error) {
-	users, err := u.reposititory.GetAllUser(ctx)
+func (u *userService) GetAllUser(ctx context.Context, req *requests.UserRole) ([]*responses.User, error) {
+	users, err := u.reposititory.GetAllUser(ctx, req)
 
 	if err != nil {
 		return nil, err
 	}
-
-	usernamesRes := make([]*responses.Username, 0)
-	for _, user := range users {
-		usernamesRes = append(usernamesRes, &responses.Username{
-			Username: user.Username,
-		})
+	// response
+	// usernamesRes := make([]*responses.Username, 0)
+	// for _, user := range users {
+	// 	usernamesRes = append(usernamesRes, &responses.Username{
+	// 		Username: user.Username,
+	// 	})
+	// }
+	if users == nil {
+		return nil, err
 	}
 
-	return usernamesRes, err
+	return users, err
 }
 
 func (u *userService) Register(ctx context.Context, req *requests.UserRegister) error {
 
-	err := u.reposititory.FindByUsername(ctx, &requests.Username{Username: req.Username})
-	if err != nil {
+	if err := utils.ValidateUsername(req.Username); err != nil {
 		return err
 	}
 
-	err = utils.ValidateUsername(req.Username)
-	if err != nil {
-		return err
-	}
-
-	err = utils.ValidatePassword(req.Password)
-	if err != nil {
+	if err := utils.ValidatePassword(req.Password); err != nil {
 		return err
 	}
 
@@ -83,7 +80,26 @@ func (u *userService) Register(ctx context.Context, req *requests.UserRegister) 
 	}
 
 	req.Password = string(hashedPassword)
-	return u.reposititory.Create(ctx, req)
+	return u.reposititory.CreateUser(ctx, req)
+}
+
+func (u *userService) StoreRegister(ctx context.Context, req *requests.UserRegister) error {
+
+	if err := utils.ValidateUsername(req.Username); err != nil {
+		return err
+	}
+
+	if err := utils.ValidatePassword(req.Password); err != nil {
+		return err
+	}
+
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(req.Password), bcrypt.DefaultCost)
+	if err != nil {
+		return err
+	}
+
+	req.Password = string(hashedPassword)
+	return u.reposititory.CreateTailor(ctx, req)
 }
 
 func (u *userService) Login(ctx context.Context, req *requests.UserLogin) (*responses.UserJWT, error) {
@@ -106,9 +122,9 @@ func (u *userService) Login(ctx context.Context, req *requests.UserLogin) (*resp
 	}, nil
 }
 
-func (u *userService) FindByUsername(ctx context.Context, req *requests.Username) (*responses.Username, error) {
+func (u *userService) GetByUsername(ctx context.Context, req *requests.Username) (*responses.Username, error) {
 
-	err := u.reposititory.FindByUsername(ctx, req)
+	err := u.reposititory.GetByUsername(ctx, req)
 
 	if err != nil {
 		switch err {
@@ -128,7 +144,7 @@ func (u *userService) FindByUsername(ctx context.Context, req *requests.Username
 	return user, err
 }
 
-func (u *userService) FindByJWT(ctx context.Context, req *requests.UserJWT) (*responses.User, error) {
+func (u *userService) GetByJWT(ctx context.Context, req *requests.UserJWT) (*responses.User, error) {
 	//JWT
 	secret_key := []byte(u.config.JWTSecret)
 
@@ -165,7 +181,7 @@ func (u *userService) FindByJWT(ctx context.Context, req *requests.UserJWT) (*re
 	}
 }
 
-func (u *userService) GenToken(ctx context.Context, req *requests.UserJWT) (*responses.UserJWT, error) {
+func (u *userService) GenerateToken(ctx context.Context, req *requests.UserJWT) (*responses.UserJWT, error) {
 
 	id, err := utils.VerificationJWT(req.Token)
 
@@ -197,7 +213,7 @@ func (u *userService) GenToken(ctx context.Context, req *requests.UserJWT) (*res
 	}, err
 }
 
-func (u *userService) FindByID(ctx context.Context, req *requests.UserID) (*responses.User, error) {
+func (u *userService) GetByID(ctx context.Context, req *requests.UserID) (*responses.User, error) {
 
 	user, err := u.reposititory.GetUserByUserID(ctx, req)
 
@@ -242,15 +258,10 @@ func (u *userService) UpdateAddress(ctx context.Context, req *requests.UserUpdat
 	err = u.reposititory.UpdateAddress(ctx, req)
 
 	if err != nil {
-		switch err {
-		case exceptions.ErrUserNotFound:
-			return err
-		default:
-			return err
-		}
+		return err
 	}
 
-	return err
+	return nil
 }
 
 func (u *userService) UploadImage(ctx context.Context, file interface{}, req *requests.UserUploadImage) (*responses.UserProUrl, error) {

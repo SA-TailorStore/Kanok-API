@@ -133,3 +133,28 @@ func (p *productController) GetProductByID(c *fiber.Ctx) error {
 		"data":    res,
 	})
 }
+
+func (p *productController) GetAllProducts(c *fiber.Ctx) error {
+
+	res, err := p.service.GetAllProducts(c.Context())
+	if err != nil {
+		switch err {
+		case exceptions.ErrProductNotFound:
+			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+				"error":  err.Error(),
+				"status": "400",
+			})
+		default:
+			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+				"error":  err.Error(),
+				"status": "500",
+			})
+		}
+	}
+
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{
+		"status":  "200",
+		"message": "Get Produsts",
+		"data":    res,
+	})
+}

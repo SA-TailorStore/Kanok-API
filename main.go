@@ -64,12 +64,16 @@ func main() {
 	// api routes post
 
 	// User
-	app.Post(prefix+"/register", userController.Register)
+	app.Post(prefix+"/register", userController.UserRegister)
+	app.Post(prefix+"/store/register", userController.UserRegister)
 	app.Post(prefix+"/login", userController.Login)
-	app.Post(prefix+"/login/token", userController.LoginToken)
+	app.Post(prefix+"/login/token", userController.LoginByToken)
 	app.Post(prefix+"/user/token", userController.GetUserByJWT)
 	app.Post(prefix+"/user/update/address", userController.UpdateAddress)
 	app.Post(prefix+"/user/profile/upload", userController.UpdateImage)
+	app.Post(prefix+"/users", userController.GetAllUser)
+	app.Post(prefix+"/user/id", userController.GetUserByID)
+	app.Post(prefix+"/store/register", userController.StoreRegister)
 
 	// Order
 	app.Post(prefix+"/order/create", orderController.CreateOrder)
@@ -77,6 +81,8 @@ func main() {
 	app.Post(prefix+"/order/user", orderController.GetOrderByJWT)
 	app.Post(prefix+"/order/update/status", orderController.UpdateStatus)
 	app.Post(prefix+"/order/update/payment", orderController.UpdatePayment)
+	app.Post(prefix+"/order/update/tracking", orderController.UpdateTracking)
+	app.Post(prefix+"/order/update/tailor", orderController.UpdateTailor)
 
 	// Product
 	app.Post(prefix+"/product/create", productController.CreateProduct)
@@ -104,15 +110,18 @@ func main() {
 
 	// api routes get
 	app.Get("/", func(c *fiber.Ctx) error {
+		fmt.Println("Hello, World!")
 		return c.SendString("Hello, World!")
 	})
 	// User
-	app.Get(prefix+"/users", userController.FindAllUser)
+	app.Get(prefix+"/users", userController.GetAllUser)
+	app.Get(prefix+"/tailors", userController.GetAllTailor)
 
 	// Order
 	app.Get(prefix+"/orders", orderController.GetAllOrders)
 
 	// Product
+	app.Get(prefix+"/products", productController.GetAllProducts)
 
 	// Design
 	app.Get(prefix+"/designs", designController.GetAllDesigns)
@@ -123,7 +132,7 @@ func main() {
 	// Material
 	app.Get(prefix+"/materials", materialController.GetAllMaterials)
 
-	if err := app.Listen(":9000"); err != nil {
+	if err := app.Listen("0.0.0.0:9000"); err != nil {
 		log.Fatal(err)
 	}
 }

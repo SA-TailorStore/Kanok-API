@@ -24,11 +24,15 @@ type UserID struct {
 	User_id string `json:"user_id" validate:"required"`
 }
 
+type UserRole struct {
+	Role string `json:"role"`
+}
+
 type UserUpdate struct {
 	Token        string `json:"token" validate:"required"`
-	Display_name string `json:"display_name" validate:"required"`
-	Phone_number string `json:"phone_number" validate:"required"`
-	Address      string `json:"address" validate:"required"`
+	Display_name string `json:"display_name"`
+	Phone_number string `json:"phone_number"`
+	Address      string `json:"address"`
 }
 
 type UserUploadImage struct {
@@ -55,12 +59,24 @@ type CreateOrder struct {
 type UpdateStatus struct {
 	Order_id string `json:"order_id" validate:"required"`
 	Status   string `json:"status" validate:"required"`
+	Price    int    `json:"price"`
 }
 
 type UpdatePayment struct {
 	Order_id   string `json:"order_id" validate:"required"`
 	Image      string `json:"image"`
 	Is_payment int    `json:"is_payment"`
+}
+
+type UpdateTracking struct {
+	Order_id        string `json:"order_id" validate:"required"`
+	Tracking_number string `json:"tracking_number" validate:"required"`
+}
+
+type UpdateTailor struct {
+	Order_id  string `json:"order_id" validate:"required"`
+	Tailor_id string `json:"tailor_id" validate:"required"`
+	Due_date  string `json:"due_date" validate:"required"`
 }
 
 // PRODUCT REQUEST
@@ -71,6 +87,7 @@ type ProductID struct {
 type ProductOrderID struct {
 	Created_by string `json:"create_by" validate:"required"`
 }
+
 type Product struct {
 	Design_id      int    `json:"design_id" validate:"required"`
 	Fabric_id      int    `json:"fabric_id" validate:"required"`
@@ -78,10 +95,12 @@ type Product struct {
 	Size           string `json:"size" validate:"required"`
 	Total_quantity int    `json:"total_quantity" validate:"required"`
 }
+
 type CreateProduct struct {
 	Order_id string    `json:"order_id" validate:"required"`
 	Products []Product `json:"products" validate:"required"`
 }
+
 type UpdateProduct struct {
 	Product_id     string `json:"product_id" validate:"required"`
 	Design_id      string `json:"design_id" validate:"required"`

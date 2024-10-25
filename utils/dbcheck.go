@@ -2,6 +2,7 @@ package utils
 
 import (
 	"context"
+	"database/sql"
 	"fmt"
 
 	"github.com/SA-TailorStore/Kanok-API/database/responses"
@@ -9,7 +10,7 @@ import (
 	"github.com/jmoiron/sqlx"
 )
 
-func CheckUser(db *sqlx.DB, ctx context.Context, id string) error {
+func CheckUserByID(db *sqlx.DB, ctx context.Context, id string) error {
 
 	query := `
 	SELECT 
@@ -22,8 +23,25 @@ func CheckUser(db *sqlx.DB, ctx context.Context, id string) error {
 
 	return nil
 }
+func CheckUsernameDup(db *sqlx.DB, ctx context.Context, username string) error {
 
-func CheckOrder(db *sqlx.DB, ctx context.Context, id string) error {
+	query := `
+	SELECT 
+		username
+	FROM USERS WHERE username = ?`
+	err := db.GetContext(ctx, &responses.Username{}, query, username)
+	if err == sql.ErrNoRows {
+		return nil
+	}
+
+	if err != nil {
+		return exceptions.ErrUsernameDuplicated
+	}
+
+	return nil
+}
+
+func CheckOrderByID(db *sqlx.DB, ctx context.Context, id string) error {
 
 	query := `
 	SELECT 
@@ -37,7 +55,7 @@ func CheckOrder(db *sqlx.DB, ctx context.Context, id string) error {
 	return nil
 }
 
-func CheckProduct(db *sqlx.DB, ctx context.Context, id string) error {
+func CheckProductByID(db *sqlx.DB, ctx context.Context, id string) error {
 
 	query := `
 	SELECT 
@@ -51,7 +69,7 @@ func CheckProduct(db *sqlx.DB, ctx context.Context, id string) error {
 	return nil
 }
 
-func CheckDesign(db *sqlx.DB, ctx context.Context, id int) error {
+func CheckDesignByID(db *sqlx.DB, ctx context.Context, id int) error {
 
 	query := `
 	SELECT 
@@ -65,7 +83,7 @@ func CheckDesign(db *sqlx.DB, ctx context.Context, id int) error {
 	return nil
 }
 
-func CheckFabric(db *sqlx.DB, ctx context.Context, id int) error {
+func CheckFabricByID(db *sqlx.DB, ctx context.Context, id int) error {
 
 	query := `
 	SELECT 
@@ -80,7 +98,7 @@ func CheckFabric(db *sqlx.DB, ctx context.Context, id int) error {
 	return nil
 }
 
-func CheckMaterial(db *sqlx.DB, ctx context.Context, id int) error {
+func CheckMaterialByID(db *sqlx.DB, ctx context.Context, id int) error {
 
 	query := `
 	SELECT 

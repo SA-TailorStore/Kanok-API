@@ -16,6 +16,8 @@ type OrderUseCase interface {
 	GetOrderByID(ctx context.Context, req *requests.OrderID) (*responses.Order, error)
 	UpdateStatus(ctx context.Context, req *requests.UpdateStatus) error
 	UpdatePayment(ctx context.Context, req *requests.UpdatePayment) error
+	UpdateTailor(ctx context.Context, req *requests.UpdateTailor) error
+	UpdateTracking(ctx context.Context, req *requests.UpdateTracking) error
 	GetOrderByJWT(ctx context.Context, req *requests.UserJWT) ([]*responses.Order, error)
 	GetAllOrders(ctx context.Context) ([]*responses.Order, error)
 }
@@ -81,6 +83,17 @@ func (o *orderService) UpdatePayment(ctx context.Context, req *requests.UpdatePa
 	return nil
 }
 
+func (o *orderService) UpdateTracking(ctx context.Context, req *requests.UpdateTracking) error {
+
+	err := o.reposititory.UpdateTracking(ctx, req)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func (o *orderService) GetOrderByJWT(ctx context.Context, req *requests.UserJWT) ([]*responses.Order, error) {
 	id, err := utils.VerificationJWT(req.Token)
 
@@ -113,4 +126,14 @@ func (o *orderService) GetAllOrders(ctx context.Context) ([]*responses.Order, er
 	}
 
 	return res, nil
+}
+
+func (o *orderService) UpdateTailor(ctx context.Context, req *requests.UpdateTailor) error {
+
+	err := o.reposititory.UpdateTailor(ctx, req)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
