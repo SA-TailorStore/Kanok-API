@@ -121,6 +121,7 @@ func main() {
 	app.Get(prefix+"/orders", orderController.GetAllOrders)
 
 	// Product
+	app.Get(prefix+"/products", productController.GetAllProducts)
 
 	// Design
 	app.Get(prefix+"/designs", designController.GetAllDesigns)
