@@ -240,10 +240,25 @@ func (o *OrderMySQL) GetOrderByUserId(ctx context.Context, req *requests.UserID)
 		tailor_id,
 		created_by,
 		timestamp
-	FROM ORDERS WHERE created_by = ?
+	FROM ORDERS WHERE
 	`
 
-	rows, err := o.db.QueryContext(ctx, query, req.User_id)
+	var role requests.UserRole
+	if err := o.db.GetContext(ctx, &role,
+		"SELECT role FROM USERS WHERE user_id = ?",
+		req.User_id,
+	); err != nil {
+		return nil, err
+	}
+
+	switch role.Role {
+	case "user":
+		role = requests.UserRole{Role: " created_by = ?"}
+	case "tailor":
+		role = requests.UserRole{Role: " tailor_id = ?"}
+	}
+
+	rows, err := o.db.QueryContext(ctx, query+role.Role, req.User_id)
 	if err != nil {
 		return nil, exceptions.ErrUserNotFound
 	}
