@@ -2,6 +2,7 @@ package utils
 
 import (
 	"context"
+	"database/sql"
 	"fmt"
 
 	"github.com/SA-TailorStore/Kanok-API/database/responses"
@@ -28,8 +29,12 @@ func CheckUsernameDup(db *sqlx.DB, ctx context.Context, username string) error {
 	SELECT 
 		username
 	FROM USERS WHERE username = ?`
+	err := db.GetContext(ctx, &responses.Username{}, query, username)
+	if err == sql.ErrNoRows {
+		return nil
+	}
 
-	if err := db.GetContext(ctx, &responses.Username{}, query, username); err != nil {
+	if err != nil {
 		return exceptions.ErrUsernameDuplicated
 	}
 

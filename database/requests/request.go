@@ -40,12 +40,6 @@ type UserUploadImage struct {
 	Image string `json:"image" form:"image" `
 }
 
-type StoreAssign struct {
-	User_id  string `json:"user_id" validate:"required"`
-	Order_id string `json:"order_id" validate:"required"`
-	Due_date string `json:"due_date" validate:"required"`
-}
-
 // ORDER REQUEST
 type OrderID struct {
 	Order_id string `json:"order_id" validate:"required"`
@@ -78,6 +72,12 @@ type UpdateTracking struct {
 	Tracking_number string `json:"tracking_number" validate:"required"`
 }
 
+type UpdateTailor struct {
+	Order_id  string `json:"order_id" validate:"required"`
+	Tailor_id string `json:"tailor_id" validate:"required"`
+	Due_date  string `json:"due_date" validate:"required"`
+}
+
 // PRODUCT REQUEST
 type ProductID struct {
 	Product_id string `json:"product_id" validate:"required"`
@@ -86,6 +86,7 @@ type ProductID struct {
 type ProductOrderID struct {
 	Created_by string `json:"create_by" validate:"required"`
 }
+
 type Product struct {
 	Design_id      int    `json:"design_id" validate:"required"`
 	Fabric_id      int    `json:"fabric_id" validate:"required"`
@@ -93,10 +94,12 @@ type Product struct {
 	Size           string `json:"size" validate:"required"`
 	Total_quantity int    `json:"total_quantity" validate:"required"`
 }
+
 type CreateProduct struct {
 	Order_id string    `json:"order_id" validate:"required"`
 	Products []Product `json:"products" validate:"required"`
 }
+
 type UpdateProduct struct {
 	Product_id     string `json:"product_id" validate:"required"`
 	Design_id      string `json:"design_id" validate:"required"`

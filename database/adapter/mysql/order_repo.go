@@ -23,8 +23,10 @@ func NewOrderMySQL(db *sqlx.DB) reposititories.OrderRepository {
 }
 
 func (o *OrderMySQL) CreateOrder(ctx context.Context, req *requests.CreateOrder) (*responses.OrderID, error) {
+
 	query := `
-	SELECT 
+	SELECT
+		display_name,
 		address,
 		phone_number
 	FROM USERS WHERE role = "store"`
@@ -36,9 +38,10 @@ func (o *OrderMySQL) CreateOrder(ctx context.Context, req *requests.CreateOrder)
 	}
 
 	query = `
-	SELECT 
+	SELECT
+		display_name,
 		address,
-		phone_number 
+		phone_number
 	FROM USERS WHERE user_id = ?`
 
 	var user responses.UserCreateOrder
@@ -49,8 +52,8 @@ func (o *OrderMySQL) CreateOrder(ctx context.Context, req *requests.CreateOrder)
 
 	query = `
 	INSERT INTO ORDERS
-	(order_id, status,store_phone, store_address, user_phone, user_address, tailor_id, created_by) 
-	VALUES ( ?, ?, ?, ?, ?, ?, ?, ?)
+	(order_id, status,store_phone, store_address, user_phone, user_address, created_by, tailor_id, tailor_phone, tailor_address) 
+	VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
 	`
 
 	order_id := "O" + time.Now().Format("20060102") + time.Now().Format("150405")
@@ -62,7 +65,10 @@ func (o *OrderMySQL) CreateOrder(ctx context.Context, req *requests.CreateOrder)
 		user.Phone_number,
 		user.Display_name+"|"+user.Address,
 		req.Token,
-		req.Token)
+		req.Token,
+		user.Phone_number,
+		user.Display_name+"|"+user.Address,
+	)
 	if err != nil {
 		return nil, exceptions.ErrInfomation
 	}
@@ -82,13 +88,15 @@ func (o *OrderMySQL) GetOrderByID(ctx context.Context, req *requests.OrderID) (*
 		status,
 		store_phone,
 		store_address,
+		price,
+		tracking_number,
+		due_date,
+		created_by,
 		user_phone,
 		user_address,
-		price,
-		due_date,
-		tracking_number,
 		tailor_id,
-		created_by,
+		tailor_phone, 
+		tailor_address,
 		timestamp
 	FROM ORDERS WHERE order_id = ?`
 	var order responses.Order
@@ -155,6 +163,38 @@ func (o *OrderMySQL) UpdateTracking(ctx context.Context, req *requests.UpdateTra
 
 	_, err := o.db.ExecContext(ctx, query, req.Tracking_number, req.Order_id)
 	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (o *OrderMySQL) UpdateTailor(ctx context.Context, req *requests.UpdateTailor) error {
+
+	if err := utils.CheckUserByID(o.db, ctx, req.Tailor_id); err != nil {
+		return err
+	}
+
+	if err := utils.CheckOrderByID(o.db, ctx, req.Order_id); err != nil {
+		return err
+	}
+
+	layout := time.RFC3339
+	parsedDate, err := time.Parse(layout, req.Due_date)
+
+	if err != nil {
+		return exceptions.ErrDateInvalid
+	}
+
+	query := `
+	UPDATE ORDERS 
+	SET 
+		tailor_id = ?,
+		due_date = ?
+	WHERE order_id = ?
+	`
+
+	if _, err := o.db.ExecContext(ctx, query, req.Tailor_id, parsedDate, req.Order_id); err != nil {
 		return err
 	}
 
@@ -266,36 +306,4 @@ func (o *OrderMySQL) GetAllOrders(ctx context.Context) ([]*responses.Order, erro
 	}
 
 	return orders, nil
-}
-
-func (o *OrderMySQL) StoreAssign(ctx context.Context, req *requests.StoreAssign) error {
-
-	if err := utils.CheckUserByID(o.db, ctx, req.User_id); err != nil {
-		return err
-	}
-
-	if err := utils.CheckOrderByID(o.db, ctx, req.Order_id); err != nil {
-		return err
-	}
-
-	layout := time.RFC3339
-	parsedDate, err := time.Parse(layout, req.Due_date)
-
-	if err != nil {
-		return exceptions.ErrDateInvalid
-	}
-
-	query := `
-	UPDATE ORDERS 
-	SET 
-		tailor_id = ?,
-		due_date = ?
-	WHERE order_id = ?
-	`
-
-	if _, err := o.db.ExecContext(ctx, query, req.User_id, parsedDate, req.Order_id); err != nil {
-		return err
-	}
-
-	return nil
 }

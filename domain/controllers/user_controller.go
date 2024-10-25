@@ -102,7 +102,6 @@ func (u *userController) GetAllTailor(c *fiber.Ctx) error {
 			"message": "Not Found: " + req.Role,
 		})
 	}
-
 }
 
 func (u *userController) GetUserByID(c *fiber.Ctx) error {
