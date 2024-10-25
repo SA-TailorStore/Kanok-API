@@ -74,7 +74,6 @@ func main() {
 	app.Post(prefix+"/users", userController.GetAllUser)
 	app.Post(prefix+"/user/id", userController.GetUserByID)
 	app.Post(prefix+"/store/register", userController.StoreRegister)
-	// app.Post(prefix+"/user/tailor", userController.StoreAssign) เปลี่ยน path ไป order**
 
 	// Order
 	app.Post(prefix+"/order/create", orderController.CreateOrder)
@@ -83,7 +82,7 @@ func main() {
 	app.Post(prefix+"/order/update/status", orderController.UpdateStatus)
 	app.Post(prefix+"/order/update/payment", orderController.UpdatePayment)
 	app.Post(prefix+"/order/update/tracking", orderController.UpdateTracking)
-	app.Post(prefix+"/order/update/tailor", orderController.StoreAssign)
+	app.Post(prefix+"/order/update/tailor", orderController.UpdateTailor)
 
 	// Product
 	app.Post(prefix+"/product/create", productController.CreateProduct)
