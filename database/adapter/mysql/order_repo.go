@@ -141,6 +141,26 @@ func (o *OrderMySQL) UpdatePayment(ctx context.Context, req *requests.UpdatePaym
 	return nil
 }
 
+func (o *OrderMySQL) UpdateTracking(ctx context.Context, req *requests.UpdateTracking) error {
+
+	if err := utils.CheckOrderByID(o.db, ctx, req.Order_id); err != nil {
+		return err
+	}
+
+	query := `
+	UPDATE ORDERS 
+	SET 
+		tracking_number = ?
+	WHERE order_id = ?`
+
+	_, err := o.db.ExecContext(ctx, query, req.Tracking_number, req.Order_id)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func (o *OrderMySQL) GetOrderByUserId(ctx context.Context, req *requests.UserID) ([]*responses.Order, error) {
 
 	if err := utils.CheckUserByID(o.db, ctx, req.User_id); err != nil {
