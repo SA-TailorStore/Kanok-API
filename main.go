@@ -72,6 +72,7 @@ func main() {
 	app.Post(prefix+"/user/update/address", userController.UpdateAddress)
 	app.Post(prefix+"/user/profile/upload", userController.UpdateImage)
 	app.Post(prefix+"/users", userController.GetAllUser)
+	app.Post(prefix+"/user/id", userController.GetUserByID)
 	app.Post(prefix+"/store/register", userController.StoreRegister)
 	// app.Post(prefix+"/user/tailor", userController.StoreAssign) เปลี่ยน path ไป order**
 

@@ -10,6 +10,7 @@ type UserHandler interface {
 	Login(c *fiber.Ctx) error
 	GetAllUser(c *fiber.Ctx) error
 	GetAllTailor(c *fiber.Ctx) error
+	GetUserByID(c *fiber.Ctx) error
 	StoreAssign(c *fiber.Ctx) error
 	GetUserByJWT(c *fiber.Ctx) error
 	LoginByToken(c *fiber.Ctx) error

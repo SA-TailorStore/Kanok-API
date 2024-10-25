@@ -105,6 +105,45 @@ func (u *userController) GetAllTailor(c *fiber.Ctx) error {
 
 }
 
+func (u *userController) GetUserByID(c *fiber.Ctx) error {
+	// Parse request
+	var req requests.UserID
+
+	if err := c.BodyParser(&req); err != nil {
+		c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"error": err.Error(),
+		})
+	}
+
+	// Validate request
+	if err := utils.ValidateStruct(req); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(err)
+	}
+
+	res, err := u.service.GetByID(c.Context(), &req)
+
+	if err != nil {
+		switch err {
+		case exceptions.ErrUserNotFound:
+			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+				"error":  err.Error(),
+				"status": "400",
+			})
+		default:
+			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+				"error":  err.Error(),
+				"status": "500",
+			})
+		}
+	}
+
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{
+		"message": "OK!",
+		"status":  "200",
+		"data":    res,
+	})
+}
+
 func (u *userController) UserRegister(c *fiber.Ctx) error {
 
 	// Parse request
