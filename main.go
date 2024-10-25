@@ -81,7 +81,7 @@ func main() {
 	app.Post(prefix+"/order/user", orderController.GetOrderByJWT)
 	app.Post(prefix+"/order/update/status", orderController.UpdateStatus)
 	app.Post(prefix+"/order/update/payment", orderController.UpdatePayment)
-	app.Post(prefix+"/order/update/tailor", userController.StoreAssign)
+	app.Post(prefix+"/order/update/tailor", orderController.StoreAssign)
 
 	// Product
 	app.Post(prefix+"/product/create", productController.CreateProduct)

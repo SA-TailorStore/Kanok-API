@@ -18,6 +18,7 @@ type OrderUseCase interface {
 	UpdatePayment(ctx context.Context, req *requests.UpdatePayment) error
 	GetOrderByJWT(ctx context.Context, req *requests.UserJWT) ([]*responses.Order, error)
 	GetAllOrders(ctx context.Context) ([]*responses.Order, error)
+	StoreAssign(ctx context.Context, req *requests.StoreAssign) error
 }
 
 type orderService struct {
@@ -113,4 +114,14 @@ func (o *orderService) GetAllOrders(ctx context.Context) ([]*responses.Order, er
 	}
 
 	return res, nil
+}
+
+func (o *orderService) StoreAssign(ctx context.Context, req *requests.StoreAssign) error {
+
+	err := o.reposititory.StoreAssign(ctx, req)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
