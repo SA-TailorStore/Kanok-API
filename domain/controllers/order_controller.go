@@ -309,9 +309,9 @@ func (o *orderController) GetAllOrders(c *fiber.Ctx) error {
 	})
 }
 
-func (o *orderController) StoreAssign(c *fiber.Ctx) error {
+func (o *orderController) UpdateTailor(c *fiber.Ctx) error {
 	// Parse request
-	var req *requests.StoreAssign
+	var req *requests.UpdateTailor
 
 	if err := c.BodyParser(&req); err != nil {
 		c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
@@ -324,7 +324,7 @@ func (o *orderController) StoreAssign(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusBadRequest).JSON(err)
 	}
 
-	err := o.service.StoreAssign(c.Context(), req)
+	err := o.service.UpdateTailor(c.Context(), req)
 	if err != nil {
 		switch err {
 		case exceptions.ErrDateInvalid:

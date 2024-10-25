@@ -16,10 +16,10 @@ type OrderUseCase interface {
 	GetOrderByID(ctx context.Context, req *requests.OrderID) (*responses.Order, error)
 	UpdateStatus(ctx context.Context, req *requests.UpdateStatus) error
 	UpdatePayment(ctx context.Context, req *requests.UpdatePayment) error
+	UpdateTailor(ctx context.Context, req *requests.UpdateTailor) error
 	UpdateTracking(ctx context.Context, req *requests.UpdateTracking) error
 	GetOrderByJWT(ctx context.Context, req *requests.UserJWT) ([]*responses.Order, error)
 	GetAllOrders(ctx context.Context) ([]*responses.Order, error)
-	StoreAssign(ctx context.Context, req *requests.StoreAssign) error
 }
 
 type orderService struct {
@@ -128,9 +128,9 @@ func (o *orderService) GetAllOrders(ctx context.Context) ([]*responses.Order, er
 	return res, nil
 }
 
-func (o *orderService) StoreAssign(ctx context.Context, req *requests.StoreAssign) error {
+func (o *orderService) UpdateTailor(ctx context.Context, req *requests.UpdateTailor) error {
 
-	err := o.reposititory.StoreAssign(ctx, req)
+	err := o.reposititory.UpdateTailor(ctx, req)
 	if err != nil {
 		return err
 	}
