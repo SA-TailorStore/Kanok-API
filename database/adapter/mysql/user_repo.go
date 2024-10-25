@@ -240,27 +240,28 @@ func (u *UserMySQL) UpdateImage(ctx context.Context, req *requests.UserUploadIma
 }
 
 func (u *UserMySQL) StoreAssign(ctx context.Context, req *requests.StoreAssign) error {
-
 	if err := utils.CheckUserByID(u.db, ctx, req.User_id); err != nil {
 		return err
 	}
 
-	if err := utils.CheckOrderByID(u.db, ctx, req.User_id); err != nil {
+	if err := utils.CheckOrderByID(u.db, ctx, req.Order_id); err != nil {
 		return err
+	}
+
+	layout := time.RFC3339
+	parsedDate, err := time.Parse(layout, req.Due_date)
+
+	if err != nil {
+		return exceptions.ErrDateInvalid
 	}
 
 	query := `
 	UPDATE ORDERS 
 	SET 
-		tailor_id = ?
+		tailor_id = ?,
 		due_date = ?
 	WHERE order_id = ?
 	`
-	layout := "2006-01-02"
-	parsedDate, err := time.Parse(layout, req.Due_date)
-	if err != nil {
-		return exceptions.ErrDateInvalid
-	}
 
 	if _, err := u.db.ExecContext(ctx, query, req.User_id, parsedDate, req.Order_id); err != nil {
 		return err
