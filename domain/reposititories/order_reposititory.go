@@ -14,4 +14,5 @@ type OrderRepository interface {
 	UpdatePayment(ctx context.Context, req *requests.UpdatePayment) error
 	GetOrderByUserId(ctx context.Context, req *requests.UserID) ([]*responses.Order, error)
 	GetAllOrders(ctx context.Context) ([]*responses.Order, error)
+	StoreAssign(ctx context.Context, req *requests.StoreAssign) error
 }
