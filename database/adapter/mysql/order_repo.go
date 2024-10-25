@@ -250,11 +250,11 @@ func (o *OrderMySQL) GetAllOrders(ctx context.Context) ([]*responses.Order, erro
 
 func (o *OrderMySQL) StoreAssign(ctx context.Context, req *requests.StoreAssign) error {
 
-	if err := utils.CheckUserByID(u.db, ctx, req.User_id); err != nil {
+	if err := utils.CheckUserByID(o.db, ctx, req.User_id); err != nil {
 		return err
 	}
 
-	if err := utils.CheckOrderByID(u.db, ctx, req.Order_id); err != nil {
+	if err := utils.CheckOrderByID(o.db, ctx, req.Order_id); err != nil {
 		return err
 	}
 
@@ -273,7 +273,7 @@ func (o *OrderMySQL) StoreAssign(ctx context.Context, req *requests.StoreAssign)
 	WHERE order_id = ?
 	`
 
-	if _, err := u.db.ExecContext(ctx, query, req.User_id, parsedDate, req.Order_id); err != nil {
+	if _, err := o.db.ExecContext(ctx, query, req.User_id, parsedDate, req.Order_id); err != nil {
 		return err
 	}
 
