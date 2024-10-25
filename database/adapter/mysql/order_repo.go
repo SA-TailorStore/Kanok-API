@@ -52,8 +52,8 @@ func (o *OrderMySQL) CreateOrder(ctx context.Context, req *requests.CreateOrder)
 
 	query = `
 	INSERT INTO ORDERS
-	(order_id, status,store_phone, store_address, user_phone, user_address, tailor_id, created_by) 
-	VALUES ( ?, ?, ?, ?, ?, ?, ?, ?)
+	(order_id, status,store_phone, store_address, user_phone, user_address, created_by, tailor_id, tailor_phone, tailor_address) 
+	VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
 	`
 
 	order_id := "O" + time.Now().Format("20060102") + time.Now().Format("150405")
@@ -65,7 +65,10 @@ func (o *OrderMySQL) CreateOrder(ctx context.Context, req *requests.CreateOrder)
 		user.Phone_number,
 		user.Display_name+"|"+user.Address,
 		req.Token,
-		req.Token)
+		req.Token,
+		user.Phone_number,
+		user.Display_name+"|"+user.Address,
+	)
 	if err != nil {
 		return nil, exceptions.ErrInfomation
 	}
@@ -85,13 +88,15 @@ func (o *OrderMySQL) GetOrderByID(ctx context.Context, req *requests.OrderID) (*
 		status,
 		store_phone,
 		store_address,
+		price,
+		tracking_number,
+		due_date,
+		created_by,
 		user_phone,
 		user_address,
-		price,
-		due_date,
-		tracking_number,
 		tailor_id,
-		created_by,
+		tailor_phone, 
+		tailor_address,
 		timestamp
 	FROM ORDERS WHERE order_id = ?`
 	var order responses.Order
