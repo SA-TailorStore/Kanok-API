@@ -221,7 +221,7 @@ func (o *OrderMySQL) UpdateTailor(ctx context.Context, req *requests.UpdateTailo
 	return nil
 }
 
-func (o *OrderMySQL) GetOrderByUserId(ctx context.Context, req *requests.UserID) ([]*responses.Order, error) {
+func (o *OrderMySQL) GetOrderByUserId(ctx context.Context, req *requests.UserID) ([]*responses.ShowOrder, error) {
 
 	if err := utils.CheckUserByID(o.db, ctx, req.User_id); err != nil {
 		return nil, err
@@ -256,9 +256,9 @@ func (o *OrderMySQL) GetOrderByUserId(ctx context.Context, req *requests.UserID)
 	}
 	defer rows.Close()
 
-	orders := make([]*responses.Order, 0)
+	orders := make([]*responses.ShowOrder, 0)
 	for rows.Next() {
-		var order responses.Order
+		var order responses.ShowOrder
 		if err := rows.Scan(
 			&order.Order_id,
 			&order.Status,

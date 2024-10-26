@@ -19,7 +19,7 @@ type OrderUseCase interface {
 	UpdatePayment(ctx context.Context, req *requests.UpdatePayment, file multipart.File) error
 	UpdateTailor(ctx context.Context, req *requests.UpdateTailor) error
 	UpdateTracking(ctx context.Context, req *requests.UpdateTracking) error
-	GetOrderByJWT(ctx context.Context, req *requests.UserJWT) ([]*responses.Order, error)
+	GetOrderByJWT(ctx context.Context, req *requests.UserJWT) ([]*responses.ShowOrder, error)
 	GetAllOrders(ctx context.Context) ([]*responses.ShowOrder, error)
 	CheckProcess(ctx context.Context, req *requests.OrderID) (*responses.CheckProcess, error)
 }
@@ -109,7 +109,7 @@ func (o *orderService) UpdateTracking(ctx context.Context, req *requests.UpdateT
 	return nil
 }
 
-func (o *orderService) GetOrderByJWT(ctx context.Context, req *requests.UserJWT) ([]*responses.Order, error) {
+func (o *orderService) GetOrderByJWT(ctx context.Context, req *requests.UserJWT) ([]*responses.ShowOrder, error) {
 	id, err := utils.VerificationJWT(req.Token)
 
 	if err != nil {
