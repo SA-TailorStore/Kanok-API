@@ -13,4 +13,5 @@ type OrderHandler interface {
 	UpdateTracking(c *fiber.Ctx) error
 	GetOrderByJWT(c *fiber.Ctx) error
 	GetAllOrders(c *fiber.Ctx) error
+	CheckProcess(c *fiber.Ctx) error
 }

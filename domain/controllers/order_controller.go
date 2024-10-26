@@ -365,3 +365,45 @@ func (o *orderController) UpdateTailor(c *fiber.Ctx) error {
 		"status":  "204",
 	})
 }
+
+func (o *orderController) CheckProcess(c *fiber.Ctx) error {
+	// Parse request
+	var req *requests.OrderID
+
+	if err := c.BodyParser(&req); err != nil {
+		c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"error": err.Error(),
+		})
+	}
+
+	// Validate request
+	if err := utils.ValidateStruct(req); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(err)
+	}
+
+	res, err := o.service.CheckProcess(c.Context(), req)
+	if err != nil {
+		switch err {
+		case exceptions.ErrOrderNotFound:
+			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+				"error":  err.Error(),
+				"status": "400",
+			})
+		case exceptions.ErrProductNotFound:
+			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+				"error":  err.Error(),
+				"status": "400",
+			})
+		default:
+			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+				"error":  err.Error(),
+				"status": "500",
+			})
+		}
+	}
+
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{
+		"status":   "200",
+		"response": res.Is_ready,
+	})
+}

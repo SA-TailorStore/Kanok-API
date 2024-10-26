@@ -71,6 +71,10 @@ type OrderID struct {
 	Order_id string `json:"order_id"`
 }
 
+type CheckProcess struct {
+	Is_ready bool `json:"is_ready"`
+}
+
 // PRODUCT
 type Product struct {
 	Product_id       string `json:"product_id"`
