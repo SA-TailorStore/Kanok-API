@@ -24,6 +24,8 @@ func NewOrderMySQL(db *sqlx.DB) reposititories.OrderRepository {
 
 func (o *OrderMySQL) CreateOrder(ctx context.Context, req *requests.CreateOrder) (*responses.OrderID, error) {
 
+	order_id := "O" + time.Now().Format("20060102") + time.Now().Format("150405")
+
 	query := `
 	SELECT
 		display_name,
@@ -56,7 +58,6 @@ func (o *OrderMySQL) CreateOrder(ctx context.Context, req *requests.CreateOrder)
 	VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
 	`
 
-	order_id := "O" + time.Now().Format("20060102") + time.Now().Format("150405")
 	_, err = o.db.QueryContext(ctx, query,
 		order_id,
 		"pending",
@@ -138,7 +139,8 @@ func (o *OrderMySQL) UpdatePayment(ctx context.Context, req *requests.UpdatePaym
 	query := `
 	UPDATE ORDERS 
 	SET 
-		is_payment = ? 
+		is_payment = ?,
+		status = waiting_assign
 	WHERE order_id = ?`
 
 	_, err := o.db.ExecContext(ctx, query, req.Is_payment, req.Order_id)
