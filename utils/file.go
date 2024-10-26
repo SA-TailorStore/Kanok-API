@@ -1,9 +1,12 @@
 package utils
 
 import (
+	"image"
 	"mime/multipart"
 
+	"github.com/SA-TailorStore/Kanok-API/domain/exceptions"
 	"github.com/gofiber/fiber/v2"
+	"github.com/liyue201/goqr"
 )
 
 func OpenFile(c *fiber.Ctx) (multipart.File, error) {
@@ -30,4 +33,20 @@ func OpenFile(c *fiber.Ctx) (multipart.File, error) {
 	defer file.Close()
 
 	return file, nil
+}
+
+func DecodeImage(file multipart.File) (image.Image, error) {
+	img, _, err := image.Decode(file)
+	if err != nil {
+		return nil, exceptions.ErrInvalidImage
+	}
+	return img, nil
+}
+
+func ReadQRCode(img image.Image) ([]*goqr.QRData, error) {
+	codes, err := goqr.Recognize(img)
+	if err != nil {
+		return nil, err
+	}
+	return codes, nil
 }

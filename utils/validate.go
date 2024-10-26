@@ -8,6 +8,7 @@ import (
 	"github.com/SA-TailorStore/Kanok-API/domain/exceptions"
 	valid "github.com/go-playground/validator/v10"
 	"github.com/golang-jwt/jwt/v5"
+	"github.com/liyue201/goqr"
 )
 
 var validate = valid.New()
@@ -90,6 +91,26 @@ func ValidateJWTFormat(tokenString string) error {
 	_, _, err := jwt.NewParser().ParseUnverified(tokenString, jwt.MapClaims{})
 	if err != nil {
 		return fmt.Errorf("invalid JWT: %v", err)
+	}
+
+	return nil
+}
+
+func ValidateSlip(qrcode []*goqr.QRData) error {
+
+	for _, code := range qrcode {
+		parsedCode := ParseCode(string(code.Payload))
+		data := strings.ReplaceAll(string(code.Payload), parsedCode.Checksum, "")
+		checksumqr, _ := CRC16XModem(data, 0xffff)
+		checksum, err := HexToDecimal(parsedCode.Checksum)
+
+		if err != nil {
+			return err
+		}
+
+		if checksumqr != checksum {
+			return exceptions.ErrWrongSlip
+		}
 	}
 
 	return nil

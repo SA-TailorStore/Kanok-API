@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"strconv"
 	"strings"
 )
 
@@ -34,6 +35,7 @@ type QRCode struct {
 	Type              string
 	Language          string
 	AdditionalInfo    string
+	Checksum          string
 }
 
 func ParseCode(code string) QRCode {
@@ -48,7 +50,8 @@ func ParseCode(code string) QRCode {
 		TransactionREF:    tranref,
 		Type:              lang[0:4],
 		Language:          lang[4:],
-		AdditionalInfo:    addition,
+		AdditionalInfo:    addition[0:4],
+		Checksum:          addition[4:],
 	}
 }
 
@@ -59,7 +62,7 @@ func GetTransactionREF(str string, bankcode string) string {
 	case SCB:
 		return str[25:50]
 	default:
-		return str
+		return str[25:25]
 	}
 }
 
@@ -75,19 +78,10 @@ func GetAdditionalInfo(code string, lang string) string {
 	return code[index:]
 }
 
-func CalculateCRC16(data string) uint16 {
-	var crc uint16 = 0xFFFF // ค่าเริ่มต้น
-
-	for i := 0; i < len(data); i++ {
-		crc ^= uint16(data[i]) << 8
-		for j := 0; j < 8; j++ {
-			if (crc & 0x8000) != 0 {
-				crc = (crc << 1) ^ 0x1021
-			} else {
-				crc <<= 1
-			}
-		}
+func HexToDecimal(hexString string) (int32, error) {
+	decimalValue, err := strconv.ParseInt(hexString, 16, 64)
+	if err != nil {
+		return 0, err
 	}
-
-	return crc & 0xFFFF
+	return int32(decimalValue), nil
 }

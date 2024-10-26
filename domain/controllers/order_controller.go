@@ -1,8 +1,6 @@
 package controllers
 
 import (
-	"fmt"
-	"image"
 	_ "image/jpeg"
 	_ "image/png"
 
@@ -12,7 +10,6 @@ import (
 	"github.com/SA-TailorStore/Kanok-API/domain/services"
 	"github.com/SA-TailorStore/Kanok-API/utils"
 	"github.com/gofiber/fiber/v2"
-	"github.com/liyue201/goqr"
 )
 
 type orderController struct {
@@ -174,46 +171,17 @@ func (o *orderController) UpdatePayment(c *fiber.Ctx) error {
 
 	file, err := utils.OpenFile(c)
 	if err != nil {
-		return err
-	}
-	// Decode รูปภาพ
-	img, _, err := image.Decode(file)
-	if err != nil {
-		return err
+		return c.Status(fiber.StatusBadRequest).JSON(err)
 	}
 
-	// อ่าน QR code
-	codes, err := goqr.Recognize(img)
-	if err != nil {
-		return err
-	}
-
-	for _, code := range codes {
-		parsedCode := utils.ParseCode(string(code.Payload))
-
-		fmt.Println(len(string(code.Payload)))
-		fmt.Println("QR Code Data:", string(code.Payload))
-		fmt.Println("SendingBankCode:", parsedCode.SendingBankCode)
-		fmt.Println("ReceivingBankCode:", parsedCode.ReceivingBankCode)
-		fmt.Println("Transaction ID:", parsedCode.TransactionREF)
-		fmt.Println("IDK Code:", parsedCode.IDK)
-		fmt.Println("IDK Number:", parsedCode.AccountNumber)
-		fmt.Println("Type:", parsedCode.Type)
-		fmt.Println("Language:", parsedCode.Language)
-		fmt.Println("Additional Info:", parsedCode.AdditionalInfo)
-		checksum := utils.CalculateCRC16(string(code.Payload))
-		fmt.Printf("Checksum: %d\n", checksum)
-		fmt.Println()
-	}
-
-	if err := o.service.UpdatePayment(c.Context(), &req); err != nil {
+	if err := o.service.UpdatePayment(c.Context(), &req, file); err != nil {
 		switch err {
 		case exceptions.ErrOrderNotFound:
 			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 				"error":  err.Error(),
 				"status": "400",
 			})
-		case err:
+		case exceptions.ErrWrongSlip:
 			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 				"error":  err.Error(),
 				"status": "400",
