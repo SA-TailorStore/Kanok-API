@@ -230,19 +230,7 @@ func (o *OrderMySQL) GetOrderByUserId(ctx context.Context, req *requests.UserID)
 	query := `
 	SELECT 
 		order_id,
-		is_payment,
 		status,
-		store_phone,
-		store_address,
-		user_phone,
-		user_address,
-		price,
-		due_date,
-		tracking_number,
-		tailor_id,
-		tailor_phone,
-		tailor_address,
-		created_by,
 		timestamp
 	FROM ORDERS WHERE
 	`
