@@ -342,8 +342,12 @@ func (o *OrderMySQL) GetAllOrders(ctx context.Context) ([]*responses.Order, erro
 }
 
 func (o *OrderMySQL) CheckProcess(ctx context.Context, req *requests.OrderID) (*responses.CheckProcess, error) {
-	var res *responses.CheckProcess
 
+	if err := utils.CheckOrderByID(o.db, ctx, req.Order_id); err != nil {
+		return nil, err
+	}
+
+	var res *responses.CheckProcess
 	query := `
 	SELECT 
 		process_quantity,
