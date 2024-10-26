@@ -261,17 +261,7 @@ func (o *OrderMySQL) GetOrderByUserId(ctx context.Context, req *requests.UserID)
 		var order responses.Order
 		if err := rows.Scan(
 			&order.Order_id,
-			&order.Is_payment,
 			&order.Status,
-			&order.Store_phone,
-			&order.Store_address,
-			&order.User_phone,
-			&order.User_address,
-			&order.Price,
-			&order.Due_date,
-			&order.Tracking_number,
-			&order.Tailor_id,
-			&order.Created_by,
 			&order.Timestamp,
 		); err != nil {
 			return nil, err
