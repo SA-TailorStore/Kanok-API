@@ -240,6 +240,8 @@ func (o *OrderMySQL) GetOrderByUserId(ctx context.Context, req *requests.UserID)
 		due_date,
 		tracking_number,
 		tailor_id,
+		tailor_phone,
+		tailor_address,
 		created_by,
 		timestamp
 	FROM ORDERS WHERE
@@ -292,21 +294,11 @@ func (o *OrderMySQL) GetOrderByUserId(ctx context.Context, req *requests.UserID)
 	return orders, nil
 }
 
-func (o *OrderMySQL) GetAllOrders(ctx context.Context) ([]*responses.Order, error) {
+func (o *OrderMySQL) GetAllOrders(ctx context.Context) ([]*responses.ShowOrder, error) {
 	query := `
 	SELECT 
 		order_id,
-		is_payment,
 		status,
-		store_phone,
-		store_address,
-		user_phone,
-		user_address,
-		price,
-		due_date,
-		tracking_number,
-		tailor_id,
-		created_by,
 		timestamp
 	FROM ORDERS
 	`
@@ -317,22 +309,12 @@ func (o *OrderMySQL) GetAllOrders(ctx context.Context) ([]*responses.Order, erro
 	}
 	defer rows.Close()
 
-	orders := make([]*responses.Order, 0)
+	orders := make([]*responses.ShowOrder, 0)
 	for rows.Next() {
-		var order responses.Order
+		var order responses.ShowOrder
 		if err := rows.Scan(
 			&order.Order_id,
-			&order.Is_payment,
 			&order.Status,
-			&order.Store_phone,
-			&order.Store_address,
-			&order.User_phone,
-			&order.User_address,
-			&order.Price,
-			&order.Due_date,
-			&order.Tracking_number,
-			&order.Tailor_id,
-			&order.Created_by,
 			&order.Timestamp,
 		); err != nil {
 			return nil, err

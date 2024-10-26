@@ -67,6 +67,12 @@ type Order struct {
 	Timestamp       string `json:"timestamp"`
 }
 
+type ShowOrder struct {
+	Order_id  string `json:"order_id"`
+	Status    string `json:"status"`
+	Timestamp string `json:"timestamp"`
+}
+
 type OrderID struct {
 	Order_id string `json:"order_id"`
 }
