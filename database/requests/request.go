@@ -106,7 +106,13 @@ type UpdateProduct struct {
 	Fabric_id      string `json:"fabric_id" validate:"required"`
 	Detail         string `json:"detail" validate:"required"`
 	Size           string `json:"size" validate:"required"`
-	Total_quantity int    `json:"total_quantity " validate:"required"`
+	Total_quantity int    `json:"total_quantity" validate:"required"`
+}
+
+type UpdateProcessQuantity struct {
+	Product_id        string `json:"product_id" validate:"required"`
+	Increase_quantity int    `json:"increase_quantity"`
+	Decrease_quantity int    `json:"decrease_quantity"`
 }
 
 // DESIGN REQUEST

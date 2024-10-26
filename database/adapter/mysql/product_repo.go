@@ -128,8 +128,11 @@ func (p *ProductMySQL) GetProductByID(ctx context.Context, req *requests.Product
 	FROM PRODUCTS WHERE product_id = ?`
 
 	var product responses.Product
-	err := p.db.GetContext(ctx, &product,
-		query, req.Product_id)
+	err := p.db.GetContext(ctx,
+		&product,
+		query,
+		req.Product_id,
+	)
 
 	if err != nil {
 		switch err {
@@ -185,4 +188,55 @@ func (p *ProductMySQL) GetAllProducts(ctx context.Context) ([]*responses.Product
 	}
 
 	return products, err
+}
+
+func (p *ProductMySQL) UpdateProcessQuantity(ctx context.Context, req *requests.UpdateProcessQuantity) error {
+
+	if err := utils.CheckProductByID(p.db, ctx, req.Product_id); err != nil {
+		return err
+	}
+
+	var process_current responses.ProductProcess
+	if err := p.db.GetContext(ctx,
+		&process_current,
+		`
+	SELECT 
+		process_quantity,
+		total_quantity
+	FROM PRODUCTS WHERE product_id = ?`,
+		req.Product_id,
+	); err != nil {
+		return err
+	}
+
+	query := `
+	UPDATE PRODUCTS
+	SET
+		process_quantity = process_quantity + ?
+	WHERE product_id = ?`
+
+	if req.Increase_quantity > 0 &&
+		process_current.Process_quantity <= process_current.Total_quantity &&
+		req.Increase_quantity <= (process_current.Total_quantity-process_current.Process_quantity) &&
+		req.Decrease_quantity == 0 {
+		_, err := p.db.ExecContext(ctx,
+			query,
+			req.Increase_quantity,
+			req.Product_id,
+		)
+		return err
+	} else if req.Decrease_quantity > 0 &&
+		process_current.Process_quantity > 0 &&
+		0 <= (process_current.Process_quantity-req.Decrease_quantity) &&
+		req.Increase_quantity == 0 {
+		_, err := p.db.ExecContext(ctx,
+			query,
+			-req.Decrease_quantity,
+			req.Product_id,
+		)
+		return err
+	} else {
+		return exceptions.ErrSomethingWrong
+	}
+
 }

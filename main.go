@@ -87,6 +87,7 @@ func main() {
 	// Product
 	app.Post(prefix+"/product/create", productController.CreateProduct)
 	app.Post(prefix+"/product/get", productController.GetProductByID)
+	app.Post(prefix+"/product/update/process", productController.UpdateProcessQuantity)
 	app.Post(prefix+"/product/get/order", productController.GetProductByOrderID)
 
 	// Design

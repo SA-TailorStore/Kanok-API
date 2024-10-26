@@ -88,6 +88,11 @@ type ProductID struct {
 	Product_id string `json:"product_id"`
 }
 
+type ProductProcess struct {
+	Process_quantity int `json:"process_quantity"`
+	Total_quantity   int `json:"total_quantity"`
+}
+
 // DESIGN
 type Design struct {
 	Design_id  int    `json:"design_id" db:"design_id"`
