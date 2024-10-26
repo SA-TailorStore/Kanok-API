@@ -198,8 +198,11 @@ func (o *orderController) UpdatePayment(c *fiber.Ctx) error {
 		fmt.Println("Transaction ID:", parsedCode.TransactionREF)
 		fmt.Println("IDK Code:", parsedCode.IDK)
 		fmt.Println("IDK Number:", parsedCode.AccountNumber)
+		fmt.Println("Type:", parsedCode.Type)
 		fmt.Println("Language:", parsedCode.Language)
 		fmt.Println("Additional Info:", parsedCode.AdditionalInfo)
+		checksum := utils.CalculateCRC16(string(code.Payload))
+		fmt.Printf("Checksum: %d\n", checksum)
 		fmt.Println()
 	}
 
