@@ -83,10 +83,12 @@ func main() {
 	app.Post(prefix+"/order/update/payment", orderController.UpdatePayment)
 	app.Post(prefix+"/order/update/tracking", orderController.UpdateTracking)
 	app.Post(prefix+"/order/update/tailor", orderController.UpdateTailor)
+	app.Post(prefix+"/order/product/check", orderController.CheckProcess)
 
 	// Product
 	app.Post(prefix+"/product/create", productController.CreateProduct)
 	app.Post(prefix+"/product/get", productController.GetProductByID)
+	app.Post(prefix+"/product/update/process", productController.UpdateProcessQuantity)
 	app.Post(prefix+"/product/get/order", productController.GetProductByOrderID)
 
 	// Design

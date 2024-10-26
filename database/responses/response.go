@@ -71,6 +71,10 @@ type OrderID struct {
 	Order_id string `json:"order_id"`
 }
 
+type CheckProcess struct {
+	Is_ready bool `json:"is_ready"`
+}
+
 // PRODUCT
 type Product struct {
 	Product_id       string `json:"product_id"`
@@ -86,6 +90,11 @@ type Product struct {
 
 type ProductID struct {
 	Product_id string `json:"product_id"`
+}
+
+type ProductProcess struct {
+	Process_quantity int `json:"process_quantity"`
+	Total_quantity   int `json:"total_quantity"`
 }
 
 // DESIGN
