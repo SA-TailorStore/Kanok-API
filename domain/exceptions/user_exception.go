@@ -19,4 +19,5 @@ var (
 	ErrLeastPhoneNumber       = errors.New("phone number must be at least 10")
 	ErrRoleNotHave            = errors.New("not have this role")
 	ErrInvalidImage           = errors.New("slip is wrong")
+	ErrNoImage                = errors.New("no image")
 )

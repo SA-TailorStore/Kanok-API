@@ -36,11 +36,16 @@ func OpenFile(c *fiber.Ctx) (multipart.File, error) {
 }
 
 func DecodeImage(file multipart.File) (image.Image, error) {
-	img, _, err := image.Decode(file)
-	if err != nil {
-		return nil, exceptions.ErrInvalidImage
+	if file != nil {
+		img, _, err := image.Decode(file)
+		if err != nil {
+			return nil, exceptions.ErrInvalidImage
+		}
+
+		return img, nil
+	} else {
+		return nil, exceptions.ErrNoImage
 	}
-	return img, nil
 }
 
 func ReadQRCode(img image.Image) ([]*goqr.QRData, error) {
