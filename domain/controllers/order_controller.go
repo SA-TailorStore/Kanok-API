@@ -1,6 +1,9 @@
 package controllers
 
 import (
+	_ "image/jpeg"
+	_ "image/png"
+
 	"github.com/SA-TailorStore/Kanok-API/database/adapter/rest"
 	"github.com/SA-TailorStore/Kanok-API/database/requests"
 	"github.com/SA-TailorStore/Kanok-API/domain/exceptions"
@@ -152,7 +155,7 @@ func (o *orderController) UpdateStatus(c *fiber.Ctx) error {
 
 func (o *orderController) UpdatePayment(c *fiber.Ctx) error {
 	// Parse request
-	var req *requests.UpdatePayment
+	var req requests.UpdatePayment
 
 	if err := c.BodyParser(&req); err != nil {
 		c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
@@ -166,15 +169,19 @@ func (o *orderController) UpdatePayment(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusBadRequest).JSON(err)
 	}
 
-	err := o.service.UpdatePayment(c.Context(), req)
+	file, err := utils.OpenFile(c)
 	if err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(err)
+	}
+
+	if err := o.service.UpdatePayment(c.Context(), &req, file); err != nil {
 		switch err {
 		case exceptions.ErrOrderNotFound:
 			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 				"error":  err.Error(),
 				"status": "400",
 			})
-		case err:
+		case exceptions.ErrWrongSlip:
 			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 				"error":  err.Error(),
 				"status": "400",

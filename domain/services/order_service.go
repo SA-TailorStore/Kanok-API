@@ -2,6 +2,7 @@ package services
 
 import (
 	"context"
+	"mime/multipart"
 
 	"github.com/SA-TailorStore/Kanok-API/configs"
 	"github.com/SA-TailorStore/Kanok-API/database/requests"
@@ -15,7 +16,7 @@ type OrderUseCase interface {
 	CreateOrder(ctx context.Context, req *requests.CreateOrder) (*responses.OrderID, error)
 	GetOrderByID(ctx context.Context, req *requests.OrderID) (*responses.Order, error)
 	UpdateStatus(ctx context.Context, req *requests.UpdateStatus) error
-	UpdatePayment(ctx context.Context, req *requests.UpdatePayment) error
+	UpdatePayment(ctx context.Context, req *requests.UpdatePayment, file multipart.File) error
 	UpdateTailor(ctx context.Context, req *requests.UpdateTailor) error
 	UpdateTracking(ctx context.Context, req *requests.UpdateTracking) error
 	GetOrderByJWT(ctx context.Context, req *requests.UserJWT) ([]*responses.Order, error)
@@ -73,11 +74,24 @@ func (o *orderService) UpdateStatus(ctx context.Context, req *requests.UpdateSta
 	return nil
 }
 
-func (o *orderService) UpdatePayment(ctx context.Context, req *requests.UpdatePayment) error {
-
-	err := o.reposititory.UpdatePayment(ctx, req)
-
+func (o *orderService) UpdatePayment(ctx context.Context, req *requests.UpdatePayment, file multipart.File) error {
+	// Decode รูปภาพ
+	img, err := utils.DecodeImage(file)
 	if err != nil {
+		return err
+	}
+
+	// อ่าน QR code
+	codes, err := utils.ReadQRCode(img)
+	if err != nil {
+		return err
+	}
+
+	if err := utils.ValidateSlip(codes); err != nil {
+		return err
+	}
+	req = &requests.UpdatePayment{Order_id: req.Order_id, Is_payment: 1}
+	if err := o.reposititory.UpdatePayment(ctx, req); err != nil {
 		return err
 	}
 
