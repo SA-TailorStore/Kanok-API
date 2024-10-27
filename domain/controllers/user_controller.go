@@ -318,6 +318,11 @@ func (u *userController) GetUserByJWT(c *fiber.Ctx) error {
 
 	if err != nil {
 		switch err {
+		case exceptions.ErrUserNotFound:
+			return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
+				"error":  err.Error(),
+				"status": "401",
+			})
 		case exceptions.ErrInvalidToken:
 			return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
 				"error":  err.Error(),
@@ -362,6 +367,11 @@ func (u *userController) LoginByToken(c *fiber.Ctx) error {
 
 	if err != nil {
 		switch err {
+		case exceptions.ErrUserNotFound:
+			return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
+				"error":  err.Error(),
+				"status": "401",
+			})
 		case exceptions.ErrInvalidToken:
 			return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
 				"error":  err.Error(),
