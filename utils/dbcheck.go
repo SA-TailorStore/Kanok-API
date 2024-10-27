@@ -67,11 +67,28 @@ func CheckOrderByID(db *sqlx.DB, ctx context.Context, id string) error {
 	var order responses.Order
 	query := `
 	SELECT 
-		*
+		order_id,
+		is_payment,
+		status,
+		store_phone,
+		store_address,
+		price,
+		tracking_number,
+		due_date,
+		created_by,
+		user_phone,
+		user_address,
+		tailor_id,
+		tailor_phone, 
+		tailor_address,
+		timestamp
 	FROM ORDERS WHERE order_id = ?`
 	err := db.GetContext(ctx, &order, query, id)
 	if err != nil {
-		return exceptions.ErrOrderNotFound
+		if err == sql.ErrNoRows {
+			return exceptions.ErrOrderNotFound
+		}
+		return err
 	}
 
 	return nil
