@@ -44,20 +44,29 @@ func (p *ProductMySQL) CreateProduct(ctx context.Context, req *requests.Product,
 
 	product_id := "P" + time.Now().Format("20060102") + time.Now().Format("150405") + index
 
-	_, err := p.db.QueryContext(ctx, query,
+	if _, err := p.db.QueryContext(ctx, query,
 		product_id,
 		req.Design_id,
 		req.Fabric_id,
 		req.Detail,
 		req.Size,
 		req.Total_quantity,
-		order_id)
-
-	if err != nil {
+		order_id,
+	); err != nil {
 		return err
 	}
 
-	return err
+	// Update Fabric
+	if _, err := p.db.ExecContext(ctx, `
+		UPDATE FABRICS 
+		SET 
+			quantity = quantity + ? 
+		WHERE fabric_id = ?`, -req.Total_quantity, req.Fabric_id,
+	); err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func (p *ProductMySQL) GetProductByOrderID(ctx context.Context, req *requests.OrderID) ([]*responses.Product, error) {
@@ -258,7 +267,7 @@ func (p *ProductMySQL) CheckFabric(ctx context.Context, req *requests.Product, i
 	if err != nil {
 		return nil, err
 	}
-	res = &responses.CheckFabric{Product_index: index, Quantity: fabric.Quantity >= req.Total_quantity}
+	res = &responses.CheckFabric{Product_index: index, Quantity: fabric.Quantity-req.Total_quantity >= 0}
 
 	return res, nil
 }

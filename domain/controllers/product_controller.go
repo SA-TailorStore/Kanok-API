@@ -36,7 +36,17 @@ func (p *productController) CreateProduct(c *fiber.Ctx) error {
 	res, err := p.service.CreateProduct(c.Context(), req)
 	if err != nil {
 		switch err {
-		case err:
+		case exceptions.ErrOrderNotFound:
+			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+				"error":  err.Error(),
+				"status": "400",
+			})
+		case exceptions.ErrDesignNotFound:
+			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+				"error":  err.Error(),
+				"status": "400",
+			})
+		case exceptions.ErrFabricNotFound:
 			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 				"error":  err.Error(),
 				"status": "400",
@@ -48,7 +58,7 @@ func (p *productController) CreateProduct(c *fiber.Ctx) error {
 			})
 		}
 	}
-	if res != nil {
+	if res == nil {
 		return c.Status(fiber.StatusCreated).JSON(fiber.Map{
 			"status":  "201",
 			"message": "Product Create Success",

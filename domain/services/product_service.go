@@ -11,7 +11,7 @@ import (
 )
 
 type ProductUsecase interface {
-	CreateProduct(ctx context.Context, req *requests.CreateProduct) ([]*responses.CheckFabric, error)
+	CreateProduct(ctx context.Context, req *requests.CreateProduct) (map[string]bool, error)
 	GetProductByID(ctx context.Context, req *requests.ProductID) (*responses.Product, error)
 	GetProductByOrderID(ctx context.Context, req *requests.OrderID) ([]*responses.Product, error)
 	UpdateProcessQuantity(ctx context.Context, req *requests.UpdateProcessQuantity) error
@@ -30,21 +30,20 @@ func NewProductService(reposititory reposititories.ProductRepository, config *co
 	}
 }
 
-func (p *productService) CreateProduct(ctx context.Context, req *requests.CreateProduct) ([]*responses.CheckFabric, error) {
-
-	var fabrics []*responses.CheckFabric
-	var is_enough bool
+func (p *productService) CreateProduct(ctx context.Context, req *requests.CreateProduct) (map[string]bool, error) {
+	var fabrics = make(map[string]bool)
+	var is_enough = true
 
 	for index, value := range req.Products {
 		fabric, err := p.reposititory.CheckFabric(ctx, &value, strconv.Itoa(index+1))
-
 		if err != nil {
 			return nil, err
 		}
-		fabrics = append(fabrics, fabric)
+
 		if !fabric.Quantity {
 			is_enough = false
 		}
+		fabrics[fabric.Product_index] = fabric.Quantity
 	}
 
 	if is_enough {
