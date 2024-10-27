@@ -16,7 +16,7 @@ func CheckUserByID(db *sqlx.DB, ctx context.Context, id string) error {
 
 	query := `
 	SELECT 
-		*
+		user_id
 	FROM USERS WHERE user_id = ?`
 
 	err := db.GetContext(ctx, &user, query, id)
