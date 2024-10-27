@@ -22,7 +22,7 @@ type OrderUseCase interface {
 	UpdatePrice(ctx context.Context, req *requests.UpdatePrice) error
 	GetOrderByJWT(ctx context.Context, req *requests.UserJWT) ([]*responses.ShowOrder, error)
 	GetAllOrders(ctx context.Context) ([]*responses.ShowOrder, error)
-	CheckProcess(ctx context.Context, req *requests.OrderID) (*responses.CheckProcess, error)
+	CheckProcess(ctx context.Context, req *requests.OrderID) (*responses.ProductProcess, error)
 }
 
 type orderService struct {
@@ -165,7 +165,7 @@ func (o *orderService) UpdateTailor(ctx context.Context, req *requests.UpdateTai
 	return nil
 }
 
-func (o *orderService) CheckProcess(ctx context.Context, req *requests.OrderID) (*responses.CheckProcess, error) {
+func (o *orderService) CheckProcess(ctx context.Context, req *requests.OrderID) (*responses.ProductProcess, error) {
 
 	res, err := o.reposititory.CheckProcess(ctx, req)
 	if err != nil {

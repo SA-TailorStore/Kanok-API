@@ -394,13 +394,13 @@ func (o *OrderMySQL) GetAllOrders(ctx context.Context) ([]*responses.ShowOrder, 
 	return orders, nil
 }
 
-func (o *OrderMySQL) CheckProcess(ctx context.Context, req *requests.OrderID) (*responses.CheckProcess, error) {
+func (o *OrderMySQL) CheckProcess(ctx context.Context, req *requests.OrderID) (*responses.ProductProcess, error) {
 
 	if err := utils.CheckOrderByID(o.db, ctx, req.Order_id); err != nil {
 		return nil, err
 	}
 
-	var res *responses.CheckProcess
+	// var res *responses.CheckProcess
 	query := `
 	SELECT 
 		SUM(process_quantity) AS process_quantity, 
@@ -413,8 +413,8 @@ func (o *OrderMySQL) CheckProcess(ctx context.Context, req *requests.OrderID) (*
 		return nil, err
 	}
 
-	res = &responses.CheckProcess{Is_ready: product.Process_quantity == product.Total_quantity}
-	return res, nil
+	// res = &responses.CheckProcess{Is_ready: product.Process_quantity == product.Total_quantity}
+	return &product, nil
 }
 
 func (o *OrderMySQL) CheckFabric(ctx context.Context, req *requests.Product, index string) (*responses.CheckFabric, error) {

@@ -17,6 +17,6 @@ type OrderRepository interface {
 	UpdateTracking(ctx context.Context, req *requests.UpdateTracking) error
 	GetOrderByUserId(ctx context.Context, req *requests.UserID) ([]*responses.ShowOrder, error)
 	GetAllOrders(ctx context.Context) ([]*responses.ShowOrder, error)
-	CheckProcess(ctx context.Context, req *requests.OrderID) (*responses.CheckProcess, error)
+	CheckProcess(ctx context.Context, req *requests.OrderID) (*responses.ProductProcess, error)
 	CheckFabric(ctx context.Context, req *requests.Product, index string) (*responses.CheckFabric, error)
 }
