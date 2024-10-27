@@ -20,4 +20,5 @@ var (
 	ErrRoleNotHave            = errors.New("not have this role")
 	ErrInvalidImage           = errors.New("slip is wrong")
 	ErrNoImage                = errors.New("no image")
+	ErrNotHaveAnyTailor       = errors.New("no tailor")
 )

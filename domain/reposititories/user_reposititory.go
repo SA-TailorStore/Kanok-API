@@ -11,6 +11,7 @@ type UserRepository interface {
 	CreateUser(ctx context.Context, req *requests.UserRegister) error
 	CreateTailor(ctx context.Context, req *requests.UserRegister) error
 	GetAllUser(ctx context.Context, req *requests.UserRole) ([]*responses.User, error)
+	GetAllTailor(ctx context.Context, req *requests.UserRole) ([]*responses.UserTailor, error)
 	GetByUsername(ctx context.Context, req *requests.Username) error
 	GetPasswordByUsername(ctx context.Context, req *requests.Username) (*responses.UserLogin, error)
 	GetUserByUserID(ctx context.Context, req *requests.UserID) (*responses.User, error)

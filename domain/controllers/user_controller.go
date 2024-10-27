@@ -71,7 +71,7 @@ func (u *userController) GetAllTailor(c *fiber.Ctx) error {
 
 	req := requests.UserRole{Role: "tailor"}
 
-	res, err := u.service.GetAllUser(c.Context(), &req)
+	res, err := u.service.GetAllTailor(c.Context(), &req)
 
 	if err != nil {
 		switch err {

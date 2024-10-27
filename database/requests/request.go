@@ -6,6 +6,8 @@ type UserRegister struct {
 	Password     string `json:"password" validate:"required"`
 	Phone_number string `json:"phone_number" validate:"required"`
 }
+type UserTailor struct {
+}
 
 type UserLogin struct {
 	Username string `json:"username" validate:"required"`

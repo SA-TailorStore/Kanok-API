@@ -19,6 +19,7 @@ import (
 
 type UserUseCase interface {
 	GetAllUser(ctx context.Context, req *requests.UserRole) ([]*responses.User, error)
+	GetAllTailor(ctx context.Context, req *requests.UserRole) ([]*responses.UserTailor, error)
 	Login(ctx context.Context, req *requests.UserLogin) (*responses.UserJWT, error)
 	Register(ctx context.Context, req *requests.UserRegister) error
 	StoreRegister(ctx context.Context, req *requests.UserRegister) error
@@ -50,13 +51,21 @@ func (u *userService) GetAllUser(ctx context.Context, req *requests.UserRole) ([
 	if err != nil {
 		return nil, err
 	}
-	// response
-	// usernamesRes := make([]*responses.Username, 0)
-	// for _, user := range users {
-	// 	usernamesRes = append(usernamesRes, &responses.Username{
-	// 		Username: user.Username,
-	// 	})
-	// }
+
+	if users == nil {
+		return nil, err
+	}
+
+	return users, err
+}
+
+func (u *userService) GetAllTailor(ctx context.Context, req *requests.UserRole) ([]*responses.UserTailor, error) {
+	users, err := u.reposititory.GetAllTailor(ctx, req)
+
+	if err != nil {
+		return nil, err
+	}
+
 	if users == nil {
 		return nil, err
 	}

@@ -62,6 +62,7 @@ func CheckOrderPayment(db *sqlx.DB, ctx context.Context, id string) error {
 
 	return nil
 }
+
 func CheckOrderByID(db *sqlx.DB, ctx context.Context, id string) error {
 	var order responses.Order
 	query := `

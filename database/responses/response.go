@@ -17,6 +17,19 @@ type User struct {
 	Timestamp        string `json:"timestamp"`
 }
 
+type UserTailor struct {
+	User_id          string `json:"user_id"`
+	Username         string `json:"username"`
+	Display_name     string `json:"display_name"`
+	User_profile_url string `json:"user_profile_url"`
+	Role             string `json:"role"`
+	Phone_number     string `json:"phone_number"`
+	Address          string `json:"address"`
+	Timestamp        string `json:"timestamp"`
+	Product_Process  int    `json:"product_process"`
+	Product_Total    int    `json:"product_total"`
+}
+
 type Username struct {
 	Username string `json:"username"`
 }

@@ -133,6 +133,61 @@ func (u *UserMySQL) GetAllUser(ctx context.Context, req *requests.UserRole) ([]*
 	return users, nil
 }
 
+func (u *UserMySQL) GetAllTailor(ctx context.Context, req *requests.UserRole) ([]*responses.UserTailor, error) {
+
+	query := `
+	SELECT 
+		u.user_id, 
+		u.username, 
+		u.display_name, 
+		u.user_profile_url, 
+		u.role, 
+		u.phone_number, 
+		u.address, 
+		u.timestamp,
+		SUM(p.process_quantity) AS process,
+		sum(p.total_quantity) AS total
+	FROM 
+		USERS u
+	JOIN
+		ORDERS o ON o.tailor_id = u.user_id
+	JOIN 
+		PRODUCTS p ON p.created_by = o.order_id
+	WHERE u.role = ?
+	`
+
+	rows, err := u.db.QueryContext(ctx, query, req.Role)
+
+	if err != nil {
+		return nil, err
+	}
+
+	defer rows.Close()
+
+	var users []*responses.UserTailor
+	for rows.Next() {
+		var user responses.UserTailor
+		if err := rows.Scan(
+			&user.User_id,
+			&user.Username,
+			&user.Display_name,
+			&user.User_profile_url,
+			&user.Role,
+			&user.Phone_number,
+			&user.Address,
+			&user.Timestamp,
+			&user.Product_Process,
+			&user.Product_Total,
+		); err != nil {
+			return nil, exceptions.ErrNotHaveAnyTailor
+		}
+
+		users = append(users, &user)
+	}
+
+	return users, nil
+}
+
 func (u *UserMySQL) GetByUsername(ctx context.Context, req *requests.Username) error {
 
 	query := `SELECT username FROM USERS WHERE username = ?`
