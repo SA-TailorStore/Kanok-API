@@ -176,6 +176,11 @@ func (o *orderController) UpdatePayment(c *fiber.Ctx) error {
 
 	if err := o.service.UpdatePayment(c.Context(), &req, file); err != nil {
 		switch err {
+		case exceptions.ErrHasPayment:
+			return c.Status(fiber.StatusNotModified).JSON(fiber.Map{
+				"error":  err.Error(),
+				"status": "304",
+			})
 		case exceptions.ErrOrderNotFound:
 			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 				"error":  err.Error(),

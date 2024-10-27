@@ -54,7 +54,7 @@ func (p *productController) CreateProduct(c *fiber.Ctx) error {
 		case exceptions.ErrFailedProduct:
 			return c.Status(fiber.StatusNotImplemented).JSON(fiber.Map{
 				"status":  "501",
-				"message": err.Error(),
+				"message": "Product Create Failed",
 				"data":    res,
 			})
 		default:
@@ -64,7 +64,6 @@ func (p *productController) CreateProduct(c *fiber.Ctx) error {
 			})
 		}
 	}
-
 	return c.Status(fiber.StatusCreated).JSON(fiber.Map{
 		"status":  "201",
 		"message": "Product Create Success",

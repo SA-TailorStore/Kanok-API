@@ -7,4 +7,5 @@ var (
 	ErrInfomation    = errors.New("information not found")
 	ErrWrongSlip     = errors.New("slip not correct")
 	ErrDateInvalid   = errors.New("invalid date")
+	ErrHasPayment    = errors.New("nothing to update")
 )

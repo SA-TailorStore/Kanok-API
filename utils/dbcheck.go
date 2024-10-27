@@ -45,6 +45,23 @@ func CheckUsernameDup(db *sqlx.DB, ctx context.Context, username string) error {
 	return nil
 }
 
+func CheckOrderPayment(db *sqlx.DB, ctx context.Context, id string) error {
+	var order responses.Order
+	query := `
+	SELECT 
+		*
+	FROM ORDERS WHERE order_id = ?`
+	err := db.GetContext(ctx, &order, query, id)
+	if err != nil {
+		return err
+	}
+
+	if order.Is_payment == 1 {
+		return exceptions.ErrHasPayment
+	}
+
+	return nil
+}
 func CheckOrderByID(db *sqlx.DB, ctx context.Context, id string) error {
 	var order responses.Order
 	query := `

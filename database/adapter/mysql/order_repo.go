@@ -136,14 +136,18 @@ func (o *OrderMySQL) UpdatePayment(ctx context.Context, req *requests.UpdatePaym
 		return err
 	}
 
+	if err := utils.CheckOrderPayment(o.db, ctx, req.Order_id); err != nil {
+		return err
+	}
+
 	query := `
 	UPDATE ORDERS 
 	SET 
 		is_payment = ?,
-		status = waiting_assign
+		status = ?
 	WHERE order_id = ?`
 
-	_, err := o.db.ExecContext(ctx, query, req.Is_payment, req.Order_id)
+	_, err := o.db.ExecContext(ctx, query, req.Is_payment, "waiting_assign", req.Order_id)
 	if err != nil {
 		return err
 	}
