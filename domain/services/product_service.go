@@ -11,7 +11,7 @@ import (
 )
 
 type ProductUsecase interface {
-	CreateProduct(ctx context.Context, req *requests.CreateProduct) error
+	CreateProduct(ctx context.Context, req *requests.CreateProduct) ([]*responses.CheckFabric, error)
 	GetProductByID(ctx context.Context, req *requests.ProductID) (*responses.Product, error)
 	GetProductByOrderID(ctx context.Context, req *requests.OrderID) ([]*responses.Product, error)
 	UpdateProcessQuantity(ctx context.Context, req *requests.UpdateProcessQuantity) error
@@ -30,17 +30,34 @@ func NewProductService(reposititory reposititories.ProductRepository, config *co
 	}
 }
 
-func (p *productService) CreateProduct(ctx context.Context, req *requests.CreateProduct) error {
+func (p *productService) CreateProduct(ctx context.Context, req *requests.CreateProduct) ([]*responses.CheckFabric, error) {
+
+	var fabrics []*responses.CheckFabric
+	var is_enough bool
 
 	for index, value := range req.Products {
-		err := p.reposititory.CreateProduct(ctx, &value, req.Order_id, strconv.Itoa(index+1))
+		fabric, err := p.reposititory.CheckFabric(ctx, &value, strconv.Itoa(index+1))
 
 		if err != nil {
-			return err
+			return nil, err
+		}
+		fabrics = append(fabrics, fabric)
+		if !fabric.Quantity {
+			is_enough = false
 		}
 	}
 
-	return nil
+	if is_enough {
+		for index, value := range req.Products {
+			err := p.reposititory.CreateProduct(ctx, &value, req.Order_id, strconv.Itoa(index+1))
+
+			if err != nil {
+				return nil, err
+			}
+		}
+	}
+
+	return fabrics, nil
 }
 
 func (p *productService) GetProductByOrderID(ctx context.Context, req *requests.OrderID) ([]*responses.Product, error) {
@@ -72,6 +89,7 @@ func (p *productService) GetAllProducts(ctx context.Context) ([]*responses.Produ
 
 	return products, err
 }
+
 func (p *productService) UpdateProcessQuantity(ctx context.Context, req *requests.UpdateProcessQuantity) error {
 
 	err := p.reposititory.UpdateProcessQuantity(ctx, req)

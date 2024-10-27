@@ -238,5 +238,27 @@ func (p *ProductMySQL) UpdateProcessQuantity(ctx context.Context, req *requests.
 	} else {
 		return exceptions.ErrSomethingWrong
 	}
+}
 
+func (p *ProductMySQL) CheckFabric(ctx context.Context, req *requests.Product, index string) (*responses.CheckFabric, error) {
+	var res *responses.CheckFabric
+
+	if err := utils.CheckFabricByID(p.db, ctx, req.Fabric_id); err != nil {
+		return nil, err
+	}
+
+	query := `
+	SELECT 
+		quantity 
+	FROM FABRICS WHERE fabric_id = ?
+	`
+
+	var fabric responses.FabricQuantity
+	err := p.db.GetContext(ctx, &fabric, query, req.Fabric_id)
+	if err != nil {
+		return nil, err
+	}
+	res = &responses.CheckFabric{Product_index: index, Quantity: fabric.Quantity >= req.Total_quantity}
+
+	return res, nil
 }

@@ -33,7 +33,7 @@ func (p *productController) CreateProduct(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusBadRequest).JSON(err)
 	}
 
-	err := p.service.CreateProduct(c.Context(), req)
+	res, err := p.service.CreateProduct(c.Context(), req)
 	if err != nil {
 		switch err {
 		case err:
@@ -48,11 +48,19 @@ func (p *productController) CreateProduct(c *fiber.Ctx) error {
 			})
 		}
 	}
+	if res != nil {
+		return c.Status(fiber.StatusCreated).JSON(fiber.Map{
+			"status":  "201",
+			"message": "Product Create Success",
+		})
+	} else {
+		return c.Status(fiber.StatusNotImplemented).JSON(fiber.Map{
+			"status":  "501",
+			"message": "Product Create Failed",
+			"data":    res,
+		})
+	}
 
-	return c.Status(fiber.StatusCreated).JSON(fiber.Map{
-		"status":  "201",
-		"message": "Product Create Success",
-	})
 }
 
 func (p *productController) GetProductByOrderID(c *fiber.Ctx) error {

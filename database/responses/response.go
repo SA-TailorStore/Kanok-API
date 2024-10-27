@@ -137,8 +137,13 @@ type FabricURL struct {
 	Fabric_url string `json:"fabric_url" db:"fabric_url"`
 }
 
-type FabricType struct {
+type FabricQuantity struct {
 	Quantity int `json:"quantity" db:"quantity"`
+}
+
+type CheckFabric struct {
+	Product_index string `json:"product_index" db:"fabric_id"`
+	Quantity      bool   `json:"quantity" db:"quantity"`
 }
 
 // MATERIAL

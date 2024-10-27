@@ -12,17 +12,21 @@ import (
 
 func CheckUserByID(db *sqlx.DB, ctx context.Context, id string) error {
 
+	var user responses.User
+
 	query := `
 	SELECT 
-		user_id
+		*
 	FROM USERS WHERE user_id = ?`
 
-	if err := db.GetContext(ctx, &responses.UserID{}, query, id); err != nil {
+	err := db.GetContext(ctx, &user, query, id)
+	if err != nil {
 		return exceptions.ErrUserNotFound
 	}
 
 	return nil
 }
+
 func CheckUsernameDup(db *sqlx.DB, ctx context.Context, username string) error {
 
 	query := `
@@ -42,13 +46,13 @@ func CheckUsernameDup(db *sqlx.DB, ctx context.Context, username string) error {
 }
 
 func CheckOrderByID(db *sqlx.DB, ctx context.Context, id string) error {
-
+	var order responses.Order
 	query := `
 	SELECT 
-		order_id
+		*
 	FROM ORDERS WHERE order_id = ?`
-
-	if err := db.GetContext(ctx, &responses.OrderID{}, query, id); err != nil {
+	err := db.GetContext(ctx, &order, query, id)
+	if err != nil {
 		return exceptions.ErrOrderNotFound
 	}
 
@@ -59,10 +63,10 @@ func CheckProductByID(db *sqlx.DB, ctx context.Context, id string) error {
 
 	query := `
 	SELECT 
-		product_id
+		*
 	FROM PRODUCTS WHERE product_id = ?`
 
-	if err := db.GetContext(ctx, &responses.ProductID{}, query, id); err != nil {
+	if err := db.GetContext(ctx, &responses.Product{}, query, id); err != nil {
 		return exceptions.ErrProductNotFound
 	}
 
