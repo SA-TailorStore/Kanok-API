@@ -14,4 +14,5 @@ type ProductRepository interface {
 	UpdateProcessQuantity(ctx context.Context, req *requests.UpdateProcessQuantity) error
 	GetAllProducts(ctx context.Context) ([]*responses.Product, error)
 	CheckFabric(ctx context.Context, req *requests.Product, index string) (*responses.CheckFabric, error)
+	CheckProcess(ctx context.Context, req *requests.ProductID) (*responses.ProductProcess, error)
 }

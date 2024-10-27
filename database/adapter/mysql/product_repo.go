@@ -271,3 +271,24 @@ func (p *ProductMySQL) CheckFabric(ctx context.Context, req *requests.Product, i
 
 	return res, nil
 }
+
+func (p *ProductMySQL) CheckProcess(ctx context.Context, req *requests.ProductID) (*responses.ProductProcess, error) {
+
+	if err := utils.CheckProductByID(p.db, ctx, req.Product_id); err != nil {
+		return nil, err
+	}
+
+	query := `
+	SELECT 
+		process_quantity, 
+    	total_quantity
+	FROM PRODUCTS WHERE product_id = ?
+	`
+	var product responses.ProductProcess
+	err := p.db.GetContext(ctx, &product, query, req.Product_id)
+	if err != nil {
+		return nil, err
+	}
+
+	return &product, nil
+}
