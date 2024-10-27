@@ -414,7 +414,11 @@ func (o *OrderMySQL) CheckProcess(ctx context.Context, req *requests.OrderID) (*
 	}
 
 	// res = &responses.CheckProcess{Is_ready: product.Process_quantity == product.Total_quantity}
-	return &product, nil
+	return &responses.ProductProcess{
+		Is_ready:         product.Process_quantity == product.Total_quantity,
+		Process_quantity: product.Process_quantity,
+		Total_quantity:   product.Total_quantity,
+	}, nil
 }
 
 func (o *OrderMySQL) CheckFabric(ctx context.Context, req *requests.Product, index string) (*responses.CheckFabric, error) {

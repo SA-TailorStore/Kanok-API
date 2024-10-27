@@ -118,8 +118,9 @@ type ProductID struct {
 }
 
 type ProductProcess struct {
-	Process_quantity int `json:"process_quantity"`
-	Total_quantity   int `json:"total_quantity"`
+	Is_ready         bool `json:"is_ready"`
+	Process_quantity int  `json:"process_quantity"`
+	Total_quantity   int  `json:"total_quantity"`
 }
 
 // DESIGN
