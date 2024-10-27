@@ -403,32 +403,17 @@ func (o *OrderMySQL) CheckProcess(ctx context.Context, req *requests.OrderID) (*
 	var res *responses.CheckProcess
 	query := `
 	SELECT 
-		process_quantity,
-		total_quantity
+		SUM(process_quantity) AS process, 
+    	SUM(total_quantity) AS total
 	FROM PRODUCTS WHERE created_by = ?
 	`
-
-	rows, err := o.db.QueryContext(ctx, query, req.Order_id)
+	var product responses.ProductProcess
+	err := o.db.GetContext(ctx, &product, query, req.Order_id)
 	if err != nil {
 		return nil, err
 	}
-	defer rows.Close()
 
-	var process int
-	var total int
-	for rows.Next() {
-		var product responses.ProductProcess
-		if err := rows.Scan(
-			&product.Process_quantity,
-			&product.Total_quantity,
-		); err != nil {
-			return nil, err
-		}
-		process += product.Process_quantity
-		total += product.Total_quantity
-	}
-
-	res = &responses.CheckProcess{Is_ready: process == total}
+	res = &responses.CheckProcess{Is_ready: product.Process_quantity == product.Total_quantity}
 	return res, nil
 }
 
