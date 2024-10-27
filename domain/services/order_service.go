@@ -19,6 +19,7 @@ type OrderUseCase interface {
 	UpdatePayment(ctx context.Context, req *requests.UpdatePayment, file multipart.File) error
 	UpdateTailor(ctx context.Context, req *requests.UpdateTailor) error
 	UpdateTracking(ctx context.Context, req *requests.UpdateTracking) error
+	UpdatePrice(ctx context.Context, req *requests.UpdatePrice) error
 	GetOrderByJWT(ctx context.Context, req *requests.UserJWT) ([]*responses.ShowOrder, error)
 	GetAllOrders(ctx context.Context) ([]*responses.ShowOrder, error)
 	CheckProcess(ctx context.Context, req *requests.OrderID) (*responses.CheckProcess, error)
@@ -101,6 +102,17 @@ func (o *orderService) UpdatePayment(ctx context.Context, req *requests.UpdatePa
 func (o *orderService) UpdateTracking(ctx context.Context, req *requests.UpdateTracking) error {
 
 	err := o.reposititory.UpdateTracking(ctx, req)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (o *orderService) UpdatePrice(ctx context.Context, req *requests.UpdatePrice) error {
+
+	err := o.reposititory.UpdatePrice(ctx, req)
 
 	if err != nil {
 		return err

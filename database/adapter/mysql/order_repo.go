@@ -237,6 +237,30 @@ func (o *OrderMySQL) UpdateTracking(ctx context.Context, req *requests.UpdateTra
 	return nil
 }
 
+func (o *OrderMySQL) UpdatePrice(ctx context.Context, req *requests.UpdatePrice) error {
+
+	if err := utils.CheckOrderByID(o.db, ctx, req.Order_id); err != nil {
+		return err
+	}
+
+	if req.Price <= 0 {
+		return exceptions.ErrPriceIsValid
+	}
+
+	query := `
+	UPDATE ORDERS 
+	SET 
+		price = ?
+	WHERE order_id = ?`
+
+	_, err := o.db.ExecContext(ctx, query, req.Price, req.Order_id)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func (o *OrderMySQL) UpdateTailor(ctx context.Context, req *requests.UpdateTailor) error {
 
 	if err := utils.CheckUserByID(o.db, ctx, req.Tailor_id); err != nil {

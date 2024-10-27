@@ -82,6 +82,7 @@ func main() {
 	app.Post(prefix+"/order/update/status", orderController.UpdateStatus)
 	app.Post(prefix+"/order/update/payment", orderController.UpdatePayment)
 	app.Post(prefix+"/order/update/tracking", orderController.UpdateTracking)
+	app.Post(prefix+"/order/update/price", orderController.UpdatePrice)
 	app.Post(prefix+"/order/update/tailor", orderController.UpdateTailor)
 	app.Post(prefix+"/order/product/check", orderController.CheckProcess)
 

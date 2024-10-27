@@ -74,6 +74,11 @@ type UpdateTracking struct {
 	Tracking_number string `json:"tracking_number" validate:"required"`
 }
 
+type UpdatePrice struct {
+	Order_id string  `json:"order_id" validate:"required"`
+	Price    float32 `json:"price" validate:"required"`
+}
+
 type UpdateTailor struct {
 	Order_id  string `json:"order_id" validate:"required"`
 	Tailor_id string `json:"tailor_id" validate:"required"`
