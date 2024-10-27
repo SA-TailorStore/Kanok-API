@@ -43,9 +43,9 @@ func (o *orderController) CreateOrder(c *fiber.Ctx) error {
 	if err != nil {
 		switch err {
 		case exceptions.ErrFabricNotEnough:
-			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			return c.Status(fiber.StatusOK).JSON(fiber.Map{
 				"error":  err.Error(),
-				"status": "400",
+				"status": "200",
 				"data":   res.Products,
 			})
 		case exceptions.ErrFabricNotFound:
