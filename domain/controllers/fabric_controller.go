@@ -253,9 +253,9 @@ func (f *fabricController) GetFabricByID(c *fiber.Ctx) error {
 			})
 		}
 	}
-	return c.Status(fiber.StatusCreated).JSON(fiber.Map{
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{
 		"message": "Get Fabric",
 		"data":    res,
-		"status":  "201",
+		"status":  "200",
 	})
 }
