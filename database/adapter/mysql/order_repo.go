@@ -180,11 +180,10 @@ func (o *OrderMySQL) UpdateStatus(ctx context.Context, req *requests.UpdateStatu
 	query := `
 	UPDATE ORDERS
 	SET
-		status = ?,
-		price = ?
+		status = ?
 	WHERE order_id = ?`
 
-	_, err := o.db.ExecContext(ctx, query, req.Status, req.Price, req.Order_id)
+	_, err := o.db.ExecContext(ctx, query, req.Status, req.Order_id)
 	if err != nil {
 		return err
 	}
@@ -291,6 +290,7 @@ func (o *OrderMySQL) UpdateTailor(ctx context.Context, req *requests.UpdateTailo
 	query := `
 	UPDATE ORDERS 
 	SET 
+		status = ?
 		tailor_id = ?,
 		tailor_phone = ?,
 		tailor_address = ?,
@@ -299,6 +299,7 @@ func (o *OrderMySQL) UpdateTailor(ctx context.Context, req *requests.UpdateTailo
 	`
 
 	if _, err := o.db.ExecContext(ctx, query,
+		"processing_user",
 		req.Tailor_id,
 		tailor.Phone_number,
 		tailor.Display_name+"|"+tailor.Address,
