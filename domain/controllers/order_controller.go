@@ -42,6 +42,27 @@ func (o *orderController) CreateOrder(c *fiber.Ctx) error {
 	res, err := o.service.CreateOrder(c.Context(), req)
 	if err != nil {
 		switch err {
+		case exceptions.ErrFabricNotEnough:
+			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+				"error":  err.Error(),
+				"status": "400",
+				"data":   res.Products,
+			})
+		case exceptions.ErrFabricNotFound:
+			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+				"error":  err.Error(),
+				"status": "400",
+			})
+		case exceptions.ErrDesignNotFound:
+			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+				"error":  err.Error(),
+				"status": "400",
+			})
+		case exceptions.ErrFailedProduct:
+			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+				"error":  err.Error(),
+				"status": "400",
+			})
 		case exceptions.ErrInfomation:
 			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 				"error":  err.Error(),
@@ -64,6 +85,7 @@ func (o *orderController) CreateOrder(c *fiber.Ctx) error {
 		"message":  "Order success",
 		"status":   "201",
 		"order_id": res.Order_id,
+		"data":     res.Products,
 	})
 }
 
@@ -210,6 +232,48 @@ func (o *orderController) UpdatePayment(c *fiber.Ctx) error {
 	})
 }
 
+func (o *orderController) UpdatePrice(c *fiber.Ctx) error {
+	// Parse request
+	var req requests.UpdatePrice
+
+	if err := c.BodyParser(&req); err != nil {
+		c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"error":  err.Error(),
+			"status": "500",
+		})
+	}
+
+	// Validate request
+	if err := utils.ValidateStruct(req); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(err)
+	}
+
+	if err := o.service.UpdatePrice(c.Context(), &req); err != nil {
+		switch err {
+		case exceptions.ErrOrderNotFound:
+			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+				"error":  err.Error(),
+				"status": "400",
+			})
+		case exceptions.ErrPriceIsValid:
+			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+				"error":  err.Error(),
+				"status": "400",
+			})
+		default:
+			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+				"error":  err.Error(),
+				"status": "500",
+			})
+		}
+	}
+
+	return c.Status(fiber.StatusNoContent).JSON(fiber.Map{
+		"message": "Order update price",
+		"status":  "204",
+	})
+}
+
 func (o *orderController) UpdateTracking(c *fiber.Ctx) error {
 	// Parse request
 	var req *requests.UpdateTracking
@@ -249,6 +313,63 @@ func (o *orderController) UpdateTracking(c *fiber.Ctx) error {
 
 	return c.Status(fiber.StatusNoContent).JSON(fiber.Map{
 		"message": "Order has update",
+		"status":  "204",
+	})
+}
+
+func (o *orderController) UpdateTailor(c *fiber.Ctx) error {
+	// Parse request
+	var req *requests.UpdateTailor
+
+	if err := c.BodyParser(&req); err != nil {
+		c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"error": err.Error(),
+		})
+	}
+
+	// Validate request
+	if err := utils.ValidateStruct(req); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(err)
+	}
+
+	err := o.service.UpdateTailor(c.Context(), req)
+	if err != nil {
+		switch err {
+		case exceptions.ErrDateInvalid:
+			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+				"error":  err.Error(),
+				"status": "400",
+			})
+		case exceptions.ErrUserNotFound:
+			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+				"error":  err.Error(),
+				"status": "400",
+			})
+		case exceptions.ErrOrderNotFound:
+			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+				"error":  err.Error(),
+				"status": "400",
+			})
+		case exceptions.ErrInvalidToken:
+			return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
+				"error":  err.Error(),
+				"status": "401",
+			})
+		case exceptions.ErrExpiredToken:
+			return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
+				"error":  err.Error(),
+				"status": "401",
+			})
+		default:
+			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+				"error":  err.Error(),
+				"status": "500",
+			})
+		}
+	}
+
+	return c.Status(fiber.StatusNoContent).JSON(fiber.Map{
+		"message": "Assign",
 		"status":  "204",
 	})
 }
@@ -323,63 +444,6 @@ func (o *orderController) GetAllOrders(c *fiber.Ctx) error {
 		"message": "Get Orders",
 		"status":  "200",
 		"data":    res,
-	})
-}
-
-func (o *orderController) UpdateTailor(c *fiber.Ctx) error {
-	// Parse request
-	var req *requests.UpdateTailor
-
-	if err := c.BodyParser(&req); err != nil {
-		c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"error": err.Error(),
-		})
-	}
-
-	// Validate request
-	if err := utils.ValidateStruct(req); err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(err)
-	}
-
-	err := o.service.UpdateTailor(c.Context(), req)
-	if err != nil {
-		switch err {
-		case exceptions.ErrDateInvalid:
-			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-				"error":  err.Error(),
-				"status": "400",
-			})
-		case exceptions.ErrUserNotFound:
-			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-				"error":  err.Error(),
-				"status": "400",
-			})
-		case exceptions.ErrOrderNotFound:
-			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-				"error":  err.Error(),
-				"status": "400",
-			})
-		case exceptions.ErrInvalidToken:
-			return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
-				"error":  err.Error(),
-				"status": "401",
-			})
-		case exceptions.ErrExpiredToken:
-			return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
-				"error":  err.Error(),
-				"status": "401",
-			})
-		default:
-			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-				"error":  err.Error(),
-				"status": "500",
-			})
-		}
-	}
-
-	return c.Status(fiber.StatusNoContent).JSON(fiber.Map{
-		"message": "Assign",
-		"status":  "204",
 	})
 }
 

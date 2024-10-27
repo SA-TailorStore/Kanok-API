@@ -8,4 +8,5 @@ var (
 	ErrWrongSlip     = errors.New("slip not correct")
 	ErrDateInvalid   = errors.New("invalid date")
 	ErrHasPayment    = errors.New("nothing to update")
+	ErrPriceIsValid  = errors.New("price is valid")
 )

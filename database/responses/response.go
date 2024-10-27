@@ -81,6 +81,11 @@ type CheckProcess struct {
 	Is_ready bool `json:"is_ready"`
 }
 
+type CreateOrder struct {
+	Order_id string          `json:"order_id"`
+	Products map[string]bool `json:"product"`
+}
+
 // PRODUCT
 type Product struct {
 	Product_id       string `json:"product_id"`

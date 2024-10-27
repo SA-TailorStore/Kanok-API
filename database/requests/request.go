@@ -53,7 +53,8 @@ type UpdateOrder struct {
 	User_address  string `json:"user_address" validate:"required"`
 }
 type CreateOrder struct {
-	Token string `json:"token" validate:"required"`
+	Token    string    `json:"token" validate:"required"`
+	Products []Product `json:"products" validate:"required"`
 }
 
 type UpdateStatus struct {
@@ -71,6 +72,11 @@ type UpdatePayment struct {
 type UpdateTracking struct {
 	Order_id        string `json:"order_id" validate:"required"`
 	Tracking_number string `json:"tracking_number" validate:"required"`
+}
+
+type UpdatePrice struct {
+	Order_id string  `json:"order_id" validate:"required"`
+	Price    float32 `json:"price" validate:"required"`
 }
 
 type UpdateTailor struct {
