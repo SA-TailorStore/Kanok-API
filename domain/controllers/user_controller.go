@@ -80,6 +80,11 @@ func (u *userController) GetAllTailor(c *fiber.Ctx) error {
 				"error":  err.Error(),
 				"status": "400",
 			})
+		case exceptions.ErrNotHaveAnyTailor:
+			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+				"error":  err.Error(),
+				"status": "400",
+			})
 		default:
 			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 				"status":  "500",
