@@ -8,7 +8,7 @@ import (
 )
 
 type OrderRepository interface {
-	CreateOrder(ctx context.Context, req *requests.CreateOrder) (*responses.OrderID, error)
+	CreateOrder(ctx context.Context, req *requests.CreateOrder) (*responses.CreateOrder, error)
 	GetOrderByID(ctx context.Context, req *requests.OrderID) (*responses.Order, error)
 	UpdateStatus(ctx context.Context, req *requests.UpdateStatus) error
 	UpdatePayment(ctx context.Context, req *requests.UpdatePayment) error
@@ -17,4 +17,5 @@ type OrderRepository interface {
 	GetOrderByUserId(ctx context.Context, req *requests.UserID) ([]*responses.ShowOrder, error)
 	GetAllOrders(ctx context.Context) ([]*responses.ShowOrder, error)
 	CheckProcess(ctx context.Context, req *requests.OrderID) (*responses.CheckProcess, error)
+	CheckFabric(ctx context.Context, req *requests.Product, index string) (*responses.CheckFabric, error)
 }

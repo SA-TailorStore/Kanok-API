@@ -13,7 +13,7 @@ import (
 )
 
 type OrderUseCase interface {
-	CreateOrder(ctx context.Context, req *requests.CreateOrder) (*responses.OrderID, error)
+	CreateOrder(ctx context.Context, req *requests.CreateOrder) (*responses.CreateOrder, error)
 	GetOrderByID(ctx context.Context, req *requests.OrderID) (*responses.Order, error)
 	UpdateStatus(ctx context.Context, req *requests.UpdateStatus) error
 	UpdatePayment(ctx context.Context, req *requests.UpdatePayment, file multipart.File) error
@@ -47,14 +47,14 @@ func (o *orderService) GetOrderByID(ctx context.Context, req *requests.OrderID) 
 	return res, nil
 }
 
-func (o *orderService) CreateOrder(ctx context.Context, req *requests.CreateOrder) (*responses.OrderID, error) {
+func (o *orderService) CreateOrder(ctx context.Context, req *requests.CreateOrder) (*responses.CreateOrder, error) {
 
 	user_id, err := utils.VerificationJWT(req.Token)
 	if err != nil {
 		return nil, err
 	}
 
-	res, err := o.reposititory.CreateOrder(ctx, &requests.CreateOrder{Token: user_id})
+	res, err := o.reposititory.CreateOrder(ctx, &requests.CreateOrder{Token: user_id, Products: req.Products})
 
 	if err != nil {
 		return res, err

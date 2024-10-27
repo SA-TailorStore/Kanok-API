@@ -42,6 +42,27 @@ func (o *orderController) CreateOrder(c *fiber.Ctx) error {
 	res, err := o.service.CreateOrder(c.Context(), req)
 	if err != nil {
 		switch err {
+		case exceptions.ErrFabricNotEnough:
+			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+				"error":  err.Error(),
+				"status": "400",
+				"data":   res.Products,
+			})
+		case exceptions.ErrFabricNotFound:
+			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+				"error":  err.Error(),
+				"status": "400",
+			})
+		case exceptions.ErrDesignNotFound:
+			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+				"error":  err.Error(),
+				"status": "400",
+			})
+		case exceptions.ErrFailedProduct:
+			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+				"error":  err.Error(),
+				"status": "400",
+			})
 		case exceptions.ErrInfomation:
 			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 				"error":  err.Error(),
@@ -64,6 +85,7 @@ func (o *orderController) CreateOrder(c *fiber.Ctx) error {
 		"message":  "Order success",
 		"status":   "201",
 		"order_id": res.Order_id,
+		"data":     res.Products,
 	})
 }
 
