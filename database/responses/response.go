@@ -26,6 +26,7 @@ type UserTailor struct {
 	Phone_number     string `json:"phone_number"`
 	Address          string `json:"address"`
 	Timestamp        string `json:"timestamp"`
+	Order_id         string `json:"order_id"`
 	Product_Process  int    `json:"product_process"`
 	Product_Total    int    `json:"product_total"`
 }
