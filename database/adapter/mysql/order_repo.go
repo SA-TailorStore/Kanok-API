@@ -403,8 +403,8 @@ func (o *OrderMySQL) CheckProcess(ctx context.Context, req *requests.OrderID) (*
 	var res *responses.CheckProcess
 	query := `
 	SELECT 
-		SUM(process_quantity) AS process, 
-    	SUM(total_quantity) AS total
+		SUM(process_quantity) AS process_quantity, 
+    	SUM(total_quantity) AS total_quantity
 	FROM PRODUCTS WHERE created_by = ?
 	`
 	var product responses.ProductProcess

@@ -484,7 +484,7 @@ func (o *orderController) CheckProcess(c *fiber.Ctx) error {
 	}
 
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{
-		"status":   "200",
-		"response": res.Is_ready,
+		"status":  "200",
+		"message": res.Is_ready,
 	})
 }
