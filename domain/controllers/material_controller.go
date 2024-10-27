@@ -37,6 +37,11 @@ func (m *materialController) AddMaterial(c *fiber.Ctx) error {
 	err := m.service.AddMaterial(c.Context(), &req)
 	if err != nil {
 		switch err {
+		case exceptions.ErrDupicatedName:
+			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+				"error":  err.Error(),
+				"status": "400",
+			})
 		case fiber.ErrUnauthorized:
 			return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
 				"error":  err.Error(),

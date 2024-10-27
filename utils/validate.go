@@ -115,3 +115,12 @@ func ValidateSlip(qrcode []*goqr.QRData) error {
 
 	return nil
 }
+
+func ValidateName(o string, s string) error {
+
+	if o == s {
+		return exceptions.ErrDupicatedName
+	}
+
+	return nil
+}

@@ -5,6 +5,7 @@ import (
 
 	"github.com/SA-TailorStore/Kanok-API/database/requests"
 	"github.com/SA-TailorStore/Kanok-API/database/responses"
+	"github.com/SA-TailorStore/Kanok-API/domain/exceptions"
 	"github.com/SA-TailorStore/Kanok-API/domain/reposititories"
 	"github.com/SA-TailorStore/Kanok-API/utils"
 	"github.com/jmoiron/sqlx"
@@ -21,9 +22,17 @@ func NewMaterialMySQL(db *sqlx.DB) reposititories.MaterialRepository {
 }
 
 func (m *MaterialMySQL) AddMaterial(ctx context.Context, req *requests.AddMaterial) error {
+
+	var name string
+	if err := m.db.GetContext(ctx, &name,
+		`SELECT material_name FROM MATERIALS WHERE material_name = ?`, req.Material_name,
+	); err == nil {
+		return exceptions.ErrDupicatedName
+	}
+
 	query := `
 	INSERT INTO MATERIALS 
-	(material_name,amount) 
+	(material_name,amount)
 	VALUES (?,?)`
 
 	_, err := m.db.QueryContext(ctx, query, req.Material_name, req.Amount)
