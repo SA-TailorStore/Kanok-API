@@ -64,7 +64,7 @@ func (d *DesignMySQL) DeleteDesign(ctx context.Context, req *requests.DesignID) 
 	query := `
 	UPDATE DESIGNS 
 	SET 
-		is_delete = ?, 
+		is_delete = ? 
 	WHERE design_id = ?`
 	_, err := d.db.QueryContext(ctx, query, 1, req.Design_id)
 	if err != nil {

@@ -58,7 +58,7 @@ func (f *FabricMySQL) UpdateFabrics(ctx context.Context, req []*requests.UpdateF
 	query := `
 	UPDATE FABRICS 
 	SET 
-		quantity = ? 
+		quantity = ?
 	WHERE fabric_id = ?`
 
 	for _, value := range req {
@@ -81,7 +81,7 @@ func (f *FabricMySQL) DeleteFabric(ctx context.Context, req *requests.FabricID) 
 	query := `
 	UPDATE FABRICS 
 	SET 
-		is_delete = ?, 
+		is_delete = ? 
 	WHERE fabric_id = ?`
 	_, err := f.db.QueryContext(ctx, query, 1, req.Fabric_id)
 	if err != nil {
