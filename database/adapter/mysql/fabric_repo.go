@@ -97,7 +97,7 @@ func (f *FabricMySQL) GetAllFabrics(ctx context.Context) ([]*responses.Fabric, e
 		fabric_id, 
 		fabric_url, 
 		quantity 
-	FROM FABRICS
+	FROM FABRICS WHERE is_delete = 0
 	`
 
 	rows, err := f.db.QueryContext(ctx, query)

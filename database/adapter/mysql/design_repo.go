@@ -80,7 +80,7 @@ func (d *DesignMySQL) GetAllDesigns(ctx context.Context) ([]*responses.Design, e
 		design_id, 
 		design_url, 
 		type 
-	FROM DESIGNS`
+	FROM DESIGNS WHERE is_delete = 0`
 
 	rows, err := d.db.QueryContext(ctx, query)
 	if err != nil {
