@@ -91,6 +91,7 @@ func main() {
 	app.Post(prefix+"/product/get", productController.GetProductByID)
 	app.Post(prefix+"/product/update/process", productController.UpdateProcessQuantity)
 	app.Post(prefix+"/product/get/order", productController.GetProductByOrderID)
+	app.Post(prefix+"/product/check", productController.CheckProcessQuantity)
 
 	// Design
 	app.Post(prefix+"/design/add", designController.AddDesign)

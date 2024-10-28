@@ -215,3 +215,45 @@ func (p *productController) UpdateProcessQuantity(c *fiber.Ctx) error {
 		"message": "Produst Update",
 	})
 }
+
+func (p *productController) CheckProcessQuantity(c *fiber.Ctx) error {
+	var req *requests.ProductID
+
+	if err := c.BodyParser(&req); err != nil {
+		c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"error": err.Error(),
+		})
+	}
+
+	// Validate request
+	if err := utils.ValidateStruct(req); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(err)
+	}
+
+	res, err := p.service.CheckProcessQuantity(c.Context(), req)
+	if err != nil {
+		switch err {
+		case exceptions.ErrProductNotFound:
+			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+				"error":  err.Error(),
+				"status": "400",
+			})
+		case exceptions.ErrSomethingWrong:
+			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+				"error":  err.Error(),
+				"status": "400",
+			})
+		default:
+			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+				"error":  err.Error(),
+				"status": "500",
+			})
+		}
+	}
+
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{
+		"status":  "200",
+		"message": "Produst Process",
+		"data":    res,
+	})
+}

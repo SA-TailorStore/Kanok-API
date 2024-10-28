@@ -76,17 +76,20 @@ func (p *ProductMySQL) GetProductByOrderID(ctx context.Context, req *requests.Or
 	}
 
 	query := `
-	SELECT 
-		product_id,
-		design_id,
-		fabric_id,
-		detail,
-		size,
-		process_quantity,
-		total_quantity,
-		created_by,
-		timestamp
-	FROM PRODUCTS WHERE created_by = ?
+	SELECT
+          p.product_id,
+		  p.design_id,
+		  p.fabric_id,
+		  p.detail,
+		  p.size,
+		  p.process_quantity,
+		  p.total_quantity,
+          p.created_by,
+		  p.timestamp,
+		  d.design_url
+     FROM PRODUCTS p
+	JOIN DESIGNS d ON d.design_id = p.design_id
+	WHERE p.created_by = ?;
 	`
 
 	rows, err := p.db.QueryContext(ctx, query, req.Order_id)

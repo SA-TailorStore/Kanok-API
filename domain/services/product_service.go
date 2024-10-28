@@ -16,6 +16,7 @@ type ProductUsecase interface {
 	GetProductByID(ctx context.Context, req *requests.ProductID) (*responses.Product, error)
 	GetProductByOrderID(ctx context.Context, req *requests.OrderID) ([]*responses.Product, error)
 	UpdateProcessQuantity(ctx context.Context, req *requests.UpdateProcessQuantity) error
+	CheckProcessQuantity(ctx context.Context, req *requests.ProductID) (*responses.ProductProcess, error)
 	GetAllProducts(ctx context.Context) ([]*responses.Product, error)
 }
 
@@ -100,4 +101,14 @@ func (p *productService) UpdateProcessQuantity(ctx context.Context, req *request
 	}
 
 	return nil
+}
+
+func (p *productService) CheckProcessQuantity(ctx context.Context, req *requests.ProductID) (*responses.ProductProcess, error) {
+
+	res, err := p.reposititory.CheckProcess(ctx, req)
+	if err != nil {
+		return res, err
+	}
+
+	return res, nil
 }

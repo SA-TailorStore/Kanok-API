@@ -290,7 +290,7 @@ func (o *OrderMySQL) UpdateTailor(ctx context.Context, req *requests.UpdateTailo
 	query := `
 	UPDATE ORDERS 
 	SET 
-		status = ?
+		status = ?,
 		tailor_id = ?,
 		tailor_phone = ?,
 		tailor_address = ?,

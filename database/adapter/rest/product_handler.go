@@ -9,5 +9,6 @@ type ProductHandler interface {
 	GetProductByID(c *fiber.Ctx) error
 	GetProductByOrderID(c *fiber.Ctx) error
 	UpdateProcessQuantity(c *fiber.Ctx) error
+	CheckProcessQuantity(c *fiber.Ctx) error
 	GetAllProducts(c *fiber.Ctx) error
 }
