@@ -151,7 +151,7 @@ type FabricID struct {
 
 type AddFabric struct {
 	Image    string `json:"image" `
-	Quantity int    `json:"quantity" validate:"required"`
+	Quantity int    `json:"quantity" `
 }
 
 type UpdateFabric struct {
