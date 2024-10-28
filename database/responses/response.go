@@ -111,6 +111,7 @@ type Product struct {
 	Total_quantity   int    `json:"total_quantity"`
 	Created_by       string `json:"created_by"`
 	Timestamp        string `json:"timestamp"`
+	Design_url       string `json:"design_url"`
 }
 
 type ProductID struct {

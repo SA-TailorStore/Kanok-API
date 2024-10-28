@@ -110,7 +110,9 @@ func (p *ProductMySQL) GetProductByOrderID(ctx context.Context, req *requests.Or
 			&product.Process_quantity,
 			&product.Total_quantity,
 			&product.Created_by,
-			&product.Timestamp); err != nil {
+			&product.Timestamp,
+			&product.Design_url,
+		); err != nil {
 			return nil, err
 		}
 
