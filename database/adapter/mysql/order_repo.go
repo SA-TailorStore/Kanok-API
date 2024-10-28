@@ -367,7 +367,7 @@ func (o *OrderMySQL) GetAllOrders(ctx context.Context) ([]*responses.ShowOrder, 
 		order_id,
 		status,
 		timestamp
-	FROM ORDERS
+	FROM ORDERS ORDER BY timestamp;
 	`
 
 	rows, err := o.db.QueryContext(ctx, query)
