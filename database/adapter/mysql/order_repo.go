@@ -321,7 +321,7 @@ func (o *OrderMySQL) GetOrderByUserId(ctx context.Context, req *requests.UserID)
 		order_id,
 		status,
 		timestamp
-	FROM ORDERS WHERE
+	FROM ORDERS ORDER BY timestamp WHERE
 	`
 
 	var role requests.UserRole
