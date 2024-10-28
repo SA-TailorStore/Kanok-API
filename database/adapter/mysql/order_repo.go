@@ -2,6 +2,7 @@ package mysql
 
 import (
 	"context"
+	"fmt"
 	"strconv"
 	"time"
 
@@ -321,7 +322,7 @@ func (o *OrderMySQL) GetOrderByUserId(ctx context.Context, req *requests.UserID)
 		order_id,
 		status,
 		timestamp
-	FROM ORDERS ORDER BY timestamp WHERE
+	FROM ORDERS WHERE
 	`
 
 	var role requests.UserRole
@@ -339,8 +340,9 @@ func (o *OrderMySQL) GetOrderByUserId(ctx context.Context, req *requests.UserID)
 		role = requests.UserRole{Role: " tailor_id = ?"}
 	}
 
-	rows, err := o.db.QueryContext(ctx, query+role.Role, req.User_id)
+	rows, err := o.db.QueryContext(ctx, query+role.Role+" ORDER BY timestamp DESC", req.User_id)
 	if err != nil {
+		fmt.Println(err)
 		return nil, exceptions.ErrUserNotFound
 	}
 	defer rows.Close()
@@ -367,7 +369,7 @@ func (o *OrderMySQL) GetAllOrders(ctx context.Context) ([]*responses.ShowOrder, 
 		order_id,
 		status,
 		timestamp
-	FROM ORDERS ORDER BY timestamp;
+	FROM ORDERS ORDER BY timestamp DESC;
 	`
 
 	rows, err := o.db.QueryContext(ctx, query)

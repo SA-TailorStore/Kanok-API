@@ -12,7 +12,7 @@ import (
 
 func CheckUserByID(db *sqlx.DB, ctx context.Context, id string) error {
 
-	var user responses.User
+	var user responses.UserID
 
 	query := `
 	SELECT 
