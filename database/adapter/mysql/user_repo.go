@@ -146,15 +146,11 @@ func (u *UserMySQL) GetAllTailor(ctx context.Context, req *requests.UserRole) ([
 		u.address, 
 		u.timestamp,
         CASE 
-        	WHEN o.order_id IS NULL THEN ?
-        	ELSE o.order_id 
-    	END AS has_order,
-        CASE 
-        	WHEN o.tailor_id IS NOT NULL THEN SUM(p.process_quantity)
+        	WHEN o.tailor_id = u.user_id && o.status NOT IN ("cancel","success_tailor", "recevied_shop", "success_shop", "recevied_user", "success_user") THEN SUM(p.process_quantity)
         	ELSE 0 
     	END AS process,
     	CASE 
-        	WHEN o.tailor_id IS NOT NULL THEN SUM(p.total_quantity)
+        	WHEN o.tailor_id = u.user_id && o.status NOT IN ("cancel","success_tailor", "recevied_shop", "success_shop", "recevied_user", "success_user") THEN SUM(p.total_quantity)
         	ELSE 0 
     	END AS total
 	FROM 
@@ -167,7 +163,7 @@ func (u *UserMySQL) GetAllTailor(ctx context.Context, req *requests.UserRole) ([
     GROUP BY user_id;
 	`
 
-	rows, err := u.db.QueryContext(ctx, query, "No Order", req.Role)
+	rows, err := u.db.QueryContext(ctx, query, req.Role)
 
 	if err != nil {
 		return nil, err
@@ -187,7 +183,6 @@ func (u *UserMySQL) GetAllTailor(ctx context.Context, req *requests.UserRole) ([
 			&user.Phone_number,
 			&user.Address,
 			&user.Timestamp,
-			&user.Order_id,
 			&user.Product_Process,
 			&user.Product_Total,
 		); err != nil {

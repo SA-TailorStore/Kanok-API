@@ -67,11 +67,11 @@ func (o *OrderMySQL) CreateOrder(ctx context.Context, req *requests.CreateOrder)
 		user.Phone_number,
 		user.Display_name+"|"+user.Address,
 		req.Token,
-		user.Phone_number,
-		user.Display_name+"|"+user.Address,
+		"-",
+		"-",
 		req.Token,
 	); err != nil {
-		return nil, exceptions.ErrInfomation
+		return nil, err
 	}
 
 	// Create Product
@@ -242,17 +242,15 @@ func (o *OrderMySQL) UpdatePrice(ctx context.Context, req *requests.UpdatePrice)
 		return err
 	}
 
-	if req.Price <= 0 {
-		return exceptions.ErrPriceIsValid
-	}
-
 	query := `
 	UPDATE ORDERS 
 	SET 
-		price = ?
-	WHERE order_id = ?`
+		price = ?,
+		status = ?
+	WHERE order_id = ?
+	`
 
-	_, err := o.db.ExecContext(ctx, query, req.Price, req.Order_id)
+	_, err := o.db.ExecContext(ctx, query, req.Price, "payment", req.Order_id)
 	if err != nil {
 		return err
 	}

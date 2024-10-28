@@ -112,6 +112,10 @@ func (o *orderService) UpdateTracking(ctx context.Context, req *requests.UpdateT
 
 func (o *orderService) UpdatePrice(ctx context.Context, req *requests.UpdatePrice) error {
 
+	if req.Price <= 0 {
+		return exceptions.ErrPriceIsValid
+	}
+
 	err := o.reposititory.UpdatePrice(ctx, req)
 
 	if err != nil {
