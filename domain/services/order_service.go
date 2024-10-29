@@ -161,13 +161,15 @@ func (o *orderService) GetAllOrders(ctx context.Context) ([]*responses.ShowOrder
 
 func (o *orderService) UpdateTailor(ctx context.Context, req *requests.UpdateTailor) error {
 
-	layout := time.RFC3339
+	layout := "2006-01-02T15:04:05.000Z"
 	parsedDate, err := time.Parse(layout, req.Due_date)
 
 	if err != nil {
 		return exceptions.ErrDateInvalid
 	}
-	if time.Since(parsedDate) >= 72*time.Hour {
+	duration := time.Since(parsedDate) * -1
+
+	if duration <= 72*time.Hour {
 		return exceptions.ErrDateToLow
 	}
 
