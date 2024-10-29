@@ -25,7 +25,7 @@ func NewUserMySQL(db *sqlx.DB) reposititories.UserRepository {
 
 func (u *UserMySQL) CreateUser(ctx context.Context, req *requests.UserRegister) error {
 
-	if err := utils.CheckUsernameDup(u.db, ctx, req.Username); err != nil {
+	if err := utils.CheckUsernameDup(u.db, ctx, &requests.Username{Username: req.Username}); err != nil {
 		return err
 	}
 
@@ -52,7 +52,7 @@ func (u *UserMySQL) CreateUser(ctx context.Context, req *requests.UserRegister) 
 
 func (u *UserMySQL) CreateTailor(ctx context.Context, req *requests.UserRegister) error {
 
-	if err := utils.CheckUsernameDup(u.db, ctx, req.Username); err != nil {
+	if err := utils.CheckUsernameDup(u.db, ctx, &requests.Username{Username: req.Username}); err != nil {
 		return err
 	}
 

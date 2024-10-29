@@ -65,7 +65,7 @@ func main() {
 
 	// User
 	app.Post(prefix+"/register", userController.UserRegister)
-
+	app.Post(prefix+"/store/register", userController.StoreRegister)
 	app.Post(prefix+"/login", userController.Login)
 	app.Post(prefix+"/login/token", userController.LoginByToken)
 	app.Post(prefix+"/user/token", userController.GetUserByJWT)

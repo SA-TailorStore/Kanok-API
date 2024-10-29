@@ -93,12 +93,11 @@ func (u *userService) Register(ctx context.Context, req *requests.UserRegister) 
 		}
 
 		req.Password = string(hashedPassword)
-		u.reposititory.CreateUser(ctx, req)
+		return u.reposititory.CreateUser(ctx, req)
 	} else {
 		return exceptions.ErrPassNotMatch
 	}
 
-	return nil
 }
 
 func (u *userService) StoreRegister(ctx context.Context, req *requests.UserRegister) error {
@@ -121,12 +120,11 @@ func (u *userService) StoreRegister(ctx context.Context, req *requests.UserRegis
 		}
 
 		req.Password = string(hashedPassword)
-		u.reposititory.CreateTailor(ctx, req)
+		return u.reposititory.CreateTailor(ctx, req)
 	} else {
 		return exceptions.ErrPassNotMatch
 	}
 
-	return nil
 }
 
 func (u *userService) Login(ctx context.Context, req *requests.UserLogin) (*responses.UserJWT, error) {

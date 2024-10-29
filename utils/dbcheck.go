@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"fmt"
 
+	"github.com/SA-TailorStore/Kanok-API/database/requests"
 	"github.com/SA-TailorStore/Kanok-API/database/responses"
 	"github.com/SA-TailorStore/Kanok-API/domain/exceptions"
 	"github.com/jmoiron/sqlx"
@@ -27,19 +28,19 @@ func CheckUserByID(db *sqlx.DB, ctx context.Context, id string) error {
 	return nil
 }
 
-func CheckUsernameDup(db *sqlx.DB, ctx context.Context, username string) error {
-
+func CheckUsernameDup(db *sqlx.DB, ctx context.Context, req *requests.Username) error {
+	var username requests.Username
 	query := `
 	SELECT 
 		username
 	FROM USERS WHERE username = ?`
-	err := db.GetContext(ctx, &responses.Username{}, query, username)
-	if err == sql.ErrNoRows {
-		return nil
-	}
+	err := db.GetContext(ctx, &username, query, req.Username)
 
-	if err != nil {
+	if username.Username == req.Username {
 		return exceptions.ErrUsernameDuplicated
+	}
+	if err != nil {
+		return nil
 	}
 
 	return nil
