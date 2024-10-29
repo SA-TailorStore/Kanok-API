@@ -3,6 +3,7 @@ package services
 import (
 	"context"
 	"mime/multipart"
+	"time"
 
 	"github.com/SA-TailorStore/Kanok-API/configs"
 	"github.com/SA-TailorStore/Kanok-API/database/requests"
@@ -126,8 +127,8 @@ func (o *orderService) UpdatePrice(ctx context.Context, req *requests.UpdatePric
 }
 
 func (o *orderService) GetOrderByJWT(ctx context.Context, req *requests.UserJWT) ([]*responses.ShowOrder, error) {
-	id, err := utils.VerificationJWT(req.Token)
 
+	id, err := utils.VerificationJWT(req.Token)
 	if err != nil {
 		switch err {
 		case exceptions.ErrExpiredToken:
@@ -151,7 +152,6 @@ func (o *orderService) GetOrderByJWT(ctx context.Context, req *requests.UserJWT)
 func (o *orderService) GetAllOrders(ctx context.Context) ([]*responses.ShowOrder, error) {
 
 	res, err := o.reposititory.GetAllOrders(ctx)
-
 	if err != nil {
 		return res, err
 	}
@@ -161,8 +161,18 @@ func (o *orderService) GetAllOrders(ctx context.Context) ([]*responses.ShowOrder
 
 func (o *orderService) UpdateTailor(ctx context.Context, req *requests.UpdateTailor) error {
 
-	err := o.reposititory.UpdateTailor(ctx, req)
+	layout := time.RFC3339
+	parsedDate, err := time.Parse(layout, req.Due_date)
+
 	if err != nil {
+		return exceptions.ErrDateInvalid
+	}
+	if time.Since(parsedDate) >= 72*time.Hour {
+		return exceptions.ErrDateToLow
+	}
+
+	req = &requests.UpdateTailor{Order_id: req.Order_id, Tailor_id: req.Tailor_id, ParseDate: parsedDate}
+	if err := o.reposititory.UpdateTailor(ctx, req); err != nil {
 		return err
 	}
 

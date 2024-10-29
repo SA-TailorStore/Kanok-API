@@ -9,4 +9,5 @@ var (
 	ErrDateInvalid   = errors.New("invalid date")
 	ErrHasPayment    = errors.New("nothing to update")
 	ErrPriceIsValid  = errors.New("price is valid")
+	ErrDateToLow     = errors.New("date is less than 3 day")
 )

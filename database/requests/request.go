@@ -1,5 +1,7 @@
 package requests
 
+import "time"
+
 // USER REQUEST
 type UserRegister struct {
 	Username     string `json:"username" validate:"required"`
@@ -82,9 +84,10 @@ type UpdatePrice struct {
 }
 
 type UpdateTailor struct {
-	Order_id  string `json:"order_id" validate:"required"`
-	Tailor_id string `json:"tailor_id" validate:"required"`
-	Due_date  string `json:"due_date" validate:"required"`
+	Order_id  string    `json:"order_id" validate:"required"`
+	Tailor_id string    `json:"tailor_id" validate:"required"`
+	Due_date  string    `json:"due_date" validate:"required"`
+	ParseDate time.Time `json:"parse_due_date"`
 }
 
 // PRODUCT REQUEST

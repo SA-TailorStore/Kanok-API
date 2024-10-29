@@ -340,6 +340,11 @@ func (o *orderController) UpdateTailor(c *fiber.Ctx) error {
 				"error":  err.Error(),
 				"status": "400",
 			})
+		case exceptions.ErrDateToLow:
+			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+				"error":  err.Error(),
+				"status": "400",
+			})
 		case exceptions.ErrUserNotFound:
 			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 				"error":  err.Error(),

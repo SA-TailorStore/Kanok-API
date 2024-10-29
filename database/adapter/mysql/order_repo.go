@@ -269,13 +269,6 @@ func (o *OrderMySQL) UpdateTailor(ctx context.Context, req *requests.UpdateTailo
 		return err
 	}
 
-	layout := time.RFC3339
-	parsedDate, err := time.Parse(layout, req.Due_date)
-
-	if err != nil {
-		return exceptions.ErrDateInvalid
-	}
-
 	var tailor requests.UserUpdate
 
 	if err := o.db.GetContext(ctx,
@@ -302,7 +295,7 @@ func (o *OrderMySQL) UpdateTailor(ctx context.Context, req *requests.UpdateTailo
 		req.Tailor_id,
 		tailor.Phone_number,
 		tailor.Display_name+"|"+tailor.Address,
-		parsedDate,
+		req.ParseDate,
 		req.Order_id,
 	); err != nil {
 		return err
