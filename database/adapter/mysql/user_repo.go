@@ -78,7 +78,7 @@ func (u *UserMySQL) CreateTailor(ctx context.Context, req *requests.UserRegister
 	return err
 }
 
-func (u *UserMySQL) GetAllUser(ctx context.Context, req *requests.UserRole) ([]*responses.User, error) {
+func (u *UserMySQL) GetAllUsers(ctx context.Context, req *requests.UserRole) ([]*responses.User, error) {
 
 	query := `
 	SELECT 
@@ -133,7 +133,7 @@ func (u *UserMySQL) GetAllUser(ctx context.Context, req *requests.UserRole) ([]*
 	return users, nil
 }
 
-func (u *UserMySQL) GetAllTailor(ctx context.Context, req *requests.UserRole) ([]*responses.UserTailor, error) {
+func (u *UserMySQL) GetAllTailors(ctx context.Context, req *requests.UserRole) ([]*responses.UserTailor, error) {
 
 	query := `
 	SELECT 

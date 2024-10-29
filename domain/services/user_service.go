@@ -46,7 +46,7 @@ func NewUserService(reposititory reposititories.UserRepository, config *configs.
 }
 
 func (u *userService) GetAllUser(ctx context.Context, req *requests.UserRole) ([]*responses.User, error) {
-	users, err := u.reposititory.GetAllUser(ctx, req)
+	users, err := u.reposititory.GetAllUsers(ctx, req)
 
 	if err != nil {
 		return nil, err
@@ -60,7 +60,7 @@ func (u *userService) GetAllUser(ctx context.Context, req *requests.UserRole) ([
 }
 
 func (u *userService) GetAllTailor(ctx context.Context, req *requests.UserRole) ([]*responses.UserTailor, error) {
-	users, err := u.reposititory.GetAllTailor(ctx, req)
+	users, err := u.reposititory.GetAllTailors(ctx, req)
 
 	if err != nil {
 		return nil, err

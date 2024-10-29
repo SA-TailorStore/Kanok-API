@@ -39,8 +39,8 @@ func CheckUsernameDup(db *sqlx.DB, ctx context.Context, req *requests.Username) 
 	if username.Username == req.Username {
 		return exceptions.ErrUsernameDuplicated
 	}
-	if err != nil {
-		return nil
+	if err != nil && err != sql.ErrNoRows {
+		return err
 	}
 
 	return nil
