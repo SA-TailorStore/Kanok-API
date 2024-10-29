@@ -4,9 +4,10 @@ import "time"
 
 // USER REQUEST
 type UserRegister struct {
-	Username     string `json:"username" validate:"required"`
-	Password     string `json:"password" validate:"required"`
-	Phone_number string `json:"phone_number" validate:"required"`
+	Username         string `json:"username" validate:"required"`
+	Password         string `json:"password" validate:"required"`
+	Confirm_Password string `json:"confirm_password" validate:"required"`
+	Phone_number     string `json:"phone_number" validate:"required"`
 }
 type UserTailor struct {
 }

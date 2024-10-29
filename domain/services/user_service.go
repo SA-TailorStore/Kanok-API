@@ -83,13 +83,22 @@ func (u *userService) Register(ctx context.Context, req *requests.UserRegister) 
 		return err
 	}
 
-	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(req.Password), bcrypt.DefaultCost)
-	if err != nil {
+	if err := utils.ValidatePassword(req.Confirm_Password); err != nil {
 		return err
 	}
+	if req.Password == req.Confirm_Password {
+		hashedPassword, err := bcrypt.GenerateFromPassword([]byte(req.Password), bcrypt.DefaultCost)
+		if err != nil {
+			return err
+		}
 
-	req.Password = string(hashedPassword)
-	return u.reposititory.CreateUser(ctx, req)
+		req.Password = string(hashedPassword)
+		u.reposititory.CreateTailor(ctx, req)
+	} else {
+		return exceptions.ErrPassNotMatch
+	}
+
+	return nil
 }
 
 func (u *userService) StoreRegister(ctx context.Context, req *requests.UserRegister) error {
@@ -102,13 +111,22 @@ func (u *userService) StoreRegister(ctx context.Context, req *requests.UserRegis
 		return err
 	}
 
-	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(req.Password), bcrypt.DefaultCost)
-	if err != nil {
+	if err := utils.ValidatePassword(req.Confirm_Password); err != nil {
 		return err
 	}
+	if req.Password == req.Confirm_Password {
+		hashedPassword, err := bcrypt.GenerateFromPassword([]byte(req.Password), bcrypt.DefaultCost)
+		if err != nil {
+			return err
+		}
 
-	req.Password = string(hashedPassword)
-	return u.reposititory.CreateTailor(ctx, req)
+		req.Password = string(hashedPassword)
+		u.reposititory.CreateTailor(ctx, req)
+	} else {
+		return exceptions.ErrPassNotMatch
+	}
+
+	return nil
 }
 
 func (u *userService) Login(ctx context.Context, req *requests.UserLogin) (*responses.UserJWT, error) {

@@ -21,4 +21,5 @@ var (
 	ErrInvalidImage           = errors.New("slip is wrong")
 	ErrNoImage                = errors.New("no image")
 	ErrNotHaveAnyTailor       = errors.New("no tailor")
+	ErrPassNotMatch           = errors.New("password is not match")
 )
