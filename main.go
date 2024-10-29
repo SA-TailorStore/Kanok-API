@@ -65,7 +65,7 @@ func main() {
 
 	// User
 	app.Post(prefix+"/register", userController.UserRegister)
-	app.Post(prefix+"/store/register", userController.UserRegister)
+
 	app.Post(prefix+"/login", userController.Login)
 	app.Post(prefix+"/login/token", userController.LoginByToken)
 	app.Post(prefix+"/user/token", userController.GetUserByJWT)
@@ -73,7 +73,6 @@ func main() {
 	app.Post(prefix+"/user/profile/upload", userController.UpdateImage)
 	app.Post(prefix+"/users", userController.GetAllUser)
 	app.Post(prefix+"/user/id", userController.GetUserByID)
-	app.Post(prefix+"/store/register", userController.StoreRegister)
 
 	// Order
 	app.Post(prefix+"/order/create", orderController.CreateOrder)
