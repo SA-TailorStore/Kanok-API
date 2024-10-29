@@ -93,7 +93,7 @@ func (u *userService) Register(ctx context.Context, req *requests.UserRegister) 
 		}
 
 		req.Password = string(hashedPassword)
-		u.reposititory.CreateTailor(ctx, req)
+		u.reposititory.CreateUser(ctx, req)
 	} else {
 		return exceptions.ErrPassNotMatch
 	}
