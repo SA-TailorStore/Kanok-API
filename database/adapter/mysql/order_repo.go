@@ -229,7 +229,7 @@ func (o *OrderMySQL) UpdateTracking(ctx context.Context, req *requests.UpdateTra
 		tracking_number = ?
 	WHERE order_id = ?`
 
-	_, err := o.db.ExecContext(ctx, query, req.Tracking_number, req.Order_id)
+	_, err := o.db.ExecContext(ctx, query, req.Status, req.Tracking_number, req.Order_id)
 	if err != nil {
 		return err
 	}
