@@ -142,6 +142,7 @@ func (p *ProductMySQL) GetProductByID(ctx context.Context, req *requests.Product
         d.design_url
 	FROM PRODUCTS p
     JOIN DESIGNS d ON d.design_id = p.design_id
+	WHERE p.product_id = ?
 	`
 
 	var product responses.Product
