@@ -24,9 +24,9 @@ type UserUseCase interface {
 	Register(ctx context.Context, req *requests.UserRegister) error
 	StoreRegister(ctx context.Context, req *requests.UserRegister) error
 	GetByUsername(ctx context.Context, req *requests.Username) (*responses.Username, error)
-	GetByJWT(ctx context.Context, req *requests.UserJWT) (*responses.User, error)
+	GetUserByJWT(ctx context.Context, req *requests.UserJWT) (*responses.User, error)
 	GenerateToken(ctx context.Context, req *requests.UserJWT) (*responses.UserJWT, error)
-	GetByID(ctx context.Context, req *requests.UserID) (*responses.User, error)
+	GetUserByID(ctx context.Context, req *requests.UserID) (*responses.User, error)
 	UpdateAddress(ctx context.Context, req *requests.UserUpdate) error
 	UploadImage(ctx context.Context, file interface{}, req *requests.UserUploadImage) (*responses.UserProUrl, error)
 }
@@ -169,7 +169,7 @@ func (u *userService) GetByUsername(ctx context.Context, req *requests.Username)
 	return user, err
 }
 
-func (u *userService) GetByJWT(ctx context.Context, req *requests.UserJWT) (*responses.User, error) {
+func (u *userService) GetUserByJWT(ctx context.Context, req *requests.UserJWT) (*responses.User, error) {
 	//JWT
 	secret_key := []byte(u.config.JWTSecret)
 
@@ -238,7 +238,7 @@ func (u *userService) GenerateToken(ctx context.Context, req *requests.UserJWT) 
 	}, err
 }
 
-func (u *userService) GetByID(ctx context.Context, req *requests.UserID) (*responses.User, error) {
+func (u *userService) GetUserByID(ctx context.Context, req *requests.UserID) (*responses.User, error) {
 
 	user, err := u.reposititory.GetUserByUserID(ctx, req)
 

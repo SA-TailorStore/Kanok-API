@@ -124,7 +124,7 @@ func (u *userController) GetUserByID(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusBadRequest).JSON(err)
 	}
 
-	res, err := u.service.GetByID(c.Context(), &req)
+	res, err := u.service.GetUserByID(c.Context(), &req)
 
 	if err != nil {
 		switch err {
@@ -324,7 +324,7 @@ func (u *userController) GetUserByJWT(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusBadRequest).JSON(err)
 	}
 
-	res, err := u.service.GetByJWT(c.Context(), req)
+	res, err := u.service.GetUserByJWT(c.Context(), req)
 
 	if err != nil {
 		switch err {

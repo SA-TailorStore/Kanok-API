@@ -395,7 +395,7 @@ func (o *orderController) GetOrderByJWT(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusBadRequest).JSON(err)
 	}
 
-	res, err := o.service.GetOrderByJWT(c.Context(), req)
+	res, err := o.service.GetOrderByUserID(c.Context(), req)
 	if err != nil {
 		switch err {
 		case exceptions.ErrOrderNotFound:
