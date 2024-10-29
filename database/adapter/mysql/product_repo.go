@@ -130,16 +130,19 @@ func (p *ProductMySQL) GetProductByID(ctx context.Context, req *requests.Product
 
 	query := `
 	SELECT 
-		product_id,
-		design_id,
-		fabric_id,
-		detail,
-		size,
-		process_quantity,
-		total_quantity,
-		created_by,
-		timestamp
-	FROM PRODUCTS WHERE product_id = ?`
+		p.product_id,
+		p.design_id,
+		p.fabric_id,
+		p.detail,
+		p.size,
+		p.process_quantity,
+		p.total_quantity,
+		p.created_by,
+		p.timestamp,
+        d.design_url
+	FROM PRODUCTS p
+    JOIN DESIGNS d ON d.design_id = p.design_id
+	`
 
 	var product responses.Product
 	err := p.db.GetContext(ctx,

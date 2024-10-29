@@ -76,6 +76,7 @@ type UpdatePayment struct {
 
 type UpdateTracking struct {
 	Order_id        string `json:"order_id" validate:"required"`
+	Status          string `json:"status" validate:"required"`
 	Tracking_number string `json:"tracking_number" validate:"required"`
 }
 

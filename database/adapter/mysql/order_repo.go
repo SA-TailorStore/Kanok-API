@@ -225,7 +225,7 @@ func (o *OrderMySQL) UpdateTracking(ctx context.Context, req *requests.UpdateTra
 
 	query := `
 	UPDATE ORDERS 
-	SET 
+	SET status = ?,
 		tracking_number = ?
 	WHERE order_id = ?`
 
