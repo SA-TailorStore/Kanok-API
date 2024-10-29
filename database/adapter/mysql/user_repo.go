@@ -59,7 +59,7 @@ func (u *UserMySQL) CreateTailor(ctx context.Context, req *requests.UserRegister
 	query := `
 	INSERT INTO USERS
 	(user_id, username, password, phone_number,role, address) 
-	VALUES ( ?, ?, ?, ?, ?)
+	VALUES ( ?, ?, ?, ?, ?, ?)
 	`
 
 	user_id, err := uuid.NewV7()

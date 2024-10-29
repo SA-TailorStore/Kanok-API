@@ -71,7 +71,7 @@ func main() {
 	app.Post(prefix+"/user/token", userController.GetUserByJWT)
 	app.Post(prefix+"/user/update/address", userController.UpdateAddress)
 	app.Post(prefix+"/user/profile/upload", userController.UpdateImage)
-	app.Post(prefix+"/users", userController.GetAllUser)
+	app.Post(prefix+"/users", userController.GetAllUsers)
 	app.Post(prefix+"/user/id", userController.GetUserByID)
 
 	// Order
@@ -117,8 +117,8 @@ func main() {
 		return c.SendString("Hello, World!")
 	})
 	// User
-	app.Get(prefix+"/users", userController.GetAllUser)
-	app.Get(prefix+"/tailors", userController.GetAllTailor)
+	app.Get(prefix+"/users", userController.GetAllUsers)
+	app.Get(prefix+"/tailors", userController.GetAllTailors)
 
 	// Order
 	app.Get(prefix+"/orders", orderController.GetAllOrders)

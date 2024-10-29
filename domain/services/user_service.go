@@ -18,8 +18,8 @@ import (
 )
 
 type UserUseCase interface {
-	GetAllUser(ctx context.Context, req *requests.UserRole) ([]*responses.User, error)
-	GetAllTailor(ctx context.Context, req *requests.UserRole) ([]*responses.UserTailor, error)
+	GetAllUsers(ctx context.Context, req *requests.UserRole) ([]*responses.User, error)
+	GetAllTailors(ctx context.Context, req *requests.UserRole) ([]*responses.UserTailor, error)
 	Login(ctx context.Context, req *requests.UserLogin) (*responses.UserJWT, error)
 	Register(ctx context.Context, req *requests.UserRegister) error
 	StoreRegister(ctx context.Context, req *requests.UserRegister) error
@@ -45,7 +45,7 @@ func NewUserService(reposititory reposititories.UserRepository, config *configs.
 	}
 }
 
-func (u *userService) GetAllUser(ctx context.Context, req *requests.UserRole) ([]*responses.User, error) {
+func (u *userService) GetAllUsers(ctx context.Context, req *requests.UserRole) ([]*responses.User, error) {
 	users, err := u.reposititory.GetAllUsers(ctx, req)
 
 	if err != nil {
@@ -59,7 +59,7 @@ func (u *userService) GetAllUser(ctx context.Context, req *requests.UserRole) ([
 	return users, err
 }
 
-func (u *userService) GetAllTailor(ctx context.Context, req *requests.UserRole) ([]*responses.UserTailor, error) {
+func (u *userService) GetAllTailors(ctx context.Context, req *requests.UserRole) ([]*responses.UserTailor, error) {
 	users, err := u.reposititory.GetAllTailors(ctx, req)
 
 	if err != nil {

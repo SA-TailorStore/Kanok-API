@@ -19,7 +19,7 @@ func NewUserController(service services.UserUseCase) rest.UserHandler {
 	}
 }
 
-func (u *userController) GetAllUser(c *fiber.Ctx) error {
+func (u *userController) GetAllUsers(c *fiber.Ctx) error {
 	// Parse request
 	var req requests.UserRole
 
@@ -34,7 +34,7 @@ func (u *userController) GetAllUser(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusBadRequest).JSON(err)
 	}
 
-	res, err := u.service.GetAllUser(c.Context(), &req)
+	res, err := u.service.GetAllUsers(c.Context(), &req)
 
 	if err != nil {
 		switch err {
@@ -67,11 +67,11 @@ func (u *userController) GetAllUser(c *fiber.Ctx) error {
 	}
 }
 
-func (u *userController) GetAllTailor(c *fiber.Ctx) error {
+func (u *userController) GetAllTailors(c *fiber.Ctx) error {
 
 	req := requests.UserRole{Role: "tailor"}
 
-	res, err := u.service.GetAllTailor(c.Context(), &req)
+	res, err := u.service.GetAllTailors(c.Context(), &req)
 
 	if err != nil {
 		switch err {

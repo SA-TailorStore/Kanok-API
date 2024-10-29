@@ -8,8 +8,8 @@ type UserHandler interface {
 	UserRegister(c *fiber.Ctx) error
 	StoreRegister(c *fiber.Ctx) error
 	Login(c *fiber.Ctx) error
-	GetAllUser(c *fiber.Ctx) error
-	GetAllTailor(c *fiber.Ctx) error
+	GetAllUsers(c *fiber.Ctx) error
+	GetAllTailors(c *fiber.Ctx) error
 	GetUserByID(c *fiber.Ctx) error
 	GetUserByJWT(c *fiber.Ctx) error
 	LoginByToken(c *fiber.Ctx) error
