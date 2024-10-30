@@ -48,25 +48,13 @@ func (m *materialService) AddMaterial(ctx context.Context, req *requests.AddMate
 
 func (m *materialService) UpdateMaterial(ctx context.Context, req *requests.UpdateMaterial) error {
 
-	temp, err := m.reposititory.GetMaterialByID(ctx, &requests.MaterialID{Material_id: req.Material_id})
-	if err != nil {
-		return err
-	}
-
-	if req.Material_name == "" {
-		req = &requests.UpdateMaterial{
-			Material_id:   req.Material_id,
-			Material_name: temp.Material_name,
-			Amount:        req.Amount,
-		}
-	}
-
-	if req.Amount == 0 {
+	if req.Amount <= 0 {
 		req = &requests.UpdateMaterial{
 			Material_id:   req.Material_id,
 			Material_name: req.Material_name,
-			Amount:        temp.Amount,
+			Amount:        0,
 		}
+
 	}
 
 	if err := m.reposititory.UpdateMaterial(ctx, req); err != nil {

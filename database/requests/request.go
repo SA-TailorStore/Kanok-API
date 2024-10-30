@@ -58,6 +58,7 @@ type UpdateOrder struct {
 	User_phone    string `json:"user_phone" validate:"required"`
 	User_address  string `json:"user_address" validate:"required"`
 }
+
 type CreateOrder struct {
 	Token    string    `json:"token" validate:"required"`
 	Products []Product `json:"products" validate:"required"`
