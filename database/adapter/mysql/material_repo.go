@@ -41,25 +41,37 @@ func (m *MaterialMySQL) AddMaterial(ctx context.Context, req *requests.AddMateri
 
 func (m *MaterialMySQL) UpdateMaterial(ctx context.Context, req *requests.UpdateMaterial) error {
 
+	var query string
 	if err := utils.CheckMaterialByID(m.db, ctx, req.Material_id); err != nil {
 		return err
 	}
 
 	if err := utils.CheckNameDup(m.db, ctx, req.Material_name); err != nil {
-		return err
+		query = `
+		UPDATE MATERIALS 
+		SET 
+			amount = amount + ? 
+		WHERE material_id = ?`
+
+		_, err := m.db.ExecContext(ctx, query, req.Amount, req.Material_id)
+		if err != nil {
+			return err
+		}
+
+	} else {
+		query = `
+		UPDATE MATERIALS 
+		SET 
+			material_name = ?, 
+			amount = ? 
+		WHERE material_id = ?`
+
+		_, err := m.db.ExecContext(ctx, query, req.Material_name, req.Amount, req.Material_id)
+		if err != nil {
+			return err
+		}
 	}
 
-	query := `
-	UPDATE MATERIALS 
-	SET 
-		material_name = ?, 
-		amount = ? 
-	WHERE material_id = ?`
-
-	_, err := m.db.ExecContext(ctx, query, req.Material_name, req.Amount, req.Material_id)
-	if err != nil {
-		return err
-	}
 	return nil
 }
 

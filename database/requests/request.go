@@ -9,6 +9,7 @@ type UserRegister struct {
 	Confirm_Password string `json:"confirm_password" validate:"required"`
 	Phone_number     string `json:"phone_number" validate:"required"`
 }
+
 type UserTailor struct {
 }
 
@@ -164,6 +165,7 @@ type UpdateFabric struct {
 	Image     string `json:"image"`
 	Quantity  int    `json:"quantity"`
 }
+
 type UpdateFabrics struct {
 	Fabric_id int `json:"fabric_id" validate:"required"`
 	Quantity  int `json:"quantity" validate:"required"`
