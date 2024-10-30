@@ -5,7 +5,6 @@ import (
 
 	"github.com/SA-TailorStore/Kanok-API/database/requests"
 	"github.com/SA-TailorStore/Kanok-API/database/responses"
-	"github.com/SA-TailorStore/Kanok-API/domain/exceptions"
 	"github.com/SA-TailorStore/Kanok-API/domain/reposititories"
 	"github.com/SA-TailorStore/Kanok-API/utils"
 	"github.com/jmoiron/sqlx"
@@ -23,11 +22,8 @@ func NewMaterialMySQL(db *sqlx.DB) reposititories.MaterialRepository {
 
 func (m *MaterialMySQL) AddMaterial(ctx context.Context, req *requests.AddMaterial) error {
 
-	var name string
-	if err := m.db.GetContext(ctx, &name,
-		`SELECT material_name FROM MATERIALS WHERE material_name = ?`, req.Material_name,
-	); err == nil {
-		return exceptions.ErrDupicatedName
+	if err := utils.CheckNameDup(m.db, ctx, req.Material_name); err != nil {
+		return err
 	}
 
 	query := `
@@ -46,6 +42,10 @@ func (m *MaterialMySQL) AddMaterial(ctx context.Context, req *requests.AddMateri
 func (m *MaterialMySQL) UpdateMaterial(ctx context.Context, req *requests.UpdateMaterial) error {
 
 	if err := utils.CheckMaterialByID(m.db, ctx, req.Material_id); err != nil {
+		return err
+	}
+
+	if err := utils.CheckNameDup(m.db, ctx, req.Material_name); err != nil {
 		return err
 	}
 
