@@ -152,6 +152,23 @@ func CheckMaterialByID(db *sqlx.DB, ctx context.Context, id int) error {
 	return nil
 }
 
+func CheckNameDupNoID(db *sqlx.DB, ctx context.Context, name string, id int) error {
+	var obj requests.MaterialName
+	query := `
+	SELECT material_name FROM MATERIALS WHERE material_name = ? && material_id != ?
+	`
+	err := db.GetContext(ctx, &obj, query, name, id)
+
+	if obj.Material_name == name {
+		return exceptions.ErrDupicatedName
+	}
+	if err != nil && err != sql.ErrNoRows {
+		return err
+	}
+
+	return nil
+}
+
 func CheckNameDup(db *sqlx.DB, ctx context.Context, name string) error {
 	var obj requests.MaterialName
 	query := `

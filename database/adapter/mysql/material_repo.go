@@ -46,30 +46,19 @@ func (m *MaterialMySQL) UpdateMaterial(ctx context.Context, req *requests.Update
 		return err
 	}
 
-	if err := utils.CheckNameDup(m.db, ctx, req.Material_name); err != nil {
-		query = `
-		UPDATE MATERIALS 
-		SET 
-			amount = amount + ? 
-		WHERE material_id = ?`
-
-		_, err := m.db.ExecContext(ctx, query, req.Amount, req.Material_id)
-		if err != nil {
-			return err
-		}
-
-	} else {
-		query = `
+	if err := utils.CheckNameDupNoID(m.db, ctx, req.Material_name, req.Material_id); err != nil {
+		return err
+	}
+	query = `
 		UPDATE MATERIALS 
 		SET 
 			material_name = ?, 
 			amount = ? 
 		WHERE material_id = ?`
 
-		_, err := m.db.ExecContext(ctx, query, req.Material_name, req.Amount, req.Material_id)
-		if err != nil {
-			return err
-		}
+	_, err := m.db.ExecContext(ctx, query, req.Material_name, req.Amount, req.Material_id)
+	if err != nil {
+		return err
 	}
 
 	return nil
