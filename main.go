@@ -6,6 +6,10 @@ import (
 	"log"
 
 	"github.com/SA-TailorStore/Kanok-API/configs"
+	"github.com/SA-TailorStore/Kanok-API/database/adapter/mysql"
+	"github.com/SA-TailorStore/Kanok-API/domain/controllers"
+	"github.com/SA-TailorStore/Kanok-API/domain/services"
+	"github.com/cloudinary/cloudinary-go/v2"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/gofiber/fiber/v2"
 	"github.com/jmoiron/sqlx"
@@ -14,11 +18,16 @@ import (
 func main() {
 	app := fiber.New()
 
+	// Cloudinary
+	cfg := configs.NewConfig()
+	cld, err := cloudinary.NewFromURL(cfg.Cloudinary_url)
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	ctx := context.Background()
 
-	cfg := configs.NewConfig()
 	fmt.Printf("%s:%s@tcp(%s:%s)/%s", cfg.DBUsername, cfg.DBPassword, cfg.DBHost, cfg.DBPort, cfg.DBName)
-	fmt.Println()
 	db, err := sqlx.ConnectContext(ctx, "mysql", fmt.Sprintf("%s:%s@tcp(%s:%s)/%s", cfg.DBUsername, cfg.DBPassword, cfg.DBHost, cfg.DBPort, cfg.DBName))
 
 	if err != nil {
@@ -27,7 +36,106 @@ func main() {
 
 	defer db.Close()
 
-	if err := app.Listen(":9000"); err != nil {
+	userRepo := mysql.NewUserMySQL(db)
+	userService := services.NewUserService(userRepo, cfg, cld)
+	userController := controllers.NewUserController(userService)
+
+	orderRepo := mysql.NewOrderMySQL(db)
+	orderService := services.NewOrderService(orderRepo, cfg)
+	orderController := controllers.NewOrderController(orderService)
+
+	productRepo := mysql.NewProductMySQL(db)
+	productService := services.NewProductService(productRepo, cfg)
+	productController := controllers.NewProductController(productService)
+
+	designRepo := mysql.NewDesignMySQL(db)
+	designService := services.NewDesignService(designRepo, cfg, cld)
+	designController := controllers.NewDesignController(designService)
+
+	fabricRepo := mysql.NewFabricMySQL(db)
+	fabricService := services.NewFabricService(fabricRepo, cfg, cld)
+	fabricController := controllers.NewFabricController(fabricService)
+
+	materialRepo := mysql.NewMaterialMySQL(db)
+	materialService := services.NewMaterialService(materialRepo, cfg)
+	materialController := controllers.NewMaterialController(materialService)
+
+	prefix := "/api"
+	// api routes post
+
+	// User
+	app.Post(prefix+"/register", userController.UserRegister)
+	app.Post(prefix+"/store/register", userController.StoreRegister)
+	app.Post(prefix+"/login", userController.Login)
+	app.Post(prefix+"/login/token", userController.LoginByToken)
+	app.Post(prefix+"/user/id", userController.GetUserByID)
+	app.Post(prefix+"/user/token", userController.GetUserByJWT)
+	app.Post(prefix+"/user/update/address", userController.UpdateAddress)
+	app.Post(prefix+"/user/profile/upload", userController.UpdateImage)
+	app.Post(prefix+"/users", userController.GetAllUsers)
+
+	// Order
+	app.Post(prefix+"/order/create", orderController.CreateOrder)
+	app.Post(prefix+"/order/get", orderController.GetOrderByID)
+	app.Post(prefix+"/order/user", orderController.GetOrderByJWT)
+	app.Post(prefix+"/order/update/status", orderController.UpdateStatus)
+	app.Post(prefix+"/order/update/payment", orderController.UpdatePayment)
+	app.Post(prefix+"/order/update/tracking", orderController.UpdateTracking)
+	app.Post(prefix+"/order/update/price", orderController.UpdatePrice)
+	app.Post(prefix+"/order/update/tailor", orderController.UpdateTailor)
+	app.Post(prefix+"/order/product/check", orderController.CheckProcess)
+
+	// Product
+	app.Post(prefix+"/product/create", productController.CreateProduct)
+	app.Post(prefix+"/product/get", productController.GetProductByID)
+	app.Post(prefix+"/product/update/process", productController.UpdateProcessQuantity)
+	app.Post(prefix+"/product/get/order", productController.GetProductByOrderID)
+	app.Post(prefix+"/product/check", productController.CheckProcessQuantity)
+
+	// Design
+	app.Post(prefix+"/design/add", designController.AddDesign)
+	app.Post(prefix+"/design/update", designController.UpdateDesign)
+	app.Post(prefix+"/design/delete", designController.DeleteDesign)
+	app.Post(prefix+"/design/get", designController.GetDesignByID)
+
+	// Fabric
+	app.Post(prefix+"/fabric/add", fabricController.AddFabric)
+	app.Post(prefix+"/fabric/update", fabricController.UpdateFabric)
+	app.Post(prefix+"/fabric/updates", fabricController.UpdateFabrics)
+	app.Post(prefix+"/fabric/delete", fabricController.DeleteFabric)
+	app.Post(prefix+"/fabric/get", fabricController.GetFabricByID)
+
+	// Material
+	app.Post(prefix+"/material/add", materialController.AddMaterial)
+	app.Post(prefix+"/material/update", materialController.UpdateMaterial)
+	app.Post(prefix+"/material/delete", materialController.DeleteMaterial)
+	app.Post(prefix+"/material/get", materialController.GetMaterialByID)
+
+	// api routes get
+	app.Get("/", func(c *fiber.Ctx) error {
+		fmt.Println("Hello, World!")
+		return c.SendString("Hello, World!")
+	})
+	// User
+	app.Get(prefix+"/users", userController.GetAllUsers)
+	app.Get(prefix+"/tailors", userController.GetAllTailors)
+
+	// Order
+	app.Get(prefix+"/orders", orderController.GetAllOrders)
+
+	// Product
+	app.Get(prefix+"/products", productController.GetAllProducts)
+
+	// Design
+	app.Get(prefix+"/designs", designController.GetAllDesigns)
+
+	// Fabric
+	app.Get(prefix+"/fabrics", fabricController.GetAllFabrics)
+
+	// Material
+	app.Get(prefix+"/materials", materialController.GetAllMaterials)
+
+	if err := app.Listen("0.0.0.0:9000"); err != nil {
 		log.Fatal(err)
 	}
 }
