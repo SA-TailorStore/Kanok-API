@@ -146,17 +146,17 @@ func (u *UserMySQL) GetAllTailors(ctx context.Context, req *requests.UserRole) (
 		u.address, 
 		u.timestamp,
         CASE 
-        	WHEN o.tailor_id = u.user_id && o.status NOT IN ("cancel","success_tailor", "recevied_shop", "success_shop", "recevied_user", "success_user") THEN SUM(p.process_quantity)
+        	WHEN o.tailor_id = u.user_id THEN SUM(p.process_quantity)
         	ELSE 0 
     	END AS process,
     	CASE 
-        	WHEN o.tailor_id = u.user_id && o.status NOT IN ("cancel","success_tailor", "recevied_shop", "success_shop", "recevied_user", "success_user") THEN SUM(p.total_quantity)
+        	WHEN o.tailor_id = u.user_id THEN SUM(p.total_quantity)
         	ELSE 0 
     	END AS total
 	FROM 
 		USERS u
 	LEFT JOIN
-		ORDERS o ON o.tailor_id = u.user_id
+		ORDERS o ON o.tailor_id = u.user_id && o.status NOT IN ("cancel","success_tailor", "recevied_shop", "success_shop", "recevied_user", "success_user")
     LEFT JOIN
 		PRODUCTS p ON p.created_by = o.order_id
     WHERE u.role = ?
