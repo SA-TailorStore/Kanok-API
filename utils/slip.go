@@ -1,8 +1,13 @@
 package utils
 
 import (
+	"encoding/json"
 	"strconv"
 	"strings"
+
+	"github.com/SA-TailorStore/Kanok-API/configs"
+	"github.com/go-resty/resty/v2"
+	"github.com/liyue201/goqr"
 )
 
 var (
@@ -84,4 +89,39 @@ func HexToDecimal(hexString string) (int32, error) {
 		return 0, err
 	}
 	return int32(decimalValue), nil
+}
+
+func GetStringQR(qrcode []*goqr.QRData) string {
+	var result string
+	for _, qrData := range qrcode {
+		result += string(qrData.Payload)
+	}
+	return result
+}
+
+func SendString(str string) (map[string]interface{}, error) {
+	var result map[string]interface{}
+	body := map[string]interface{}{
+		"data": str,
+		"log":  true,
+	}
+
+	req := resty.New()
+	resp, err := req.R().
+		SetHeader("x-authorization", configs.NewConfig().SlipOk_Secret). // ตั้ง Header อื่นๆ
+		SetBody(body).
+		Post(configs.NewConfig().SlipOk_url)
+
+	if err != nil {
+		return result, err
+	}
+
+	json.Unmarshal([]byte(resp.String()), &result)
+	/*
+		fmt.Println("Url:", configs.NewConfig().SlipOk_url)
+		fmt.Println("Response Status:", resp.Status())
+		fmt.Println("Response Code:", resp.StatusCode())
+		fmt.Println("Body:", resp.String())
+	*/
+	return result, err
 }

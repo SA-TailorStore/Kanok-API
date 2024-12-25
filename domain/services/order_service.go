@@ -88,11 +88,27 @@ func (o *orderService) UpdatePayment(ctx context.Context, req *requests.UpdatePa
 	if err != nil {
 		return err
 	}
+	s := utils.GetStringQR(codes)
+	resp, _ := utils.SendString(s)
 
-	if err := utils.ValidateSlip(codes); err != nil {
+	cur_order, err := o.reposititory.GetOrderByID(ctx, &requests.OrderID{Order_id: req.Order_id})
+	if err != nil {
 		return err
 	}
-	req = &requests.UpdatePayment{Order_id: req.Order_id, Is_payment: 1}
+
+	if data, ok := resp["data"].(map[string]interface{}); ok {
+		if code, ok := resp["code"].(float64); ok && (code != 1013) {
+			if amount, ok := data["amount"].(float64); ok && amount == cur_order.Price {
+				req = &requests.UpdatePayment{Order_id: req.Order_id, Is_payment: 1}
+			} else {
+				return exceptions.ErrWrongSlip
+			}
+		} else {
+			return exceptions.ErrAmountIsWrong
+		}
+
+	}
+
 	if err := o.reposititory.UpdatePayment(ctx, req); err != nil {
 		return err
 	}

@@ -14,6 +14,8 @@ type Config struct {
 	DBPort         string `mapstructure:"DB_PORT"`
 	JWTSecret      string `mapstructure:"JWT_SECRET"`
 	Cloudinary_url string `mapstructure:"CLOUDINARY_URL"`
+	SlipOk_url     string `mapstructure:"SLIPOK_URL"`
+	SlipOk_Secret  string `mapstructure:"SLIPOK_SECRET"`
 }
 
 func NewConfig() *Config {

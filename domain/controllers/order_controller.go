@@ -260,6 +260,16 @@ func (o *orderController) UpdatePrice(c *fiber.Ctx) error {
 				"error":  err.Error(),
 				"status": "400",
 			})
+		case exceptions.ErrAmountIsWrong:
+			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+				"error":  err.Error(),
+				"status": "400",
+			})
+		case exceptions.ErrWrongSlip:
+			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+				"error":  err.Error(),
+				"status": "400",
+			})
 		default:
 			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 				"error":  err.Error(),
