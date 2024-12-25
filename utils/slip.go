@@ -2,6 +2,7 @@ package utils
 
 import (
 	"encoding/json"
+	"fmt"
 	"strconv"
 	"strings"
 
@@ -121,7 +122,7 @@ func SendString(str string) (map[string]interface{}, error) {
 		fmt.Println("Url:", configs.NewConfig().SlipOk_url)
 		fmt.Println("Response Status:", resp.Status())
 		fmt.Println("Response Code:", resp.StatusCode())
-		fmt.Println("Body:", resp.String())
 	*/
+	fmt.Println("Body:", resp.String())
 	return result, err
 }

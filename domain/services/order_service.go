@@ -2,6 +2,7 @@ package services
 
 import (
 	"context"
+	"fmt"
 	"mime/multipart"
 	"time"
 
@@ -97,14 +98,24 @@ func (o *orderService) UpdatePayment(ctx context.Context, req *requests.UpdatePa
 	}
 
 	if data, ok := resp["data"].(map[string]interface{}); ok {
-		if code, ok := resp["code"].(float64); ok && (code != 1013) {
-			if amount, ok := data["amount"].(float64); ok && amount == cur_order.Price {
-				req = &requests.UpdatePayment{Order_id: req.Order_id, Is_payment: 1}
-			} else {
+		if code, ok := resp["code"].(float64); ok {
+			fmt.Println(code)
+			switch code {
+			case 1012:
+				return exceptions.ErrSlipIsDup
+			case 1013:
+				return exceptions.ErrWrongAmount
+			case 1014:
+				return exceptions.ErrWrongAccount
+			default:
 				return exceptions.ErrWrongSlip
 			}
 		} else {
-			return exceptions.ErrAmountIsWrong
+			if amount, ok := data["amount"].(float64); ok && amount == cur_order.Price {
+				req = &requests.UpdatePayment{Order_id: req.Order_id, Is_payment: 1}
+			} else {
+				return exceptions.ErrAmountIsWrong
+			}
 		}
 
 	}
