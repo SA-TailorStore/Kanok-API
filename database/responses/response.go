@@ -63,21 +63,21 @@ type UserCreateOrder struct {
 
 // ORDER
 type Order struct {
-	Order_id        string `json:"order_id"`
-	Is_payment      int    `json:"is_payment"`
-	Status          string `json:"status"`
-	Store_phone     string `json:"store_phone"`
-	Store_address   string `json:"store_address"`
-	Price           int    `json:"price"`
-	Due_date        string `json:"due_date"`
-	Tracking_number string `json:"tracking_number"`
-	Created_by      string `json:"created_by"`
-	User_phone      string `json:"user_phone"`
-	User_address    string `json:"user_address"`
-	Tailor_id       string `json:"tailor_id"`
-	Tailor_phone    string `json:"tailor_phone"`
-	Tailor_address  string `json:"tailor_address"`
-	Timestamp       string `json:"timestamp"`
+	Order_id        string  `json:"order_id"`
+	Is_payment      int     `json:"is_payment"`
+	Status          string  `json:"status"`
+	Store_phone     string  `json:"store_phone"`
+	Store_address   string  `json:"store_address"`
+	Price           float64 `json:"price"`
+	Due_date        string  `json:"due_date"`
+	Tracking_number string  `json:"tracking_number"`
+	Created_by      string  `json:"created_by"`
+	User_phone      string  `json:"user_phone"`
+	User_address    string  `json:"user_address"`
+	Tailor_id       string  `json:"tailor_id"`
+	Tailor_phone    string  `json:"tailor_phone"`
+	Tailor_address  string  `json:"tailor_address"`
+	Timestamp       string  `json:"timestamp"`
 }
 
 type ShowOrder struct {

@@ -13,7 +13,12 @@ require (
 	github.com/jmoiron/sqlx v1.4.0
 	github.com/liyue201/goqr v0.0.0-20200803022322-df443203d4ea
 	github.com/spf13/viper v1.19.0
-	golang.org/x/crypto v0.21.0
+	golang.org/x/crypto v0.31.0
+)
+
+require (
+	github.com/moul/http2curl v1.0.0 // indirect
+	github.com/pkg/errors v0.9.1 // indirect
 )
 
 require (
@@ -25,6 +30,7 @@ require (
 	github.com/gabriel-vasile/mimetype v1.4.3 // indirect
 	github.com/go-playground/locales v0.14.1 // indirect
 	github.com/go-playground/universal-translator v0.18.1 // indirect
+	github.com/go-resty/resty/v2 v2.16.2 // indirect
 	github.com/gofiber/contrib/jwt v1.0.10 // indirect
 	github.com/gofiber/utils v0.0.10 // indirect
 	github.com/golang-jwt/jwt v3.2.2+incompatible // indirect
@@ -38,6 +44,7 @@ require (
 	github.com/mattn/go-isatty v0.0.20 // indirect
 	github.com/mattn/go-runewidth v0.0.15 // indirect
 	github.com/mitchellh/mapstructure v1.5.0 // indirect
+	github.com/parnurzeal/gorequest v0.3.0
 	github.com/pelletier/go-toml/v2 v2.2.2 // indirect
 	github.com/rivo/uniseg v0.2.0 // indirect
 	github.com/sagikazarmark/locafero v0.4.0 // indirect
@@ -53,9 +60,9 @@ require (
 	go.uber.org/atomic v1.9.0 // indirect
 	go.uber.org/multierr v1.9.0 // indirect
 	golang.org/x/exp v0.0.0-20230905200255-921286631fa9 // indirect
-	golang.org/x/net v0.23.0 // indirect
-	golang.org/x/sys v0.18.0 // indirect
-	golang.org/x/text v0.14.0 // indirect
+	golang.org/x/net v0.33.0 // indirect
+	golang.org/x/sys v0.28.0 // indirect
+	golang.org/x/text v0.21.0 // indirect
 	golang.org/x/xerrors v0.0.0-20240903120638-7835f813f4da // indirect
 	gopkg.in/ini.v1 v1.67.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
