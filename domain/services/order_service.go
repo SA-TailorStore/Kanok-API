@@ -90,7 +90,7 @@ func (o *orderService) UpdatePayment(ctx context.Context, req *requests.UpdatePa
 		return err
 	}
 	s := utils.GetStringQR(codes)
-	resp, _ := utils.SendString(s)
+	resp, _ := utils.Bypass(s)
 
 	cur_order, err := o.reposititory.GetOrderByID(ctx, &requests.OrderID{Order_id: req.Order_id})
 	if err != nil {
