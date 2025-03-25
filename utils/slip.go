@@ -126,3 +126,54 @@ func SendString(str string) (map[string]interface{}, error) {
 	fmt.Println("Body:", resp.String())
 	return result, err
 }
+
+func Bypass(str string) (map[string]interface{}, error) {
+	result := map[string]interface{}{
+		"success": true,
+		"data": map[string]interface{}{
+			"success":       true,
+			"message":       "✅",
+			"rqUID":         "783_20191108_v4UIS1K2Mobile",
+			"language":      "TH",
+			"transRef":      "010092101507665143",
+			"sendingBank":   "004",
+			"receivingBank": "004",
+			"transDate":     "20200401",
+			"transTime":     "10:15:07",
+			"sender": map[string]interface{}{
+				"displayName": "นาย ธนาคาร ก",
+				"name":        "Mr. Thanakarn K",
+				"proxy": map[string]interface{}{
+					"type":  nil,
+					"value": nil,
+				},
+				"account": map[string]interface{}{
+					"type":  "BANKAC",
+					"value": "xxx-x-x0209-x",
+				},
+			},
+			"receiver": map[string]interface{}{
+				"displayName": "กสิกร ร",
+				"name":        "KASIKORN R",
+				"proxy": map[string]interface{}{
+					"type":  "",
+					"value": "",
+				},
+				"account": map[string]interface{}{
+					"type":  "BANKAC",
+					"value": "xxx-x-x3109-x",
+				},
+			},
+			"amount":            1,
+			"paidLocalAmount":   1,
+			"paidLocalCurrency": "764",
+			"countryCode":       "TH",
+			"transFeeAmount":    0,
+			"ref1":              "",
+			"ref2":              "",
+			"ref3":              "",
+			"toMerchantId":      "",
+		},
+	}
+	return result, nil
+}
